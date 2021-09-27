@@ -22,14 +22,16 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
+package se.warting.signatureview.utils;
+
+public class ControlTimedPoints {
+
+    public TimedPoint c1;
+    public TimedPoint c2;
+
+    public ControlTimedPoints set(TimedPoint c1, TimedPoint c2) {
+        this.c1 = c1;
+        this.c2 = c2;
+        return this;
     }
 }
-rootProject.name = "Signaturepad"
-include ':app'
-include ':signature-pad'
-include ':signature-view'

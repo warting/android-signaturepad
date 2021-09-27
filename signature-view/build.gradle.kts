@@ -24,6 +24,7 @@
 
 plugins {
     id("com.android.library")
+    id("kotlin-kapt")
     id("kotlin-android")
     id("maven-publish")
     id("signing")
@@ -37,7 +38,7 @@ androidGitVersion {
 
 val PUBLISH_GROUP_ID: String by extra("se.warting.signature")
 val PUBLISH_VERSION: String by extra(androidGitVersion.name().replace("v", ""))
-val PUBLISH_ARTIFACT_ID by extra("signature-pad")
+val PUBLISH_ARTIFACT_ID by extra("signature-view")
 
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
@@ -46,7 +47,7 @@ android {
     compileSdk = 31
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 14
         targetSdk = 31
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,8 +62,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
-        viewBinding = true
-        compose = true
+        viewBinding = false
+        compose = false
+    }
+    dataBinding {
+        isEnabled = true
     }
 
     composeOptions {
@@ -71,27 +75,9 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
         freeCompilerArgs = listOfNotNull(
-            "-Xopt-in=kotlin.RequiresOptIn",
-            "-Xallow-jvm-ir-dependencies",
-            "-Xskip-prerelease-check"
+                "-Xopt-in=kotlin.RequiresOptIn",
+                "-Xallow-jvm-ir-dependencies",
+                "-Xskip-prerelease-check"
         )
     }
-}
-
-dependencies {
-
-    val composeVersion = "1.0.2"
-
-    implementation("androidx.compose.runtime:runtime:$composeVersion")
-    implementation("androidx.core:core-ktx:1.6.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("com.github.gcacace:signature-pad:1.3.1")
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.foundation:foundation:1.0.2")
-    implementation("androidx.compose.foundation:foundation-layout:$composeVersion")
-    implementation("androidx.compose.ui:ui-viewbinding:$composeVersion")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }

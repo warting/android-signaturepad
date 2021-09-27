@@ -33,12 +33,16 @@ section:
 Then, include the library as dependency:
 
 ```gradle
-compile 'se.warting.signature:signature-pad:<latest_version>'
+compile 'se.warting.signature:signature-pad:<latest_version>' // jetpack Compose views
+```
+or
+```gradle
+compile 'se.warting.signature:signature-view:<latest_version>' // legacy android views
 ```
 
 ## Usage
 
-*Please see the `/SignaturePad-Example` app for a more detailed code example of how to use the
+*Please see the `/app` example app for a more detailed code example of how to use the
 library.*
 
 1. Add the `SignaturePad` view to the layout you want to show.

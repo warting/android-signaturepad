@@ -34,14 +34,15 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.github.gcacace.signaturepad.views.SignaturePad
-
+import se.warting.signatureview.views.SignaturePad
+@SuppressWarnings("LongParameterList")
 @Composable
 fun SignaturePadView(
     penMinWidth: Dp = 3.dp,
     penMaxWidth: Dp = 7.dp,
     penColor: Color = Color.Black,
     velocityFilterWeight: Float = 0.9F,
+    clearOnDoubleClick: Boolean = true,
     onReady: (svg: SignaturePadAdapter) -> Unit,
 ) {
     AndroidView(
@@ -54,6 +55,7 @@ fun SignaturePadView(
                 this.setMaxWidth(penMaxWidth.value)
                 this.setPenColor(penColor.toArgb())
                 this.setVelocityFilterWeight(velocityFilterWeight)
+                this.setClearOnDoubleClick(clearOnDoubleClick)
 
                 this.setOnSignedListener(object : SignaturePad.OnSignedListener {
                     override fun onStartSigning() {
