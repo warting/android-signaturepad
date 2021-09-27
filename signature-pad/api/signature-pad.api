@@ -1,0 +1,20 @@
+public final class se/warting/signaturepad/BuildConfig {
+	public static final field BUILD_TYPE Ljava/lang/String;
+	public static final field DEBUG Z
+	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
+	public fun <init> ()V
+}
+
+public final class se/warting/signaturepad/SignaturePadAdapter {
+	public static final field $stable I
+	public fun <init> (Lse/warting/signatureview/views/SignaturePad;)V
+	public final fun clear ()V
+	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
+	public final fun getSignatureSvg ()Ljava/lang/String;
+	public final fun getTransparentSignatureBitmap ()Landroid/graphics/Bitmap;
+}
+
+public final class se/warting/signaturepad/SignaturePadViewKt {
+	public static final fun SignaturePadView-8YUqYfo (FFJFZLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)V
+}
+
