@@ -21,34 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package se.warting.signatureview.utils
 
-package se.warting.signatureview.utils;
+internal class ControlTimedPoints {
+    @JvmField
+    var c1: TimedPoint? = null
 
-public class TimedPoint {
-    public float x;
-    public float y;
-    public long timestamp;
-
-    public TimedPoint set(float x, float y) {
-        this.x = x;
-        this.y = y;
-        this.timestamp = System.currentTimeMillis();
-        return this;
-    }
-
-    public float velocityFrom(TimedPoint start) {
-        long diff = this.timestamp - start.timestamp;
-        if(diff <= 0) {
-            diff = 1;
-        }
-        float velocity = distanceTo(start) / diff;
-        if (Float.isInfinite(velocity) || Float.isNaN(velocity)) {
-            velocity = 0;
-        }
-        return velocity;
-    }
-
-    public float distanceTo(TimedPoint point) {
-        return (float) Math.sqrt(Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2));
+    @JvmField
+    var c2: TimedPoint? = null
+    operator fun set(c1: TimedPoint?, c2: TimedPoint?): ControlTimedPoints {
+        this.c1 = c1
+        this.c2 = c2
+        return this
     }
 }

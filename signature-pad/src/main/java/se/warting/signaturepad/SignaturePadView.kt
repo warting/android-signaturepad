@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import se.warting.signatureview.views.SignaturePad
+import se.warting.signatureview.views.SignedListener
+
 @SuppressWarnings("LongParameterList")
 @Composable
 fun SignaturePadView(
@@ -57,7 +59,7 @@ fun SignaturePadView(
                 this.setVelocityFilterWeight(velocityFilterWeight)
                 this.setClearOnDoubleClick(clearOnDoubleClick)
 
-                this.setOnSignedListener(object : SignaturePad.OnSignedListener {
+                this.setOnSignedListener(object : SignedListener {
                     override fun onStartSigning() {
                         Log.d("SignaturePadView", "onStartSigning")
                     }
@@ -86,11 +88,11 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
     }
 
     fun getSignatureBitmap(): Bitmap {
-        return signaturePad.signatureBitmap!!
+        return signaturePad.signatureBitmap
     }
 
     fun getTransparentSignatureBitmap(): Bitmap {
-        return signaturePad.transparentSignatureBitmap!!
+        return signaturePad.transparentSignatureBitmap
     }
 
     fun getSignatureSvg(): String {

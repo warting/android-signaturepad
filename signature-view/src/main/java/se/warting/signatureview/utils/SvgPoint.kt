@@ -21,61 +21,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package se.warting.signatureview.utils
 
-package se.warting.signatureview.utils;
+import kotlin.math.roundToInt
 
 /**
  * Represent a point as it would be in the generated SVG document.
  */
-class SvgPoint {
+internal class SvgPoint {
+    val x: Int
+    val y: Int
 
-    final Integer x, y;
-
-    public SvgPoint(TimedPoint point) {
+    constructor(point: TimedPoint) {
         // one optimisation is to get rid of decimals as they are mostly non-significant in the
         // produced SVG image
-        x = Math.round(point.x);
-        y = Math.round(point.y);
+        x = point.x.roundToInt()
+        y = point.y.roundToInt()
     }
 
-    public SvgPoint(int x, int y) {
-        this.x = x;
-        this.y = y;
+    constructor(x: Int, y: Int) {
+        this.x = x
+        this.y = y
     }
 
-    public String toAbsoluteCoordinates() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(x);
-        stringBuilder.append(",");
-        stringBuilder.append(y);
-        return stringBuilder.toString();
+    private fun toAbsoluteCoordinates(): String {
+        val stringBuilder = StringBuilder()
+        stringBuilder.append(x)
+        stringBuilder.append(",")
+        stringBuilder.append(y)
+        return stringBuilder.toString()
     }
 
-    public String toRelativeCoordinates(final SvgPoint referencePoint) {
-        return (new SvgPoint(x - referencePoint.x, y - referencePoint.y)).toString();
+    fun toRelativeCoordinates(referencePoint: SvgPoint): String {
+        return SvgPoint(x - referencePoint.x, y - referencePoint.y).toString()
     }
 
-    @Override
-    public String toString() {
-        return toAbsoluteCoordinates();
+    override fun toString(): String {
+        return toAbsoluteCoordinates()
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SvgPoint svgPoint = (SvgPoint) o;
-
-        if (!x.equals(svgPoint.x)) return false;
-        return y.equals(svgPoint.y);
-
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val svgPoint = other as SvgPoint
+        return if (x != svgPoint.x) false else y == svgPoint.y
     }
 
-    @Override
-    public int hashCode() {
-        int result = x.hashCode();
-        result = 31 * result + y.hashCode();
-        return result;
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        return result
     }
 }

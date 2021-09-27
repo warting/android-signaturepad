@@ -22,28 +22,27 @@
  * SOFTWARE.
  */
 
-package se.warting.signatureview.view;
+package se.warting.signatureview.view
 
-import android.annotation.SuppressLint;
-import android.os.Build;
-import android.view.ViewTreeObserver;
+import android.os.Build
+import android.view.View
 
-public class ViewTreeObserverCompat {
+object ViewCompat {
     /**
-     * Remove a previously installed global layout callback.
-     * @param observer the view observer
-     * @param victim the victim
+     * Returns true if `view` has been through at least one layout since it
+     * was last attached to or detached from a window.
+     *
+     * See http://developer.android.com/reference/android/support/v4/view/ViewCompat.html#isLaidOut%28android.view.View%29
+     *
+     * @param view the view
+     * @return true if this view has been through at least one layout
+     * since it was last attached to or detached from a window.
      */
-    @SuppressLint("NewApi")
-    @SuppressWarnings("deprecation")
-    public static void removeOnGlobalLayoutListener(ViewTreeObserver observer, ViewTreeObserver.OnGlobalLayoutListener victim) {
-        // Future (API16+)...
-        if (Build.VERSION.SDK_INT >= 16) {
-            observer.removeOnGlobalLayoutListener(victim);
-        }
+    fun isLaidOut(view: View): Boolean {
+        // Future (API19+)...
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            view.isLaidOut
+        } else view.width > 0 && view.height > 0
         // Legacy...
-        else {
-            observer.removeGlobalOnLayoutListener(victim);
-        }
     }
 }
