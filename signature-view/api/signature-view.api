@@ -1,4 +1,5 @@
 public abstract interface class androidx/databinding/DataBindingComponent {
+	public abstract fun getSignaturePadBindingAdapter ()Lse/warting/signatureview/utils/SignaturePadBindingAdapter;
 }
 
 public class androidx/databinding/library/baseAdapters/BR {
@@ -31,30 +32,12 @@ public class se/warting/signatureview/DataBindingTriggerClass {
 	public fun <init> ()V
 }
 
-public class se/warting/signatureview/utils/Bezier {
-	public field control1 Lse/warting/signatureview/utils/TimedPoint;
-	public field control2 Lse/warting/signatureview/utils/TimedPoint;
-	public field endPoint Lse/warting/signatureview/utils/TimedPoint;
-	public field startPoint Lse/warting/signatureview/utils/TimedPoint;
-	public fun <init> ()V
-	public fun length ()F
-	public fun point (FFFFF)D
-	public fun set (Lse/warting/signatureview/utils/TimedPoint;Lse/warting/signatureview/utils/TimedPoint;Lse/warting/signatureview/utils/TimedPoint;Lse/warting/signatureview/utils/TimedPoint;)Lse/warting/signatureview/utils/Bezier;
-}
-
-public class se/warting/signatureview/utils/ControlTimedPoints {
-	public field c1 Lse/warting/signatureview/utils/TimedPoint;
-	public field c2 Lse/warting/signatureview/utils/TimedPoint;
-	public fun <init> ()V
-	public fun set (Lse/warting/signatureview/utils/TimedPoint;Lse/warting/signatureview/utils/TimedPoint;)Lse/warting/signatureview/utils/ControlTimedPoints;
-}
-
 public final class se/warting/signatureview/utils/SignaturePadBindingAdapter {
-	public fun <init> ()V
-	public static fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
-	public static fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;)V
-	public static fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;)V
-	public static fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
+	public static final field INSTANCE Lse/warting/signatureview/utils/SignaturePadBindingAdapter;
+	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
+	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;)V
+	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;)V
+	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
 }
 
 public abstract interface class se/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener {
@@ -69,68 +52,36 @@ public abstract interface class se/warting/signatureview/utils/SignaturePadBindi
 	public abstract fun onStartSigning ()V
 }
 
-public class se/warting/signatureview/utils/SvgBuilder {
-	public fun <init> ()V
-	public fun append (Lse/warting/signatureview/utils/Bezier;F)Lse/warting/signatureview/utils/SvgBuilder;
-	public fun build (II)Ljava/lang/String;
-	public fun clear ()V
+public final class se/warting/signatureview/view/ViewCompat {
+	public static final field INSTANCE Lse/warting/signatureview/view/ViewCompat;
+	public final fun isLaidOut (Landroid/view/View;)Z
 }
 
-public class se/warting/signatureview/utils/SvgPathBuilder {
-	public static final field SVG_MOVE Ljava/lang/Character;
-	public static final field SVG_RELATIVE_CUBIC_BEZIER_CURVE Ljava/lang/Character;
-	public fun <init> (Lse/warting/signatureview/utils/SvgPoint;Ljava/lang/Integer;)V
-	public fun append (Lse/warting/signatureview/utils/SvgPoint;Lse/warting/signatureview/utils/SvgPoint;Lse/warting/signatureview/utils/SvgPoint;)Lse/warting/signatureview/utils/SvgPathBuilder;
-	public final fun getLastPoint ()Lse/warting/signatureview/utils/SvgPoint;
-	public final fun getStrokeWidth ()Ljava/lang/Integer;
-	public fun toString ()Ljava/lang/String;
-}
-
-public class se/warting/signatureview/utils/TimedPoint {
-	public field timestamp J
-	public field x F
-	public field y F
-	public fun <init> ()V
-	public fun distanceTo (Lse/warting/signatureview/utils/TimedPoint;)F
-	public fun set (FF)Lse/warting/signatureview/utils/TimedPoint;
-	public fun velocityFrom (Lse/warting/signatureview/utils/TimedPoint;)F
-}
-
-public class se/warting/signatureview/view/ViewCompat {
-	public fun <init> ()V
-	public static fun isLaidOut (Landroid/view/View;)Z
-}
-
-public class se/warting/signatureview/view/ViewTreeObserverCompat {
-	public fun <init> ()V
-	public static fun removeOnGlobalLayoutListener (Landroid/view/ViewTreeObserver;Landroid/view/ViewTreeObserver$OnGlobalLayoutListener;)V
-}
-
-public class se/warting/signatureview/views/SignaturePad : android/view/View {
+public final class se/warting/signatureview/views/SignaturePad : android/view/View {
+	public static final field Companion Lse/warting/signatureview/views/SignaturePad$Companion;
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
-	public fun clear ()V
-	public fun clearView ()V
-	public fun getPoints ()Ljava/util/List;
-	public fun getSignatureBitmap ()Landroid/graphics/Bitmap;
-	public fun getSignatureSvg ()Ljava/lang/String;
-	public fun getTransparentSignatureBitmap ()Landroid/graphics/Bitmap;
-	public fun getTransparentSignatureBitmap (Z)Landroid/graphics/Bitmap;
-	public fun isEmpty ()Z
-	protected fun onDraw (Landroid/graphics/Canvas;)V
-	protected fun onRestoreInstanceState (Landroid/os/Parcelable;)V
-	protected fun onSaveInstanceState ()Landroid/os/Parcelable;
+	public final fun clear ()V
+	public final fun clearView ()V
+	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
+	public final fun getSignatureSvg ()Ljava/lang/String;
+	public final fun getTransparentSignatureBitmap ()Landroid/graphics/Bitmap;
+	public final fun getTransparentSignatureBitmap (Z)Landroid/graphics/Bitmap;
+	public final fun isEmpty ()Z
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
-	public fun setClearOnDoubleClick (Z)V
-	public fun setMaxWidth (F)V
-	public fun setMinWidth (F)V
-	public fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad$OnSignedListener;)V
-	public fun setPenColor (I)V
-	public fun setPenColorRes (I)V
-	public fun setSignatureBitmap (Landroid/graphics/Bitmap;)V
-	public fun setVelocityFilterWeight (F)V
+	public final fun setClearOnDoubleClick (Z)V
+	public final fun setMaxWidth (F)V
+	public final fun setMinWidth (F)V
+	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignedListener;)V
+	public final fun setPenColor (I)V
+	public final fun setPenColorRes (I)V
+	public final fun setSignatureBitmap (Landroid/graphics/Bitmap;)V
+	public final fun setVelocityFilterWeight (F)V
 }
 
-public abstract interface class se/warting/signatureview/views/SignaturePad$OnSignedListener {
+public final class se/warting/signatureview/views/SignaturePad$Companion {
+}
+
+public abstract interface class se/warting/signatureview/views/SignedListener {
 	public abstract fun onClear ()V
 	public abstract fun onSigned ()V
 	public abstract fun onStartSigning ()V

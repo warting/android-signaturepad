@@ -21,17 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package se.warting.signatureview.view
 
-package se.warting.signatureview.utils;
+import android.annotation.SuppressLint
+import android.os.Build
+import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 
-public class ControlTimedPoints {
-
-    public TimedPoint c1;
-    public TimedPoint c2;
-
-    public ControlTimedPoints set(TimedPoint c1, TimedPoint c2) {
-        this.c1 = c1;
-        this.c2 = c2;
-        return this;
+internal object ViewTreeObserverCompat {
+    /**
+     * Remove a previously installed global layout callback.
+     * @param observer the view observer
+     * @param victim the victim
+     */
+    @SuppressLint("NewApi")
+    internal fun removeOnGlobalLayoutListener(
+        observer: ViewTreeObserver,
+        victim: OnGlobalLayoutListener?
+    ) {
+        // Future (API16+)...
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            observer.removeOnGlobalLayoutListener(victim)
+        } else {
+            observer.removeGlobalOnLayoutListener(victim)
+        }
     }
 }
