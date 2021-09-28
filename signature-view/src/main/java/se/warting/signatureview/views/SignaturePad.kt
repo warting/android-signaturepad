@@ -42,7 +42,11 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import java.util.ArrayList
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 import se.warting.signatureview.R
 import se.warting.signatureview.utils.Bezier
 import se.warting.signatureview.utils.ControlTimedPoints
@@ -396,8 +400,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     private fun getNewPoint(x: Float, y: Float): TimedPoint {
         val mCacheSize = mPointsCache.size
-        val timedPoint: TimedPoint?
-        timedPoint = if (mCacheSize == 0) {
+        val timedPoint: TimedPoint? = if (mCacheSize == 0) {
             // Cache is empty, create a new point
             TimedPoint()
         } else {
@@ -462,7 +465,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         ensureSignatureBitmap()
         val originalWidth = mPaint.strokeWidth
         val widthDelta = endWidth - startWidth
-        val drawSteps = Math.ceil(curve.length().toDouble()).toFloat()
+        val drawSteps = ceil(curve.length().toDouble()).toFloat()
         var i = 0
         while (i < drawSteps) {
 
@@ -504,8 +507,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val m1Y = (s1.y + s2.y) / 2.0f
         val m2X = (s2.x + s3.x) / 2.0f
         val m2Y = (s2.y + s3.y) / 2.0f
-        val l1 = Math.sqrt((dx1 * dx1 + dy1 * dy1).toDouble()).toFloat()
-        val l2 = Math.sqrt((dx2 * dx2 + dy2 * dy2).toDouble()).toFloat()
+        val l1 = sqrt((dx1 * dx1 + dy1 * dy1).toDouble()).toFloat()
+        val l2 = sqrt((dx2 * dx2 + dy2 * dy2).toDouble()).toFloat()
         val dxm = m1X - m2X
         val dym = m1Y - m2Y
         var k = l2 / (l1 + l2)
@@ -521,7 +524,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     private fun strokeWidth(velocity: Float): Float {
-        return Math.max(mMaxWidth / (velocity + 1), mMinWidth.toFloat())
+        return max(mMaxWidth / (velocity + 1), mMinWidth.toFloat())
     }
 
     /**
@@ -553,10 +556,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     private fun resetDirtyRect(eventX: Float, eventY: Float) {
 
         // The mLastTouchX and mLastTouchY were set when the ACTION_DOWN motion event occurred.
-        mDirtyRect.left = Math.min(mLastTouchX, eventX)
-        mDirtyRect.right = Math.max(mLastTouchX, eventX)
-        mDirtyRect.top = Math.min(mLastTouchY, eventY)
-        mDirtyRect.bottom = Math.max(mLastTouchY, eventY)
+        mDirtyRect.left = min(mLastTouchX, eventX)
+        mDirtyRect.right = max(mLastTouchX, eventX)
+        mDirtyRect.top = min(mLastTouchY, eventY)
+        mDirtyRect.bottom = max(mLastTouchY, eventY)
     }
 
     private fun ensureSignatureBitmap() {
