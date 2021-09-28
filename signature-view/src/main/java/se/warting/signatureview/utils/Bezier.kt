@@ -23,6 +23,8 @@
  */
 package se.warting.signatureview.utils
 
+import kotlin.math.sqrt
+
 internal class Bezier {
     @JvmField
     var startPoint: TimedPoint? = null
@@ -71,7 +73,7 @@ internal class Bezier {
             if (i > 0) {
                 xDiff = cx - px
                 yDiff = cy - py
-                length += Math.sqrt(xDiff * xDiff + yDiff * yDiff).toFloat()
+                length += sqrt(xDiff * xDiff + yDiff * yDiff).toFloat()
             }
             px = cx
             py = cy

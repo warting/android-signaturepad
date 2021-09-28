@@ -23,6 +23,8 @@
  */
 package se.warting.signatureview.utils
 
+import kotlin.math.roundToInt
+
 internal class SvgBuilder {
     private val mSvgPathsBuilder = StringBuilder()
     private var mCurrentPathBuilder: SvgPathBuilder? = null
@@ -66,7 +68,7 @@ internal class SvgBuilder {
     }
 
     fun append(curve: Bezier, strokeWidth: Float): SvgBuilder {
-        val roundedStrokeWidth = Math.round(strokeWidth)
+        val roundedStrokeWidth: Int = strokeWidth.roundToInt()
         val curveStartSvgPoint = SvgPoint(curve.startPoint!!)
         val curveControlSvgPoint1 = SvgPoint(curve.control1!!)
         val curveControlSvgPoint2 = SvgPoint(curve.control2!!)
