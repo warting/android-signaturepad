@@ -25,18 +25,13 @@ package se.warting.signatureview.utils
 
 import kotlin.math.sqrt
 
-internal class Bezier {
-    @JvmField
-    var startPoint: TimedPoint? = null
+internal data class Bezier(
+    var startPoint: TimedPoint? = null,
+    var control1: TimedPoint? = null,
+    var control2: TimedPoint? = null,
+    var endPoint: TimedPoint? = null,
+) {
 
-    @JvmField
-    var control1: TimedPoint? = null
-
-    @JvmField
-    var control2: TimedPoint? = null
-
-    @JvmField
-    var endPoint: TimedPoint? = null
     operator fun set(
         startPoint: TimedPoint?,
         control1: TimedPoint?,

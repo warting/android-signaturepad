@@ -79,7 +79,7 @@ class ComposeActivity : ComponentActivity() {
                                     Log.d("ComposeActivity", "onSigned")
                                 },
                                 onClear = {
-                                    Log.d("ComposeActivity", "onClear")
+                                    Log.d("ComposeActivity", "onClear isEmpty:" + signaturePadAdapter?.isEmpty)
                                 },
                                 onStartSigning = {
                                     Log.d("ComposeActivity", "onStartSigning")

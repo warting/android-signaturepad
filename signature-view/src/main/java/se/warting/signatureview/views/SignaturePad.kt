@@ -59,7 +59,7 @@ import se.warting.signatureview.view.ViewTreeObserverCompat.removeOnGlobalLayout
 class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     // View state
     private val points = mutableListOf<TimedPoint>()
-    private var mIsEmpty = false
+    private var _isEmpty = false
     private var mHasEditState: Boolean? = null
     private var mLastTouchX = 0f
     private var mLastTouchY = 0f
@@ -187,7 +187,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             mSignatureBitmap = null
             ensureSignatureBitmap()
         }
-        isEmpty = true
+        makeEmpty(true)
         invalidate()
     }
 
@@ -214,22 +214,24 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
                 mSignedListener?.onStartSigning()
                 resetDirtyRect(eventX, eventY)
                 addTimedPoint(getNewTimedPoint(eventX, eventY))
-                isEmpty = false
+                makeEmpty(false)
             }
             MotionEvent.ACTION_MOVE -> {
                 resetDirtyRect(eventX, eventY)
                 addTimedPoint(getNewTimedPoint(eventX, eventY))
-                isEmpty = false
+                makeEmpty(false)
             }
             MotionEvent.ACTION_UP -> {
                 resetDirtyRect(eventX, eventY)
                 addTimedPoint(getNewTimedPoint(eventX, eventY))
                 parent.requestDisallowInterceptTouchEvent(true)
             }
-            else -> return false
+            else -> {
+                return false
+            }
         }
 
-        // invalidate();
+        invalidate();
         invalidate(
             (mDirtyRect.left - mMaxWidth).toInt(),
             (mDirtyRect.top - mMaxWidth).toInt(),
@@ -249,16 +251,19 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         mSignedListener = listener
     }
 
-    var isEmpty: Boolean
-        get() = mIsEmpty
-        private set(newValue) {
-            mIsEmpty = newValue
-            if (mIsEmpty) {
-                mSignedListener?.onClear()
-            } else {
-                mSignedListener?.onSigned()
-            }
+    val isEmpty: Boolean
+        get() = _isEmpty
+
+
+    private fun makeEmpty(newValue: Boolean) {
+        _isEmpty = newValue
+        if (_isEmpty) {
+            mSignedListener?.onClear()
+        } else {
+            mSignedListener?.onSigned()
         }
+    }
+
     val signatureSvg: String
         get() {
             val width = transparentSignatureBitmap.width
@@ -298,7 +303,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             drawMatrix.setRectToRect(tempSrc, tempDst, Matrix.ScaleToFit.CENTER)
             val canvas = Canvas(mSignatureBitmap!!)
             canvas.drawBitmap(signature, drawMatrix, null)
-            isEmpty = false
+            makeEmpty(false)
             invalidate()
         } else {
             viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
@@ -421,7 +426,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         points.add(timedPoint)
         val pointsCount = points.size
         if (pointsCount > 3) {
-            var tmp = calculateCurveControlPoints(points[0], points[1], points[2])
+            var tmp: ControlTimedPoints =
+                calculateCurveControlPoints(points[0], points[1], points[2])
             val c2 = tmp.c2
             recyclePoint(tmp.c1)
             tmp = calculateCurveControlPoints(points[1], points[2], points[3])
@@ -431,7 +437,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             val startPoint = curve.startPoint
             val endPoint = curve.endPoint
             var velocity = endPoint!!.velocityFrom(startPoint!!)
-            velocity = if (java.lang.Float.isNaN(velocity)) 0.0f else velocity
+
             velocity = (mVelocityFilterWeight * velocity +
                     (1 - mVelocityFilterWeight) * mLastVelocity)
 
@@ -514,7 +520,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val dxm = m1X - m2X
         val dym = m1Y - m2Y
         var k = l2 / (l1 + l2)
-        if (java.lang.Float.isNaN(k)) k = 0.0f
+        if (k.isNaN()) k = 0.0f
         val cmX = m2X + dxm * k
         val cmY = m2Y + dym * k
         val tx = s2.x - cmX

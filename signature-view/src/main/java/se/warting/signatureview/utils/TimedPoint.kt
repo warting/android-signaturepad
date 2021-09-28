@@ -44,7 +44,7 @@ internal class TimedPoint {
             diff = 1
         }
         var velocity = distanceTo(start) / diff
-        if (java.lang.Float.isInfinite(velocity) || java.lang.Float.isNaN(velocity)) {
+        if (velocity.isInfinite() || velocity.isNaN()) {
             velocity = 0f
         }
         return velocity

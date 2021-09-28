@@ -88,6 +88,10 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
         signaturePad.clear()
     }
 
+    val isEmpty: Boolean
+        get() = signaturePad.isEmpty
+
+
     fun getSignatureBitmap(): Bitmap {
         return signaturePad.signatureBitmap
     }
