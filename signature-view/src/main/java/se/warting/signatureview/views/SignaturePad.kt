@@ -58,7 +58,7 @@ import se.warting.signatureview.view.ViewTreeObserverCompat.removeOnGlobalLayout
 @SuppressWarnings("TooManyFunctions")
 class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     // View state
-    private var mPoints: MutableList<TimedPoint>? = null
+    private val points = mutableListOf<TimedPoint>()
     private var mIsEmpty = false
     private var mHasEditState: Boolean? = null
     private var mLastTouchX = 0f
@@ -82,7 +82,12 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     private var mClearOnDoubleClick = false
 
     // Double click detector
-    private val mGestureDetector: GestureDetector
+    private val doubleClickGestureDetector =
+        GestureDetector(context, object : SimpleOnGestureListener() {
+            override fun onDoubleTap(e: MotionEvent): Boolean {
+                return onDoubleClick()
+            }
+        })
 
     // Default attribute values
     companion object {
@@ -175,7 +180,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     fun clearView() {
         mSvgBuilder.clear()
-        mPoints = ArrayList()
+        points.clear()
         mLastVelocity = 0f
         mLastWidth = ((mMinWidth + mMaxWidth) / 2).toFloat()
         if (mSignatureBitmap != null) {
@@ -193,33 +198,32 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     @SuppressWarnings("ReturnCount")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (!isEnabled) return false
+        val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
+        if (!isEnabled || didDoubleClick) return false
+
         val eventX = event.x
         val eventY = event.y
-        val bool = mGestureDetector.onTouchEvent(event)
-        if (bool) {
-            return false
-        }
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
-                mPoints!!.clear()
+                points.clear()
                 mLastTouchX = eventX
                 mLastTouchY = eventY
-                addPoint(getNewPoint(eventX, eventY))
-                if (mSignedListener != null) mSignedListener!!.onStartSigning()
+                addTimedPoint(getNewTimedPoint(eventX, eventY))
+                mSignedListener?.onStartSigning()
                 resetDirtyRect(eventX, eventY)
-                addPoint(getNewPoint(eventX, eventY))
+                addTimedPoint(getNewTimedPoint(eventX, eventY))
                 isEmpty = false
             }
             MotionEvent.ACTION_MOVE -> {
                 resetDirtyRect(eventX, eventY)
-                addPoint(getNewPoint(eventX, eventY))
+                addTimedPoint(getNewTimedPoint(eventX, eventY))
                 isEmpty = false
             }
             MotionEvent.ACTION_UP -> {
                 resetDirtyRect(eventX, eventY)
-                addPoint(getNewPoint(eventX, eventY))
+                addTimedPoint(getNewTimedPoint(eventX, eventY))
                 parent.requestDisallowInterceptTouchEvent(true)
             }
             else -> return false
@@ -249,12 +253,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         get() = mIsEmpty
         private set(newValue) {
             mIsEmpty = newValue
-            if (mSignedListener != null) {
-                if (mIsEmpty) {
-                    mSignedListener!!.onClear()
-                } else {
-                    mSignedListener!!.onSigned()
-                }
+            if (mIsEmpty) {
+                mSignedListener?.onClear()
+            } else {
+                mSignedListener?.onSigned()
             }
         }
     val signatureSvg: String
@@ -398,14 +400,14 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return false
     }
 
-    private fun getNewPoint(x: Float, y: Float): TimedPoint {
-        val mCacheSize = mPointsCache.size
-        val timedPoint: TimedPoint? = if (mCacheSize == 0) {
+    private fun getNewTimedPoint(x: Float, y: Float): TimedPoint {
+        val cacheSize = mPointsCache.size
+        val timedPoint: TimedPoint? = if (cacheSize == 0) {
             // Cache is empty, create a new point
             TimedPoint()
         } else {
             // Get point from cache
-            mPointsCache.removeAt(mCacheSize - 1)
+            mPointsCache.removeAt(cacheSize - 1)
         }
         return timedPoint!!.set(x, y)
     }
@@ -415,17 +417,17 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     @SuppressWarnings("MagicNumber")
-    private fun addPoint(newPoint: TimedPoint) {
-        mPoints!!.add(newPoint)
-        val pointsCount = mPoints!!.size
+    private fun addTimedPoint(timedPoint: TimedPoint) {
+        points.add(timedPoint)
+        val pointsCount = points.size
         if (pointsCount > 3) {
-            var tmp = calculateCurveControlPoints(mPoints!![0], mPoints!![1], mPoints!![2])
+            var tmp = calculateCurveControlPoints(points[0], points[1], points[2])
             val c2 = tmp.c2
             recyclePoint(tmp.c1)
-            tmp = calculateCurveControlPoints(mPoints!![1], mPoints!![2], mPoints!![3])
+            tmp = calculateCurveControlPoints(points[1], points[2], points[3])
             val c3 = tmp.c1
             recyclePoint(tmp.c2)
-            val curve = mBezierCached.set(mPoints!![1], c2, c3, mPoints!![2])
+            val curve = mBezierCached.set(points[1], c2, c3, points[2])
             val startPoint = curve.startPoint
             val endPoint = curve.endPoint
             var velocity = endPoint!!.velocityFrom(startPoint!!)
@@ -447,14 +449,14 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
             // Remove the first element from the list,
             // so that we always have no more than 4 mPoints in mPoints array.
-            recyclePoint(mPoints!!.removeAt(0))
+            recyclePoint(points.removeAt(0))
             recyclePoint(c2)
             recyclePoint(c3)
         } else if (pointsCount == 1) {
             // To reduce the initial lag make it work with 3 mPoints
             // by duplicating the first point
-            val firstPoint = mPoints!![0]
-            mPoints!!.add(getNewPoint(firstPoint.x, firstPoint.y))
+            val firstPoint = points[0]
+            points.add(getNewTimedPoint(firstPoint.x, firstPoint.y))
         }
         mHasEditState = true
     }
@@ -518,8 +520,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val tx = s2.x - cmX
         val ty = s2.y - cmY
         return mControlTimedPointsCached.set(
-            getNewPoint(m1X + tx, m1Y + ty),
-            getNewPoint(m2X + tx, m2Y + ty)
+            getNewTimedPoint(m1X + tx, m1Y + ty),
+            getNewTimedPoint(m2X + tx, m2Y + ty)
         )
     }
 
@@ -616,10 +618,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         // Dirty rectangle to update only the changed portion of the view
         mDirtyRect = RectF()
         clearView()
-        mGestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
-            override fun onDoubleTap(e: MotionEvent): Boolean {
-                return onDoubleClick()
-            }
-        })
+
     }
 }
