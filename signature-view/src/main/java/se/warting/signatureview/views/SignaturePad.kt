@@ -28,9 +28,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Matrix
 import android.graphics.Paint
-import android.graphics.RectF
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -38,13 +36,11 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import java.util.ArrayList
 import kotlin.math.ceil
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import se.warting.signatureview.R
@@ -52,21 +48,22 @@ import se.warting.signatureview.utils.Bezier
 import se.warting.signatureview.utils.ControlTimedPoints
 import se.warting.signatureview.utils.SvgBuilder
 import se.warting.signatureview.utils.TimedPoint
-import se.warting.signatureview.view.ViewCompat.isLaidOut
-import se.warting.signatureview.view.ViewTreeObserverCompat.removeOnGlobalLayoutListener
 
 @SuppressWarnings("TooManyFunctions")
 class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+
+    private val originalEvents = mutableListOf<Event>()
+    private var iter: MutableIterator<Event> = mutableListOf<Event>().iterator()
+
     // View state
     private val points = mutableListOf<TimedPoint>()
     private var _isEmpty = false
-    private var mHasEditState: Boolean? = null
+
     private var mLastTouchX = 0f
     private var mLastTouchY = 0f
     private var mLastVelocity = 0f
     private var mLastWidth = 0f
-    private val mDirtyRect: RectF
-    private var mBitmapSavedState: Bitmap? = null
+
     private val mSvgBuilder = SvgBuilder()
 
     // Cache
@@ -100,27 +97,27 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     private val mPaint = Paint()
 
-    private var mSignatureBitmap: Bitmap? = null
+    private var mSignatureTransparentBitmap: Bitmap? = null
     private var mSignatureBitmapCanvas: Canvas? = null
     override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
         bundle.putParcelable("superState", super.onSaveInstanceState())
-        if (mHasEditState == null || mHasEditState!!) {
-            mBitmapSavedState = transparentSignatureBitmap
-        }
-        bundle.putParcelable("signatureBitmap", mBitmapSavedState)
+
+        bundle.putParcelableArray("events", originalEvents.toTypedArray())
         return bundle
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
         var mutableState: Parcelable? = state
-        if (mutableState is Bundle) {
-            val bundle = mutableState
-            setSignatureBitmap(bundle.getParcelable<Parcelable>("signatureBitmap") as Bitmap?)
-            mBitmapSavedState = bundle.getParcelable("signatureBitmap")
-            mutableState = bundle.getParcelable("superState")
+        if (state is Bundle) {
+            val events: List<Event> =
+                state.getParcelableArray("events")?.map { it as Event } ?: listOf()
+            originalEvents.clear()
+            originalEvents.addAll(events)
+            iter = originalEvents.iterator()
+            mutableState = state.getParcelable("superState")
+            invalidate()
         }
-        mHasEditState = false
         super.onRestoreInstanceState(mutableState)
     }
 
@@ -181,70 +178,105 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     fun clearView() {
         mSvgBuilder.clear()
         points.clear()
+        originalEvents.clear()
+        iter = originalEvents.iterator()
         mLastVelocity = 0f
         mLastWidth = ((mMinWidth + mMaxWidth) / 2).toFloat()
-        if (mSignatureBitmap != null) {
-            mSignatureBitmap = null
-            ensureSignatureBitmap()
-        }
+        mSignatureTransparentBitmap = null
         makeEmpty(true)
         invalidate()
     }
 
     fun clear() {
         clearView()
-        mHasEditState = true
     }
 
-    @SuppressWarnings("ReturnCount")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
-        if (!isEnabled || didDoubleClick) return false
+    private fun addEvent(event: Event) {
+        originalEvents.add(event)
+        current(event)
+    }
 
+    private fun forward() {
+        while (iter.hasNext()) {
+            current(iter.next())
+        }
+    }
+
+    private fun current(event: Event) {
+
+        val timestamp = event.timestamp
         val eventX = event.x
         val eventY = event.y
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                parent.requestDisallowInterceptTouchEvent(true)
                 points.clear()
                 mLastTouchX = eventX
                 mLastTouchY = eventY
-                addTimedPoint(getNewTimedPoint(eventX, eventY))
+                addTimedPoint(
+                    getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
+                    timestamp
+                )
                 mSignedListener?.onStartSigning()
-                resetDirtyRect(eventX, eventY)
-                addTimedPoint(getNewTimedPoint(eventX, eventY))
+                addTimedPoint(
+                    getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
+                    timestamp
+                )
                 makeEmpty(false)
             }
             MotionEvent.ACTION_MOVE -> {
-                resetDirtyRect(eventX, eventY)
-                addTimedPoint(getNewTimedPoint(eventX, eventY))
+                addTimedPoint(
+                    getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
+                    timestamp
+                )
                 makeEmpty(false)
             }
             MotionEvent.ACTION_UP -> {
-                resetDirtyRect(eventX, eventY)
-                addTimedPoint(getNewTimedPoint(eventX, eventY))
-                parent.requestDisallowInterceptTouchEvent(true)
+                addTimedPoint(
+                    getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
+                    timestamp
+                )
             }
             else -> {
-                return false
+                throw IllegalStateException("Unknown Motion " + event.action)
             }
         }
+    }
 
-        invalidate();
-        invalidate(
-            (mDirtyRect.left - mMaxWidth).toInt(),
-            (mDirtyRect.top - mMaxWidth).toInt(),
-            (mDirtyRect.right + mMaxWidth).toInt(),
-            (mDirtyRect.bottom + mMaxWidth).toInt()
-        )
-        return true
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
+        if (!isEnabled || didDoubleClick) return false
+
+        return when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                parent.requestDisallowInterceptTouchEvent(true)
+                val downEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                addEvent(downEvent)
+                invalidate()
+                true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val moveEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                addEvent(moveEvent)
+                invalidate()
+                true
+            }
+            MotionEvent.ACTION_UP -> {
+                val upEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                addEvent(upEvent)
+                invalidate()
+                true
+            }
+            else -> {
+                false
+            }
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (mSignatureBitmap != null) {
-            canvas.drawBitmap(mSignatureBitmap!!, 0f, 0f, mPaint)
-        }
+        ensureSignatureBitmapInOnDraw()
+        forward()
+        canvas.drawBitmap(mSignatureTransparentBitmap!!, 0f, 0f, mPaint)
     }
 
     fun setOnSignedListener(listener: SignedListener?) {
@@ -253,7 +285,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     val isEmpty: Boolean
         get() = _isEmpty
-
 
     private fun makeEmpty(newValue: Boolean) {
         _isEmpty = newValue
@@ -264,74 +295,32 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         }
     }
 
-    val signatureSvg: String
-        get() {
-            val width = transparentSignatureBitmap.width
-            val height = transparentSignatureBitmap.height
-            return mSvgBuilder.build(width, height)
-        }
-    val signatureBitmap: Bitmap
-        get() {
-            val originalBitmap = transparentSignatureBitmap
-            val whiteBgBitmap = Bitmap.createBitmap(
-                originalBitmap.width,
-                originalBitmap.height,
-                Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(whiteBgBitmap)
-            canvas.drawColor(Color.WHITE)
-            canvas.drawBitmap(originalBitmap, 0f, 0f, null)
-            return whiteBgBitmap
-        }
-
-    fun setSignatureBitmap(signature: Bitmap?) {
-        // View was laid out...
-        if (isLaidOut(this)) {
-            clearView()
-            ensureSignatureBitmap()
-            val tempSrc = RectF()
-            val tempDst = RectF()
-            val dWidth = signature!!.width
-            val dHeight = signature.height
-            val vWidth = width
-            val vHeight = height
-
-            // Generate the required transform.
-            tempSrc[0f, 0f, dWidth.toFloat()] = dHeight.toFloat()
-            tempDst[0f, 0f, vWidth.toFloat()] = vHeight.toFloat()
-            val drawMatrix = Matrix()
-            drawMatrix.setRectToRect(tempSrc, tempDst, Matrix.ScaleToFit.CENTER)
-            val canvas = Canvas(mSignatureBitmap!!)
-            canvas.drawBitmap(signature, drawMatrix, null)
-            makeEmpty(false)
-            invalidate()
-        } else {
-            viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    // Remove layout listener...
-                    removeOnGlobalLayoutListener(viewTreeObserver, this)
-
-                    // Signature bitmap...
-                    setSignatureBitmap(signature)
-                }
-            })
-        }
+    fun getSignatureSvg(): String {
+        val width = mSignatureTransparentBitmap!!.width
+        val height = mSignatureTransparentBitmap!!.height
+        return mSvgBuilder.build(width, height)
     }
 
-    val transparentSignatureBitmap: Bitmap
-        get() {
-            ensureSignatureBitmap()
-            return mSignatureBitmap!!
-        }
+    fun getSignatureBitmap(): Bitmap {
+        val originalBitmap = mSignatureTransparentBitmap!!
+        val whiteBgBitmap = Bitmap.createBitmap(
+            originalBitmap.width,
+            originalBitmap.height,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(whiteBgBitmap)
+        canvas.drawColor(Color.WHITE)
+        canvas.drawBitmap(originalBitmap, 0f, 0f, null)
+        return whiteBgBitmap
+    }
 
     @SuppressWarnings("LongMethod", "ComplexMethod", "ReturnCount")
-    fun getTransparentSignatureBitmap(trimBlankSpace: Boolean): Bitmap? {
+    fun getTransparentSignatureBitmap(trimBlankSpace: Boolean = false): Bitmap {
         if (!trimBlankSpace) {
-            return transparentSignatureBitmap
+            return mSignatureTransparentBitmap!!
         }
-        ensureSignatureBitmap()
-        val imgHeight = mSignatureBitmap!!.height
-        val imgWidth = mSignatureBitmap!!.width
+        val imgHeight = mSignatureTransparentBitmap!!.height
+        val imgWidth = mSignatureTransparentBitmap!!.width
         val backgroundColor = Color.TRANSPARENT
         var xMin = Int.MAX_VALUE
         var xMax = Int.MIN_VALUE
@@ -343,7 +332,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         for (x in 0 until imgWidth) {
             var stop = false
             for (y in 0 until imgHeight) {
-                if (mSignatureBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
                     xMin = x
                     stop = true
                     foundPixel = true
@@ -354,13 +343,13 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         }
 
         // Image is empty...
-        if (!foundPixel) return null
+        if (!foundPixel) return mSignatureTransparentBitmap!!
 
         // Find yMin
         for (y in 0 until imgHeight) {
             var stop = false
             for (x in xMin until imgWidth) {
-                if (mSignatureBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
                     yMin = y
                     stop = true
                     break
@@ -373,7 +362,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         for (x in imgWidth - 1 downTo xMin) {
             var stop = false
             for (y in yMin until imgHeight) {
-                if (mSignatureBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
                     xMax = x
                     stop = true
                     break
@@ -386,7 +375,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         for (y in imgHeight - 1 downTo yMin) {
             var stop = false
             for (x in xMin..xMax) {
-                if (mSignatureBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
                     yMax = y
                     stop = true
                     break
@@ -394,7 +383,13 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             }
             if (stop) break
         }
-        return Bitmap.createBitmap(mSignatureBitmap!!, xMin, yMin, xMax - xMin, yMax - yMin)
+        return Bitmap.createBitmap(
+            mSignatureTransparentBitmap!!,
+            xMin,
+            yMin,
+            xMax - xMin,
+            yMax - yMin
+        )
     }
 
     private fun onDoubleClick(): Boolean {
@@ -405,7 +400,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return false
     }
 
-    private fun getNewTimedPoint(x: Float, y: Float): TimedPoint {
+    private fun getNewTimedPoint(x: Float, y: Float, timestamp: Long): TimedPoint {
         val cacheSize = mPointsCache.size
         val timedPoint: TimedPoint? = if (cacheSize == 0) {
             // Cache is empty, create a new point
@@ -414,7 +409,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             // Get point from cache
             mPointsCache.removeAt(cacheSize - 1)
         }
-        return timedPoint!!.set(x, y)
+        return timedPoint!!.set(x, y, timestamp)
     }
 
     private fun recyclePoint(point: TimedPoint?) {
@@ -422,15 +417,15 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     @SuppressWarnings("MagicNumber")
-    private fun addTimedPoint(timedPoint: TimedPoint) {
+    private fun addTimedPoint(timedPoint: TimedPoint, timestamp: Long) {
         points.add(timedPoint)
         val pointsCount = points.size
         if (pointsCount > 3) {
             var tmp: ControlTimedPoints =
-                calculateCurveControlPoints(points[0], points[1], points[2])
+                calculateCurveControlPoints(points[0], points[1], points[2], timestamp)
             val c2 = tmp.c2
             recyclePoint(tmp.c1)
-            tmp = calculateCurveControlPoints(points[1], points[2], points[3])
+            tmp = calculateCurveControlPoints(points[1], points[2], points[3], timestamp)
             val c3 = tmp.c1
             recyclePoint(tmp.c2)
             val curve = mBezierCached.set(points[1], c2, c3, points[2])
@@ -462,15 +457,13 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             // To reduce the initial lag make it work with 3 mPoints
             // by duplicating the first point
             val firstPoint = points[0]
-            points.add(getNewTimedPoint(firstPoint.x, firstPoint.y))
+            points.add(getNewTimedPoint(firstPoint.x, firstPoint.y, timestamp))
         }
-        mHasEditState = true
     }
 
     @SuppressWarnings("MagicNumber")
     private fun addBezier(curve: Bezier, startWidth: Float, endWidth: Float) {
         mSvgBuilder.append(curve, (startWidth + endWidth) / 2)
-        ensureSignatureBitmap()
         val originalWidth = mPaint.strokeWidth
         val widthDelta = endWidth - startWidth
         val drawSteps = ceil(curve.length().toDouble()).toFloat()
@@ -496,7 +489,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             // Set the incremental stroke width and draw.
             mPaint.strokeWidth = startWidth + ttt * widthDelta
             mSignatureBitmapCanvas!!.drawPoint(x, y, mPaint)
-            expandDirtyRect(x, y)
             i++
         }
         mPaint.strokeWidth = originalWidth
@@ -505,7 +497,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     private fun calculateCurveControlPoints(
         s1: TimedPoint,
         s2: TimedPoint,
-        s3: TimedPoint
+        s3: TimedPoint,
+        timestamp: Long
     ): ControlTimedPoints {
         val dx1 = s1.x - s2.x
         val dy1 = s1.y - s2.y
@@ -526,8 +519,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val tx = s2.x - cmX
         val ty = s2.y - cmY
         return mControlTimedPointsCached.set(
-            getNewTimedPoint(m1X + tx, m1Y + ty),
-            getNewTimedPoint(m2X + tx, m2Y + ty)
+            getNewTimedPoint(m1X + tx, m1Y + ty, timestamp),
+            getNewTimedPoint(m2X + tx, m2Y + ty, timestamp)
         )
     }
 
@@ -535,44 +528,9 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return max(mMaxWidth / (velocity + 1), mMinWidth.toFloat())
     }
 
-    /**
-     * Called when replaying history to ensure the dirty region includes all
-     * mPoints.
-     *
-     * @param historicalX the previous x coordinate.
-     * @param historicalY the previous y coordinate.
-     */
-    private fun expandDirtyRect(historicalX: Float, historicalY: Float) {
-        if (historicalX < mDirtyRect.left) {
-            mDirtyRect.left = historicalX
-        } else if (historicalX > mDirtyRect.right) {
-            mDirtyRect.right = historicalX
-        }
-        if (historicalY < mDirtyRect.top) {
-            mDirtyRect.top = historicalY
-        } else if (historicalY > mDirtyRect.bottom) {
-            mDirtyRect.bottom = historicalY
-        }
-    }
-
-    /**
-     * Resets the dirty region when the motion event occurs.
-     *
-     * @param eventX the event x coordinate.
-     * @param eventY the event y coordinate.
-     */
-    private fun resetDirtyRect(eventX: Float, eventY: Float) {
-
-        // The mLastTouchX and mLastTouchY were set when the ACTION_DOWN motion event occurred.
-        mDirtyRect.left = min(mLastTouchX, eventX)
-        mDirtyRect.right = max(mLastTouchX, eventX)
-        mDirtyRect.top = min(mLastTouchY, eventY)
-        mDirtyRect.bottom = max(mLastTouchY, eventY)
-    }
-
-    private fun ensureSignatureBitmap() {
-        if (mSignatureBitmap == null) {
-            mSignatureBitmap = Bitmap.createBitmap(
+    private fun ensureSignatureBitmapInOnDraw() {
+        if (mSignatureTransparentBitmap == null) {
+            mSignatureTransparentBitmap = Bitmap.createBitmap(
                 width, height,
                 Bitmap.Config.ARGB_8888
             ).also {
@@ -621,9 +579,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         mPaint.strokeCap = Paint.Cap.ROUND
         mPaint.strokeJoin = Paint.Join.ROUND
 
-        // Dirty rectangle to update only the changed portion of the view
-        mDirtyRect = RectF()
         clearView()
-
     }
 }

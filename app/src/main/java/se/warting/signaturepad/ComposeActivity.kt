@@ -76,13 +76,22 @@ class ComposeActivity : ComponentActivity() {
                                     signaturePadAdapter = it
                                 },
                                 onSigned = {
-                                    Log.d("ComposeActivity", "onSigned")
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onSigned")
+                                    }
                                 },
                                 onClear = {
-                                    Log.d("ComposeActivity", "onClear isEmpty:" + signaturePadAdapter?.isEmpty)
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d(
+                                            "ComposeActivity",
+                                            "onClear isEmpty:" + signaturePadAdapter?.isEmpty
+                                        )
+                                    }
                                 },
                                 onStartSigning = {
-                                    Log.d("ComposeActivity", "onStartSigning")
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onStartSigning")
+                                    }
                                 })
                         }
                         Row {

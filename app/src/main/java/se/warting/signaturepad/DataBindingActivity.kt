@@ -59,9 +59,9 @@ class DataBindingActivity : Activity() {
         binding.binding = onStartSigning
         binding.clearButton.setOnClickListener { binding.signaturePad.clear() }
         binding.saveButton.setOnClickListener {
-            val signatureBitmap = binding.signaturePad.signatureBitmap
-            val signatureSvg = binding.signaturePad.signatureSvg
-            val transparentSignatureBitmap = binding.signaturePad.transparentSignatureBitmap
+            val signatureBitmap = binding.signaturePad.getSignatureBitmap()
+            val signatureSvg = binding.signaturePad.getSignatureSvg()
+            val transparentSignatureBitmap = binding.signaturePad.getTransparentSignatureBitmap()
 
             if (BuildConfig.DEBUG) {
                 Log.d("DataBindingActivity", "Bitmap size: " + signatureBitmap.byteCount)

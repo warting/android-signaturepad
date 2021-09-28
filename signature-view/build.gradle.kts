@@ -27,6 +27,7 @@ plugins {
     id("kotlin-kapt")
     id("kotlin-android")
     id("maven-publish")
+    id("kotlin-parcelize")
     id("signing")
     id("org.jetbrains.dokka") version "1.5.30"
     id("com.gladed.androidgitversion") version "0.4.14"
