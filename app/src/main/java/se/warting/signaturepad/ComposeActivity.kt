@@ -25,6 +25,7 @@
 package se.warting.signaturepad
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
@@ -45,6 +46,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+private const val SIGNATURE_PAD_HEIGHT = 120
+
 class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +63,7 @@ class ComposeActivity : ComponentActivity() {
 
                         Box(
                             modifier = Modifier
-                                .height(120.dp)
+                                .height(SIGNATURE_PAD_HEIGHT.dp)
                                 .fillMaxWidth()
                                 .border(
                                     width = 2.dp,
@@ -68,9 +71,19 @@ class ComposeActivity : ComponentActivity() {
                                 )
                         ) {
 
-                            SignaturePadView(onReady = {
-                                signaturePadAdapter = it
-                            })
+                            SignaturePadView(
+                                onReady = {
+                                    signaturePadAdapter = it
+                                },
+                                onSigned = {
+                                    Log.d("ComposeActivity", "onSigned")
+                                },
+                                onClear = {
+                                    Log.d("ComposeActivity", "onClear")
+                                },
+                                onStartSigning = {
+                                    Log.d("ComposeActivity", "onStartSigning")
+                                })
                         }
                         Row {
                             Button(onClick = {
@@ -99,7 +112,6 @@ class ComposeActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     MaterialTheme {
-        SignaturePadView {
-        }
+        SignaturePadView()
     }
 }

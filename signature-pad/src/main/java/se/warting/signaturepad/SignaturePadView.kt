@@ -25,7 +25,6 @@
 package se.warting.signaturepad
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -45,7 +44,10 @@ fun SignaturePadView(
     penColor: Color = Color.Black,
     velocityFilterWeight: Float = 0.9F,
     clearOnDoubleClick: Boolean = true,
-    onReady: (svg: SignaturePadAdapter) -> Unit,
+    onReady: (svg: SignaturePadAdapter) -> Unit = {},
+    onStartSigning: () -> Unit = {},
+    onSigned: () -> Unit = {},
+    onClear: () -> Unit = {},
 ) {
     AndroidView(
         modifier = Modifier
@@ -61,16 +63,15 @@ fun SignaturePadView(
 
                 this.setOnSignedListener(object : SignedListener {
                     override fun onStartSigning() {
-                        Log.d("SignaturePadView", "onStartSigning")
+                        onStartSigning()
                     }
 
                     override fun onSigned() {
-                        // onSigned(signatureSvg)
-                        Log.d("SignaturePadView", "onSigned")
+                        onSigned()
                     }
 
                     override fun onClear() {
-                        Log.d("SignaturePadView", "onClear")
+                        onClear()
                     }
                 })
             }
