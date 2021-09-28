@@ -23,7 +23,6 @@
  */
 package se.warting.signatureview.view
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -34,7 +33,6 @@ internal object ViewTreeObserverCompat {
      * @param observer the view observer
      * @param victim the victim
      */
-    @SuppressLint("NewApi")
     internal fun removeOnGlobalLayoutListener(
         observer: ViewTreeObserver,
         victim: OnGlobalLayoutListener?

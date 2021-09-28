@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ MIT License
   ~
   ~ Copyright (c) 2021. Stefan Wärting
@@ -23,7 +22,4 @@
   ~ SOFTWARE.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="se.warting.signaturepad">
-
-</manifest>
+<manifest package="se.warting.signaturepad" />

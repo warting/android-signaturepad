@@ -120,6 +120,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      *
      * @param colorRes the color resource.
      */
+    @Suppress("unused")
     fun setPenColorRes(@ColorRes colorRes: Int) {
         setPenColor(ContextCompat.getColor(context, colorRes))
     }
@@ -313,6 +314,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             return mSignatureBitmap!!
         }
 
+    @Suppress("unused")
     @SuppressWarnings("LongMethod", "ComplexMethod", "ReturnCount")
     fun getTransparentSignatureBitmap(trimBlankSpace: Boolean): Bitmap? {
         if (!trimBlankSpace) {

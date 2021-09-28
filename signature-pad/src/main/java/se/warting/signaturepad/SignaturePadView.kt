@@ -88,14 +88,17 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
         signaturePad.clear()
     }
 
+    @Suppress("unused")
     fun getSignatureBitmap(): Bitmap {
         return signaturePad.signatureBitmap
     }
 
+    @Suppress("unused")
     fun getTransparentSignatureBitmap(): Bitmap {
         return signaturePad.transparentSignatureBitmap
     }
 
+    @Suppress("unused")
     fun getSignatureSvg(): String {
         return signaturePad.signatureSvg
     }
