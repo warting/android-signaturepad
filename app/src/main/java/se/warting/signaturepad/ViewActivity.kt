@@ -57,9 +57,9 @@ class ViewActivity : Activity() {
         })
         mClearButton.setOnClickListener { mSignaturePad.clear() }
         mSaveButton.setOnClickListener {
-            val signatureBitmap = mSignaturePad.signatureBitmap
-            val signatureSvg = mSignaturePad.signatureSvg
-            val transparentSignatureBitmap = mSignaturePad.transparentSignatureBitmap
+            val signatureBitmap = mSignaturePad.getSignatureBitmap()
+            val signatureSvg = mSignaturePad.getSignatureSvg()
+            val transparentSignatureBitmap = mSignaturePad.getTransparentSignatureBitmap()
             if (BuildConfig.DEBUG) {
                 Log.d("ViewActivity", "Bitmap size: " + signatureBitmap.byteCount)
                 Log.d(

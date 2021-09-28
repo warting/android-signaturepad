@@ -12,6 +12,7 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
 	public final fun getSignatureSvg ()Ljava/lang/String;
 	public final fun getTransparentSignatureBitmap ()Landroid/graphics/Bitmap;
+	public final fun isEmpty ()Z
 }
 
 public final class se/warting/signaturepad/SignaturePadViewKt {
