@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import se.warting.signatureview.ExperimentalSignatureApi
+import se.warting.signatureview.Signature
 import se.warting.signatureview.views.SignaturePad
 import se.warting.signatureview.views.SignedListener
 
@@ -103,5 +105,15 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
 
     fun getSignatureSvg(): String {
         return signaturePad.getSignatureSvg()
+    }
+
+    @ExperimentalSignatureApi
+    fun getSignature(): Signature {
+        return signaturePad.getSignature()
+    }
+
+    @ExperimentalSignatureApi
+    fun setSignature(signature: Signature) {
+        return signaturePad.setSignature(signature)
     }
 }

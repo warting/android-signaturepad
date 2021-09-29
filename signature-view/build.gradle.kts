@@ -51,11 +51,20 @@ android {
         minSdk = 14
         targetSdk = 31
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+
+            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
+            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
+        }
+        debug {
+            isMinifyEnabled = false
+            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
+            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
         }
     }
     compileOptions {
@@ -76,9 +85,9 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
         freeCompilerArgs = listOfNotNull(
-                "-Xopt-in=kotlin.RequiresOptIn",
-                "-Xallow-jvm-ir-dependencies",
-                "-Xskip-prerelease-check"
+            "-Xopt-in=kotlin.RequiresOptIn",
+            "-Xallow-jvm-ir-dependencies",
+            "-Xskip-prerelease-check"
         )
     }
 }
