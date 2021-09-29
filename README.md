@@ -13,7 +13,7 @@ by [Square](https://squareup.com).
 * Bézier implementation for a smoother line
 * Variable point size based on velocity
 * Customizable pen color and size
-* Bitmap and SVG support
+* Bitmap, SVG and Raw-data support
 
 ## Installation
 
@@ -68,6 +68,7 @@ Button(onClick = {
 * `penColor` - The color of the stroke (default: Color.BLACK).
 * `velocityFilterWeight` - Weight used to modify new velocity based on the previous velocity (
   default: 0.9).
+* `clearOnDoubleClick` - Double click to clear pad (default: false)
 
 3. Get signature data
 
