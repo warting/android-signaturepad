@@ -36,6 +36,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import java.util.ArrayList
@@ -139,7 +140,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      *
      * @param color the color.
      */
-    fun setPenColor(color: Int) {
+    fun setPenColor(@ColorInt color: Int) {
         mPaint.color = color
     }
 
