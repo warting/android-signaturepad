@@ -151,6 +151,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      */
     fun setMinWidth(minWidth: Float) {
         mMinWidth = convertDpToPx(minWidth)
+        mLastWidth = (mMinWidth + mMaxWidth) / 2f
     }
 
     /**
@@ -160,6 +161,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      */
     fun setMaxWidth(maxWidth: Float) {
         mMaxWidth = convertDpToPx(maxWidth)
+        mLastWidth = (mMinWidth + mMaxWidth) / 2f
     }
 
     /**
@@ -186,6 +188,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         originalEvents.clear()
         iter = originalEvents.iterator()
         mLastVelocity = 0f
+        mLastWidth = (mMinWidth + mMaxWidth) / 2f
         mLastWidth = ((mMinWidth + mMaxWidth) / 2).toFloat()
         mSignatureTransparentBitmap = null
         makeEmpty(true)
