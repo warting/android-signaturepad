@@ -44,6 +44,7 @@
         <activity android:name=".ComposeActivity" />
         <activity android:name=".ViewActivity" />
         <activity android:name=".DataBindingActivity" />
+        <activity android:name=".SaveRestoreActivity" />
     </application>
 
 </manifest>

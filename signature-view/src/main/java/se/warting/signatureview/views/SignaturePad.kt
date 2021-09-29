@@ -43,7 +43,11 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import se.warting.signatureview.BuildConfig
+import se.warting.signatureview.Event
+import se.warting.signatureview.ExperimentalSignatureApi
 import se.warting.signatureview.R
+import se.warting.signatureview.Signature
 import se.warting.signatureview.utils.Bezier
 import se.warting.signatureview.utils.ControlTimedPoints
 import se.warting.signatureview.utils.SvgBuilder
@@ -299,6 +303,18 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val width = mSignatureTransparentBitmap!!.width
         val height = mSignatureTransparentBitmap!!.height
         return mSvgBuilder.build(width, height)
+    }
+
+    @ExperimentalSignatureApi
+    fun getSignature(): Signature {
+        return Signature(BuildConfig.VERSION_CODE, originalEvents)
+    }
+
+    @ExperimentalSignatureApi
+    fun setSignature(signature: Signature) {
+        clear()
+        originalEvents.addAll(signature.events)
+        iter = originalEvents.iterator()
     }
 
     fun getSignatureBitmap(): Bitmap {

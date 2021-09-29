@@ -65,6 +65,12 @@ class MainActivity : ComponentActivity() {
                         }) {
                             Text("databind")
                         }
+                        Button(onClick = {
+                            val intent = Intent(context, SaveRestoreActivity::class.java)
+                            startActivity(intent)
+                        }) {
+                            Text("SaveRestoreActivity")
+                        }
                     }
                 }
             }
