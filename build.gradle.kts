@@ -63,6 +63,11 @@ allprojects {
         autoCorrect = true
     }
 
+    // https://github.com/otormaigh/playground-android/issues/27
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
 detekt {
