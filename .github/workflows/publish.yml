@@ -30,7 +30,7 @@ jobs:
           java-version: 11
 
       - name: Publish application
-        run: ./gradlew publishReleasePublicationToSonatypeRepository --stacktrace
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
           USERNAME: ${{ secrets.USERNAME }}
           TOKEN: ${{ secrets.TOKEN }}
