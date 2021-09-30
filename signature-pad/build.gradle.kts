@@ -66,7 +66,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.2"
+        kotlinCompilerExtensionVersion = "1.0.3"
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
@@ -81,7 +81,9 @@ android {
 dependencies {
     val composeVersion = "1.0.3"
 
+    api(project(":signature-core"))
     implementation(project(":signature-view"))
+    implementation("androidx.compose.runtime:runtime:$composeVersion")
     implementation("androidx.compose.foundation:foundation:$composeVersion")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

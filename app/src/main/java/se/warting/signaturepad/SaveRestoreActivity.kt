@@ -43,9 +43,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import se.warting.signatureview.Event
-import se.warting.signatureview.ExperimentalSignatureApi
-import se.warting.signatureview.Signature
+import se.warting.signaturecore.Event
+import se.warting.signaturecore.ExperimentalSignatureApi
+import se.warting.signaturecore.Signature
 
 private const val SIGNATURE_PAD_HEIGHT = 120
 

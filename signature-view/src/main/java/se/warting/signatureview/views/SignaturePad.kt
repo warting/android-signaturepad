@@ -45,10 +45,10 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import se.warting.signatureview.BuildConfig
-import se.warting.signatureview.Event
-import se.warting.signatureview.ExperimentalSignatureApi
+import se.warting.signaturecore.Event
+import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signatureview.R
-import se.warting.signatureview.Signature
+import se.warting.signaturecore.Signature
 import se.warting.signatureview.utils.Bezier
 import se.warting.signatureview.utils.ControlTimedPoints
 import se.warting.signatureview.utils.SvgBuilder

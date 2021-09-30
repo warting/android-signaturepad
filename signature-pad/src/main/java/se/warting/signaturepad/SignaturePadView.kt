@@ -33,8 +33,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import se.warting.signatureview.ExperimentalSignatureApi
-import se.warting.signatureview.Signature
+import se.warting.signaturecore.ExperimentalSignatureApi
+import se.warting.signaturecore.Signature
 import se.warting.signatureview.views.SignaturePad
 import se.warting.signatureview.views.SignedListener
 

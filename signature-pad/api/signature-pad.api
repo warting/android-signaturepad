@@ -9,12 +9,12 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 	public static final field $stable I
 	public fun <init> (Lse/warting/signatureview/views/SignaturePad;)V
 	public final fun clear ()V
-	public final fun getSignature ()Lse/warting/signatureview/Signature;
+	public final fun getSignature ()Lse/warting/signaturecore/Signature;
 	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
 	public final fun getSignatureSvg ()Ljava/lang/String;
 	public final fun getTransparentSignatureBitmap ()Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
-	public final fun setSignature (Lse/warting/signatureview/Signature;)V
+	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 }
 
 public final class se/warting/signaturepad/SignaturePadViewKt {

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package se.warting.signatureview
+package se.warting.signaturecore
 
 /**
  * Marks declarations that are still **experimental** in signature API, which means that the design of the
