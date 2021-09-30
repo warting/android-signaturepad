@@ -79,7 +79,7 @@ android {
 }
 
 dependencies {
-    val composeVersion = "1.0.2"
+    val composeVersion = "1.0.3"
 
     implementation(project(":signature-view"))
     implementation("androidx.compose.foundation:foundation:$composeVersion")
