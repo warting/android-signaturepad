@@ -82,7 +82,7 @@ afterEvaluate {
                     licenses {
                         license {
                             name = 'MIT License'
-                            url = 'https://github.com/warting/https://github.com/warting/android-signaturepad/blob/main/LICENSE'
+                            url = 'https://github.com/warting/android-signaturepad/blob/main/LICENSE'
                         }
                     }
                     developers {
