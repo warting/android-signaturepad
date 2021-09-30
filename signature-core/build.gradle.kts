@@ -24,8 +24,8 @@
 
 plugins {
     id("com.android.library")
-    id("kotlin-kapt")
     id("kotlin-android")
+    id("kotlin-parcelize")
     id("maven-publish")
     id("signing")
     id("org.jetbrains.dokka") version "1.5.30"
@@ -38,7 +38,7 @@ androidGitVersion {
 
 val PUBLISH_GROUP_ID: String by extra("se.warting.signature")
 val PUBLISH_VERSION: String by extra(androidGitVersion.name().replace("v", ""))
-val PUBLISH_ARTIFACT_ID by extra("signature-view")
+val PUBLISH_ARTIFACT_ID by extra("signature-core")
 
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
@@ -50,20 +50,11 @@ android {
         minSdk = 14
         targetSdk = 31
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-
-            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
-            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
-        }
-        debug {
-            isMinifyEnabled = false
-            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
-            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
         }
     }
     compileOptions {
@@ -72,10 +63,7 @@ android {
     }
     buildFeatures {
         viewBinding = false
-        compose = false
-    }
-    dataBinding {
-        isEnabled = true
+        compose = true
     }
 
     composeOptions {
@@ -84,13 +72,14 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
         freeCompilerArgs = listOfNotNull(
-            "-Xopt-in=kotlin.RequiresOptIn",
-            "-Xallow-jvm-ir-dependencies",
-            "-Xskip-prerelease-check"
+                "-Xopt-in=kotlin.RequiresOptIn",
+                "-Xallow-jvm-ir-dependencies",
+                "-Xskip-prerelease-check"
         )
     }
 }
 
 dependencies {
-    api(project(":signature-core"))
+    val composeVersion = "1.0.3"
+    implementation("androidx.compose.runtime:runtime:$composeVersion")
 }

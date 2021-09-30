@@ -22,15 +22,13 @@
  * SOFTWARE.
  */
 
-package se.warting.signatureview
+package se.warting.signaturecore
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Event(
-    val timestamp: Long,
-    val action: Int,
-    val x: Float,
-    val y: Float,
+data class Signature(
+    val versionCode: Int,
+    val events: List<Event>,
 ) : Parcelable

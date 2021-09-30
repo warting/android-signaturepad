@@ -1,0 +1,48 @@
+public final class se/warting/signaturecore/BuildConfig {
+	public static final field BUILD_TYPE Ljava/lang/String;
+	public static final field DEBUG Z
+	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
+	public fun <init> ()V
+}
+
+public final class se/warting/signaturecore/Event : android/os/Parcelable {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public fun <init> (JIFF)V
+	public final fun component1 ()J
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (JIFF)Lse/warting/signaturecore/Event;
+	public static synthetic fun copy$default (Lse/warting/signaturecore/Event;JIFFILjava/lang/Object;)Lse/warting/signaturecore/Event;
+	public fun describeContents ()I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAction ()I
+	public final fun getTimestamp ()J
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public abstract interface annotation class se/warting/signaturecore/ExperimentalSignatureApi : java/lang/annotation/Annotation {
+}
+
+public final class se/warting/signaturecore/Signature : android/os/Parcelable {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public fun <init> (ILjava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (ILjava/util/List;)Lse/warting/signaturecore/Signature;
+	public static synthetic fun copy$default (Lse/warting/signaturecore/Signature;ILjava/util/List;ILjava/lang/Object;)Lse/warting/signaturecore/Signature;
+	public fun describeContents ()I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEvents ()Ljava/util/List;
+	public final fun getVersionCode ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
