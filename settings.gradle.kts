@@ -21,6 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+plugins {
+    id("com.gradle.enterprise") version "3.4.1"
+}
+
+buildCache {
+    local {
+        isEnabled = true
+        directory = File(rootDir, "build-cache")
+        removeUnusedEntriesAfterDays = 30
+    }
+    remote<HttpBuildCache> {
+        isEnabled = false
+    }
+}
 
 // https://github.com/otormaigh/playground-android/issues/27
 //dependencyResolutionManagement {
@@ -31,7 +45,7 @@
 //    }
 //}
 rootProject.name = "Signaturepad"
-include ':app'
-include ':signature-pad'
-include ':signature-view'
-include ':signature-core'
+include(":app")
+include(":signature-pad")
+include(":signature-view")
+include(":signature-core")

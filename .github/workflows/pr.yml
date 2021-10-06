@@ -23,8 +23,23 @@ jobs:
           distribution: 'adopt'
           java-version: 11
 
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+
+      - name: Generate cache key
+        run: ./scripts/checksum.sh ./ checksum.txt
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches/modules-*
+            ~/.gradle/caches/jars-*
+            ~/.gradle/caches/build-cache-*
+            build-cache
+          key: gradle-${{ hashFiles('checksum.txt') }}
+
       - name: Run Android checks
-        run: ./gradlew check
+        run: ./gradlew check --stacktrace
 
       - name: Upload reports
         uses: actions/upload-artifact@v2
