@@ -56,6 +56,6 @@ android {
 }
 
 dependencies {
-    val composeVersion = "1.0.3"
+    val composeVersion = "1.0.4"
     implementation("androidx.compose.runtime:runtime:$composeVersion")
 }
