@@ -1,5 +1,6 @@
 package se.warting.signatureview.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -63,7 +64,11 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     private val doubleClickGestureDetector =
         GestureDetector(context, object : SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                return onDoubleClick()
+                if (mClearOnDoubleClick) {
+                    clearView()
+                    return true
+                }
+                return false
             }
         })
 
@@ -227,6 +232,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
         if (!isEnabled || didDoubleClick) return false
@@ -386,14 +392,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             xMax - xMin,
             yMax - yMin
         )
-    }
-
-    private fun onDoubleClick(): Boolean {
-        if (mClearOnDoubleClick) {
-            clearView()
-            return true
-        }
-        return false
     }
 
     private fun getNewTimedPoint(x: Float, y: Float, timestamp: Long): TimedPoint {
