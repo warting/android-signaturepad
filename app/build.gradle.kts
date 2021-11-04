@@ -69,7 +69,7 @@ android {
 
 dependencies {
 
-    val compose_version = "1.0.4"
+    val compose_version = "1.0.5"
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
