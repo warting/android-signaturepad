@@ -67,7 +67,7 @@ android {
 }
 
 dependencies {
-    val composeVersion = "1.0.4"
+    val composeVersion = "1.0.5"
 
     api(project(":signature-core"))
     implementation(project(":signature-view"))
