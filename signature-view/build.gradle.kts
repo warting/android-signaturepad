@@ -18,7 +18,7 @@ val PUBLISH_ARTIFACT_ID by extra("signature-view")
 
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
-
+val composeVersion = "1.1.0-beta04"
 android {
     compileSdk = 31
 
@@ -55,7 +55,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.3"
+        kotlinCompilerExtensionVersion = composeVersion
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
