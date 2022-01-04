@@ -33,12 +33,6 @@ fun SignaturePadView(
         factory = { context ->
             // Creates custom view
             SignaturePad(context, null).apply {
-                this.setMinWidth(penMinWidth.value)
-                this.setMaxWidth(penMaxWidth.value)
-                this.setPenColor(penColor.toArgb())
-                this.setVelocityFilterWeight(velocityFilterWeight)
-                this.setClearOnDoubleClick(clearOnDoubleClick)
-
                 this.setOnSignedListener(object : SignedListener {
                     override fun onStartSigning() {
                         onStartSigning()
@@ -55,6 +49,11 @@ fun SignaturePadView(
             }
         },
         update = {
+            it.setMinWidth(penMinWidth.value)
+            it.setMaxWidth(penMaxWidth.value)
+            it.setPenColor(penColor.toArgb())
+            it.setVelocityFilterWeight(velocityFilterWeight)
+            it.setClearOnDoubleClick(clearOnDoubleClick)
             onReady(SignaturePadAdapter(it))
         },
     )
