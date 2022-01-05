@@ -21,7 +21,7 @@ fun SignaturePadView(
     penMaxWidth: Dp = 7.dp,
     penColor: Color = Color.Black,
     velocityFilterWeight: Float = 0.9F,
-    clearOnDoubleClick: Boolean = true,
+    clearOnDoubleClick: Boolean = false,
     onReady: (svg: SignaturePadAdapter) -> Unit = {},
     onStartSigning: () -> Unit = {},
     onSigned: () -> Unit = {},
