@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 
 private const val SIGNATURE_PAD_HEIGHT = 120
 
+@Suppress("LongMethod")
 class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,7 @@ class ComposeActivity : ComponentActivity() {
                     Column {
 
                         var signaturePadAdapter: SignaturePadAdapter? = null
+                        val penColor = remember { mutableStateOf(Color.Black) }
 
                         Box(
                             modifier = Modifier
@@ -46,11 +48,11 @@ class ComposeActivity : ComponentActivity() {
                                     color = Color.Red,
                                 )
                         ) {
-
                             SignaturePadView(
                                 onReady = {
                                     signaturePadAdapter = it
                                 },
+                                penColor = penColor.value,
                                 onSigned = {
                                     if (BuildConfig.DEBUG) {
                                         Log.d("ComposeActivity", "onSigned")
@@ -82,6 +84,18 @@ class ComposeActivity : ComponentActivity() {
                                 signaturePadAdapter?.clear()
                             }) {
                                 Text("Clear")
+                            }
+
+                            Button(onClick = {
+                                penColor.value = Color.Red
+                            }) {
+                                Text("Red")
+                            }
+
+                            Button(onClick = {
+                                penColor.value = Color.Black
+                            }) {
+                                Text("Black")
                             }
                         }
 
