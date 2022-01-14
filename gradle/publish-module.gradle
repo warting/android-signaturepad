@@ -70,8 +70,8 @@ afterEvaluate {
                     }
 
                     scm {
-                        connection = 'scm:git@github.com:wartiong/android-signaturepad.git'
-                        developerConnection = 'scm:git:ssh://github.com/wartiong/android-signaturepad.git'
+                        connection = 'scm:git@github.com:warting/android-signaturepad.git'
+                        developerConnection = 'scm:git:ssh://github.com/warting/android-signaturepad.git'
                         url = 'https://github.com/warting/android-signaturepad/tree/main'
                     }
                 }
