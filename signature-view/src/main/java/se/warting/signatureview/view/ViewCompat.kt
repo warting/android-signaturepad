@@ -1,6 +1,5 @@
 package se.warting.signatureview.view
 
-import android.os.Build
 import android.view.View
 
 object ViewCompat {
@@ -15,10 +14,6 @@ object ViewCompat {
      * since it was last attached to or detached from a window.
      */
     fun isLaidOut(view: View): Boolean {
-        // Future (API19+)...
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            view.isLaidOut
-        } else view.width > 0 && view.height > 0
-        // Legacy...
+        return view.isLaidOut
     }
 }
