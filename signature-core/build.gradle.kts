@@ -23,7 +23,7 @@ android {
     compileSdk = 31
 
     defaultConfig {
-        minSdk = 14
+        minSdk = 21
         targetSdk = 31
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -54,15 +54,15 @@ android {
         )
     }
     lint {
-        baseline(file("lint-baseline.xml"))
-        isCheckReleaseBuilds = true
-        isCheckAllWarnings = true
-        isWarningsAsErrors = true
-        isAbortOnError = true
+        baseline = file("lint-baseline.xml")
+        checkReleaseBuilds = true
+        checkAllWarnings = true
+        warningsAsErrors = true
+        abortOnError = true
         disable.add("LintBaseline")
         disable.add("GradleDependency")
-        isCheckDependencies = true
-        isCheckGeneratedSources = false
+        checkDependencies = true
+        checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-core.sarif")
     }
 }
