@@ -18,7 +18,7 @@ val PUBLISH_ARTIFACT_ID by extra("signature-core")
 
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
-val composeVersion = "1.1.0-rc01"
+val composeVersion = "1.1.0-rc03"
 android {
     compileSdk = 31
 
