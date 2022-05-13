@@ -21,7 +21,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.42.0"
     id("io.gitlab.arturbosch.detekt") version "1.20.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.8.0"
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.9.0"
 }
 
 apiValidation {
@@ -32,7 +32,7 @@ allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
     dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.20.0")
     }
 
     detekt {
