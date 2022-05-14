@@ -81,5 +81,5 @@ android {
 
 dependencies {
     api(project(":signature-core"))
-    implementation("androidx.core:core:1.1.0")
+    implementation("androidx.core:core:1.7.0")
 }
