@@ -35,11 +35,11 @@ section:
 Then, include the library as dependency:
 
 ```gradle
-compile 'se.warting.signature:signature-pad:<latest_version>' // jetpack Compose views
+implementation 'se.warting.signature:signature-pad:<latest_version>' // jetpack Compose views
 ```
 or
 ```gradle
-compile 'se.warting.signature:signature-view:<latest_version>' // legacy android views
+implementation 'se.warting.signature:signature-view:<latest_version>' // legacy android views
 ```
 
 ## Usage
