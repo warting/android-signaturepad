@@ -5,6 +5,10 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 buildscript {
 
     repositories {
+        maven {
+            // until broken gradle plugin portal is fixed
+            url = uri("https://premex.jfrog.io/artifactory/local-gradle-plugins/")
+        }
         google()
         mavenCentral()
     }
@@ -22,12 +26,12 @@ plugins {
     id("com.github.ben-manes.versions") version "0.42.0"
     id("io.gitlab.arturbosch.detekt") version "1.20.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.10.1"
+    //id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.10.1"
 }
 
-apiValidation {
-    ignoredProjects.add("app")
-}
+//apiValidation {
+//    ignoredProjects.add("app")
+//}
 
 allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")

@@ -74,8 +74,8 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
     }
 
     @Suppress("unused")
-    fun getTransparentSignatureBitmap(): Bitmap {
-        return signaturePad.getTransparentSignatureBitmap()
+    fun getTransparentSignatureBitmap(trimBlankSpace: Boolean = false): Bitmap {
+        return signaturePad.getTransparentSignatureBitmap(trimBlankSpace)
     }
 
     fun getSignatureSvg(): String {

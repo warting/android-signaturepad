@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.7.20"
     id("com.gladed.androidgitversion") version "0.4.14"
 }
 
@@ -19,11 +19,10 @@ apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
 val composeVersion = "1.2.0-rc02"
 android {
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
