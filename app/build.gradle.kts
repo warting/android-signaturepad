@@ -6,12 +6,12 @@ plugins {
 
 val composeVersion = "1.2.0-beta01"
 android {
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "se.warting.signaturepad"
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 

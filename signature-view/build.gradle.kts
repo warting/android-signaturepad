@@ -20,11 +20,10 @@ apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
 val composeVersion = "1.2.0-beta01"
 android {
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     }
