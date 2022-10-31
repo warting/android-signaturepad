@@ -17,7 +17,7 @@ val PUBLISH_ARTIFACT_ID by extra("signature-pad")
 
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
-val composeVersion = "1.2.0-rc02"
+
 android {
     compileSdk = 33
 
@@ -41,7 +41,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = composeVersion
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
@@ -63,15 +63,19 @@ android {
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-pad.sarif")
     }
+    namespace = "se.warting.signaturepad"
 }
 
 dependencies {
-    val composeVersion = "1.0.5"
+    val composeBom = platform("androidx.compose:compose-bom:2022.10.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
-    api(project(":signature-core"))
+
+            api(project(":signature-core"))
     implementation(project(":signature-view"))
-    implementation("androidx.compose.runtime:runtime:$composeVersion")
-    implementation("androidx.compose.foundation:foundation:$composeVersion")
+    implementation("androidx.compose.runtime:runtime")
+    implementation("androidx.compose.foundation:foundation")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

@@ -13,18 +13,18 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.android.tools.build:gradle:7.4.0-beta04")
 
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
-        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.20.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20")
+        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.21.0")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle.kts files
     }
 }
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.42.0"
-    id("io.gitlab.arturbosch.detekt") version "1.20.0"
+    id("com.github.ben-manes.versions") version "0.43.0"
+    id("io.gitlab.arturbosch.detekt") version "1.21.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     //id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.10.1"
 }
@@ -37,7 +37,7 @@ allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
     dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.20.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
     }
 
     detekt {
