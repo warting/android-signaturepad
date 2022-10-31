@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.7.20"
     id("com.gladed.androidgitversion") version "0.4.14"
     id("kotlin-kapt")
 }
@@ -18,7 +18,6 @@ val PUBLISH_ARTIFACT_ID by extra("signature-view")
 
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
-val composeVersion = "1.2.0-beta01"
 android {
     compileSdk = 33
 
@@ -54,7 +53,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = composeVersion
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
@@ -76,9 +75,10 @@ android {
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-view.sarif")
     }
+    namespace = "se.warting.signatureview"
 }
 
 dependencies {
     api(project(":signature-core"))
-    implementation("androidx.core:core:1.8.0")
+    implementation("androidx.core:core-ktx:1.9.0")
 }
