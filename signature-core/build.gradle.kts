@@ -4,7 +4,7 @@ plugins {
     id("kotlin-parcelize")
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.7.20"
     id("com.gladed.androidgitversion") version "0.4.14"
 }
 
@@ -18,7 +18,7 @@ val PUBLISH_ARTIFACT_ID by extra("signature-core")
 
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
-val composeVersion = "1.2.0-rc02"
+
 android {
     compileSdk = 33
 
@@ -42,7 +42,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = composeVersion
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
@@ -64,9 +64,13 @@ android {
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-core.sarif")
     }
+    namespace = "se.warting.signaturecore"
 }
 
 dependencies {
-    val composeVersion = "1.0.5"
-    implementation("androidx.compose.runtime:runtime:$composeVersion")
+    val composeBom = platform("androidx.compose:compose-bom:2022.10.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    implementation("androidx.compose.runtime:runtime")
 }

@@ -1,29 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 7.2.0" type="baseline" client="gradle" dependencies="true" name="AGP (7.2.0)" variant="all" version="7.2.0">
-
-    <issue
-        id="InvalidPackage"
-        message="Invalid package reference in org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm; not included in Android: `java.lang.instrument`. Referenced from `kotlinx.coroutines.debug.AgentPremain`.">
-        <location
-            file="../../../.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.5.0/d8cebccdcddd029022aa8646a5a953ff88b13ac8/kotlinx-coroutines-core-jvm-1.5.0.jar"/>
-    </issue>
-
-    <issue
-        id="InvalidPackage"
-        message="Invalid package reference in org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm; not included in Android: `java.lang.instrument`. Referenced from `kotlinx.coroutines.debug.AgentPremain`.">
-        <location
-            file="../../../.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.5.0/d8cebccdcddd029022aa8646a5a953ff88b13ac8/kotlinx-coroutines-core-jvm-1.5.0.jar"/>
-    </issue>
-
-    <issue
-        id="KtxExtensionAvailable"
-        message="Add suffix `-ktx` to enable the Kotlin extensions for this library"
-        errorLine1="    implementation(&quot;androidx.core:core:1.1.0&quot;)"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="84"
-            column="21"/>
-    </issue>
+<issues format="6" by="lint 7.4.0-beta04" type="baseline" client="gradle" dependencies="true" name="AGP (7.4.0-beta04)" variant="all" version="7.4.0-beta04">
 
 </issues>
