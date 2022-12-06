@@ -18,16 +18,30 @@ class ViewActivity : Activity() {
         val mClearButton = findViewById<View>(R.id.clear_button) as Button
         val mSignaturePad = findViewById<View>(R.id.signature_pad) as SignaturePad
         mSignaturePad.setOnSignedListener(object : SignedListener {
+
             override fun onStartSigning() {
                 Toast.makeText(this@ViewActivity, "OnStartSigning", Toast.LENGTH_SHORT).show()
             }
 
+            override fun onSigning() {
+                Toast.makeText(this@ViewActivity, "OnSigning", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
             override fun onSigned() {
+
+                Toast.makeText(this@ViewActivity, "OnSigned", Toast.LENGTH_SHORT)
+                    .show()
+
                 mSaveButton.isEnabled = true
                 mClearButton.isEnabled = true
             }
 
             override fun onClear() {
+
+                Toast.makeText(this@ViewActivity, "OnClear", Toast.LENGTH_SHORT)
+                    .show()
+
                 mSaveButton.isEnabled = false
                 mClearButton.isEnabled = false
             }

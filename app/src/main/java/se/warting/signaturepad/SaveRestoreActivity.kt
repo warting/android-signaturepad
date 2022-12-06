@@ -5,11 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -54,6 +50,16 @@ class SaveRestoreActivity : ComponentActivity() {
                                 onReady = {
                                     signaturePadAdapter = it
                                 },
+                                onStartSigning = {
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onStartSigning")
+                                    }
+                                },
+                                onSigning = {
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onStartSigning")
+                                    }
+                                },
                                 onSigned = {
                                     if (BuildConfig.DEBUG) {
                                         Log.d("ComposeActivity", "onSigned")
@@ -67,11 +73,7 @@ class SaveRestoreActivity : ComponentActivity() {
                                         )
                                     }
                                 },
-                                onStartSigning = {
-                                    if (BuildConfig.DEBUG) {
-                                        Log.d("ComposeActivity", "onStartSigning")
-                                    }
-                                })
+                            )
                         }
                         Row {
                             Button(onClick = {

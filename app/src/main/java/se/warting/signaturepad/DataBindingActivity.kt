@@ -23,12 +23,23 @@ class DataBindingActivity : Activity() {
                     .show()
             }
 
+            override fun onSigning() {
+                Toast.makeText(this@DataBindingActivity, "OnSigning", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
             override fun onSigned() {
+                Toast.makeText(this@DataBindingActivity, "OnSigned", Toast.LENGTH_SHORT)
+                    .show()
+
                 binding.saveButton.isEnabled = true
                 binding.clearButton.isEnabled = true
             }
 
             override fun onClear() {
+                Toast.makeText(this@DataBindingActivity, "OnClear", Toast.LENGTH_SHORT)
+                    .show()
+
                 binding.saveButton.isEnabled = false
                 binding.clearButton.isEnabled = false
             }

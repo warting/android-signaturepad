@@ -5,25 +5,32 @@ import se.warting.signatureview.views.SignaturePad
 import se.warting.signatureview.views.SignedListener
 
 object SignaturePadBindingAdapter {
+
     @BindingAdapter("onStartSigning")
     fun setOnSignedListener(view: SignaturePad, onStartSigningListener: OnStartSigningListener?) {
-        setOnSignedListener(view, onStartSigningListener, null, null)
+        setOnSignedListener(view, onStartSigningListener, null, null, null)
+    }
+
+    @BindingAdapter("onSigning")
+    fun setOnSigningListener(view: SignaturePad, onSigningListener: OnSigningListener?) {
+        setOnSignedListener(view, null, onSigningListener, null, null)
     }
 
     @BindingAdapter("onSigned")
     fun setOnSignedListener(view: SignaturePad, onSignedListener: OnSignedListener?) {
-        setOnSignedListener(view, null, onSignedListener, null)
+        setOnSignedListener(view, null, null, onSignedListener, null)
     }
 
     @BindingAdapter("onClear")
     fun setOnSignedListener(view: SignaturePad, onClearListener: OnClearListener?) {
-        setOnSignedListener(view, null, null, onClearListener)
+        setOnSignedListener(view, null, null, null, onClearListener)
     }
 
-    @BindingAdapter(value = ["onStartSigning", "onSigned", "onClear"], requireAll = false)
+    @BindingAdapter(value = ["onStartSigning", "onSigning","onSigned", "onClear"], requireAll = false)
     fun setOnSignedListener(
         view: SignaturePad,
         onStartSigningListener: OnStartSigningListener?,
+        onSigningListener: OnSigningListener?,
         onSignedListener: OnSignedListener?,
         onClearListener: OnClearListener?
     ) {
@@ -31,6 +38,10 @@ object SignaturePadBindingAdapter {
             SignedListener {
             override fun onStartSigning() {
                 onStartSigningListener?.onStartSigning()
+            }
+
+            override fun onSigning() {
+                onSigningListener?.onSigning()
             }
 
             override fun onSigned() {
@@ -45,6 +56,10 @@ object SignaturePadBindingAdapter {
 
     interface OnStartSigningListener {
         fun onStartSigning()
+    }
+
+    interface OnSigningListener {
+        fun onSigning()
     }
 
     interface OnSignedListener {

@@ -16,20 +16,19 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import java.util.ArrayList
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
-import se.warting.signatureview.BuildConfig
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
-import se.warting.signatureview.R
 import se.warting.signaturecore.Signature
+import se.warting.signatureview.BuildConfig
+import se.warting.signatureview.R
 import se.warting.signatureview.utils.Bezier
 import se.warting.signatureview.utils.ControlTimedPoints
 import se.warting.signatureview.utils.SvgBuilder
 import se.warting.signatureview.utils.TimedPoint
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 @SuppressWarnings("TooManyFunctions")
 class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs) {
@@ -199,33 +198,42 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+
                 points.clear()
                 mLastTouchX = eventX
                 mLastTouchY = eventY
+
                 addTimedPoint(
                     getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
                     timestamp
                 )
+
                 mSignedListener?.onStartSigning()
                 addTimedPoint(
                     getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
                     timestamp
                 )
-                makeEmpty(false)
             }
+
             MotionEvent.ACTION_MOVE -> {
                 addTimedPoint(
                     getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
                     timestamp
                 )
-                makeEmpty(false)
+
+                mSignedListener?.onSigning()
+
             }
+
             MotionEvent.ACTION_UP -> {
                 addTimedPoint(
                     getNewTimedPoint(eventX, eventY, System.currentTimeMillis()),
                     timestamp
                 )
+
+                mSignedListener?.onSigned()
             }
+
             else -> {
                 throw IllegalStateException("Unknown Motion " + event.action)
             }
