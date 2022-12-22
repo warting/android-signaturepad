@@ -35,7 +35,7 @@ jobs:
       - name: Generate cache key
         run: ./scripts/checksum.sh ./ checksum.txt
 
-      - uses: actions/cache@v3.0.11
+      - uses: actions/cache@v3.2.0
         with:
           path: |
             ~/.gradle/caches/modules-*
