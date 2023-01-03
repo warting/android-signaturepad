@@ -1,8 +1,6 @@
 package se.warting.signaturepad
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +26,6 @@ fun SignaturePadView(
     onStartSigning: () -> Unit = {},
     onSigned: () -> Unit = {},
     onClear: () -> Unit = {},
-
 ) {
     AndroidView(
         modifier = modifier,
