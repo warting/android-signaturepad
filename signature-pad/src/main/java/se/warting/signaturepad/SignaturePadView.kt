@@ -18,6 +18,7 @@ import se.warting.signatureview.views.SignedListener
 @SuppressWarnings("LongParameterList")
 @Composable
 fun SignaturePadView(
+    modifier: Modifier = Modifier,
     penMinWidth: Dp = 3.dp,
     penMaxWidth: Dp = 7.dp,
     penColor: Color = Color.Black,
@@ -27,12 +28,10 @@ fun SignaturePadView(
     onStartSigning: () -> Unit = {},
     onSigned: () -> Unit = {},
     onClear: () -> Unit = {},
-    background: Color = Color.White
+
 ) {
     AndroidView(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(background),
+        modifier = modifier,
         factory = { context ->
             // Creates custom view
             SignaturePad(context, null).apply {
