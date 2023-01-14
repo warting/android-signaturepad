@@ -18,6 +18,6 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 }
 
 public final class se/warting/signaturepad/SignaturePadViewKt {
-	public static final fun SignaturePadView-s1NOShc (FFJFZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+	public static final fun SignaturePadView-P6RUU8Q (Landroidx/compose/ui/Modifier;FFJFZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
 }
 
