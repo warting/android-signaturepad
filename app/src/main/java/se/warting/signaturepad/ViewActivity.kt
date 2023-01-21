@@ -20,19 +20,15 @@ class ViewActivity : Activity() {
         mSignaturePad.setOnSignedListener(object : SignedListener {
 
             override fun onStartSigning() {
-                Toast.makeText(this@ViewActivity, "OnStartSigning", Toast.LENGTH_SHORT).show()
+                Log.d("SignedListener", "OnStartSigning")
             }
 
             override fun onSigning() {
-                Toast.makeText(this@ViewActivity, "OnSigning", Toast.LENGTH_SHORT)
-                    .show()
+                Log.d("SignedListener", "OnSigning")
             }
 
             override fun onSigned() {
-
-                Toast.makeText(this@ViewActivity, "OnSigned", Toast.LENGTH_SHORT)
-                    .show()
-
+                Log.d("SignedListener", "OnSigned")
                 mSaveButton.isEnabled = true
                 mClearButton.isEnabled = true
             }

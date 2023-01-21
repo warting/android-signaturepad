@@ -3,7 +3,6 @@ package se.warting.signaturepad
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import se.warting.signaturepad.databinding.ActivityDatabindBinding
 import se.warting.signatureview.views.SignedListener
@@ -19,26 +18,21 @@ class DataBindingActivity : Activity() {
         )
         val onStartSigning: SignedListener = object : SignedListener {
             override fun onStartSigning() {
-                Toast.makeText(this@DataBindingActivity, "OnStartSigning", Toast.LENGTH_SHORT)
-                    .show()
+                Log.d("SignedListener", "OnStartSigning")
             }
 
             override fun onSigning() {
-                Toast.makeText(this@DataBindingActivity, "OnSigning", Toast.LENGTH_SHORT)
-                    .show()
+                Log.d("SignedListener", "OnSigning")
             }
 
             override fun onSigned() {
-                Toast.makeText(this@DataBindingActivity, "OnSigned", Toast.LENGTH_SHORT)
-                    .show()
-
+                Log.d("SignedListener", "OnSigned")
                 binding.saveButton.isEnabled = true
                 binding.clearButton.isEnabled = true
             }
 
             override fun onClear() {
-                Toast.makeText(this@DataBindingActivity, "OnClear", Toast.LENGTH_SHORT)
-                    .show()
+                Log.d("SignedListener", "OnClear")
 
                 binding.saveButton.isEnabled = false
                 binding.clearButton.isEnabled = false

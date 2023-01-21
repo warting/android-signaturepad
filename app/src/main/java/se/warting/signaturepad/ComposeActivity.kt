@@ -55,27 +55,19 @@ class ComposeActivity : ComponentActivity() {
                                 penColor = penColor.value,
 
                                 onStartSigning = {
-                                    if (BuildConfig.DEBUG) {
-                                        Log.d("ComposeActivity", "onStartSigning")
-                                    }
+                                    Log.d("SignedListener", "OnStartSigning")
                                 },
                                 onSigning = {
-                                    if (BuildConfig.DEBUG) {
-                                        Log.d("ComposeActivity", "onSigning")
-                                    }
+                                    Log.d("SignedListener", "onSigning")
                                 },
                                 onSigned = {
-                                    if (BuildConfig.DEBUG) {
-                                        Log.d("ComposeActivity", "onSigned")
-                                    }
+                                    Log.d("SignedListener", "onSigned")
                                 },
                                 onClear = {
-                                    if (BuildConfig.DEBUG) {
-                                        Log.d(
-                                            "ComposeActivity",
-                                            "onClear isEmpty:" + signaturePadAdapter?.isEmpty
-                                        )
-                                    }
+                                    Log.d(
+                                        "ComposeActivity",
+                                        "onClear isEmpty:" + signaturePadAdapter?.isEmpty
+                                    )
                                 },
                             )
                         }
