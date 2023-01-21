@@ -36,8 +36,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
         freeCompilerArgs = listOfNotNull(
-            "-Xopt-in=kotlin.RequiresOptIn",
-            "-Xallow-jvm-ir-dependencies",
+            "-opt-in=kotlin.RequiresOptIn",
             "-Xskip-prerelease-check"
         )
     }
