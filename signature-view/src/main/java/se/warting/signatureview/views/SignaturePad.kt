@@ -222,7 +222,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
                 )
 
                 mSignedListener?.onSigning()
-
             }
 
             MotionEvent.ACTION_UP -> {

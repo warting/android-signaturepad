@@ -26,7 +26,7 @@ object SignaturePadBindingAdapter {
         setOnSignedListener(view, null, null, null, onClearListener)
     }
 
-    @BindingAdapter(value = ["onStartSigning", "onSigning","onSigned", "onClear"], requireAll = false)
+    @BindingAdapter(value = ["onStartSigning", "onSigning", "onSigned", "onClear"], requireAll = false)
     fun setOnSignedListener(
         view: SignaturePad,
         onStartSigningListener: OnStartSigningListener?,
