@@ -54,6 +54,16 @@ class SaveRestoreActivity : ComponentActivity() {
                                 onReady = {
                                     signaturePadAdapter = it
                                 },
+                                onStartSigning = {
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onStartSigning")
+                                    }
+                                },
+                                onSigning = {
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onStartSigning")
+                                    }
+                                },
                                 onSigned = {
                                     if (BuildConfig.DEBUG) {
                                         Log.d("ComposeActivity", "onSigned")
@@ -67,11 +77,7 @@ class SaveRestoreActivity : ComponentActivity() {
                                         )
                                     }
                                 },
-                                onStartSigning = {
-                                    if (BuildConfig.DEBUG) {
-                                        Log.d("ComposeActivity", "onStartSigning")
-                                    }
-                                })
+                            )
                         }
                         Row {
                             Button(onClick = {

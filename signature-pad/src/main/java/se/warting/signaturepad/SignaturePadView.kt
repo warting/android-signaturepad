@@ -24,6 +24,7 @@ fun SignaturePadView(
     clearOnDoubleClick: Boolean = false,
     onReady: (svg: SignaturePadAdapter) -> Unit = {},
     onStartSigning: () -> Unit = {},
+    onSigning: () -> Unit = {},
     onSigned: () -> Unit = {},
     onClear: () -> Unit = {},
 ) {
@@ -33,8 +34,13 @@ fun SignaturePadView(
             // Creates custom view
             SignaturePad(context, null).apply {
                 this.setOnSignedListener(object : SignedListener {
+
                     override fun onStartSigning() {
                         onStartSigning()
+                    }
+
+                    override fun onSigning() {
+                        onSigning()
                     }
 
                     override fun onSigned() {

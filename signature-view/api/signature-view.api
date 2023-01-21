@@ -39,7 +39,8 @@ public final class se/warting/signatureview/utils/SignaturePadBindingAdapter {
 	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
 	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;)V
 	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;)V
-	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
+	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
+	public final fun setOnSigningListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSigningListener;)V
 }
 
 public abstract interface class se/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener {
@@ -48,6 +49,10 @@ public abstract interface class se/warting/signatureview/utils/SignaturePadBindi
 
 public abstract interface class se/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener {
 	public abstract fun onSigned ()V
+}
+
+public abstract interface class se/warting/signatureview/utils/SignaturePadBindingAdapter$OnSigningListener {
+	public abstract fun onSigning ()V
 }
 
 public abstract interface class se/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener {
@@ -87,6 +92,7 @@ public final class se/warting/signatureview/views/SignaturePad$Companion {
 public abstract interface class se/warting/signatureview/views/SignedListener {
 	public abstract fun onClear ()V
 	public abstract fun onSigned ()V
+	public abstract fun onSigning ()V
 	public abstract fun onStartSigning ()V
 }
 

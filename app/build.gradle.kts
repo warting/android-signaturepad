@@ -59,6 +59,7 @@ android {
         abortOnError = true
         disable.add("LintBaseline")
         disable.add("GradleDependency")
+        disable.add("LogConditional")
         checkDependencies = true
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-lib.sarif")
