@@ -38,7 +38,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     // View state
     private val points = mutableListOf<TimedPoint>()
-    private var _isEmpty = false
 
     private var mLastTouchX = 0f
     private var mLastTouchY = 0f
@@ -171,7 +170,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         mLastWidth = (mMinWidth + mMaxWidth) / 2f
         mLastWidth = ((mMinWidth + mMaxWidth) / 2).toFloat()
         mSignatureTransparentBitmap = null
-        makeEmpty(true)
+        notifyListeners()
         invalidate()
     }
 
@@ -281,11 +280,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     val isEmpty: Boolean
-        get() = _isEmpty
+        get() = points.isEmpty()
 
-    private fun makeEmpty(newValue: Boolean) {
-        _isEmpty = newValue
-        if (_isEmpty) {
+    private fun notifyListeners() {
+        if (points.isEmpty()) {
             mSignedListener?.onClear()
         } else {
             mSignedListener?.onSigned()

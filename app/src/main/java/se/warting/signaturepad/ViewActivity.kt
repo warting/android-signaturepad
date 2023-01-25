@@ -29,8 +29,8 @@ class ViewActivity : Activity() {
 
             override fun onSigned() {
                 Log.d("SignedListener", "OnSigned")
-                mSaveButton.isEnabled = true
-                mClearButton.isEnabled = true
+                mSaveButton.isEnabled = !mSignaturePad.isEmpty
+                mClearButton.isEnabled = !mSignaturePad.isEmpty
             }
 
             override fun onClear() {
@@ -38,8 +38,8 @@ class ViewActivity : Activity() {
                 Toast.makeText(this@ViewActivity, "OnClear", Toast.LENGTH_SHORT)
                     .show()
 
-                mSaveButton.isEnabled = false
-                mClearButton.isEnabled = false
+                mSaveButton.isEnabled = !mSignaturePad.isEmpty
+                mClearButton.isEnabled = !mSignaturePad.isEmpty
             }
         })
         mClearButton.setOnClickListener { mSignaturePad.clear() }
