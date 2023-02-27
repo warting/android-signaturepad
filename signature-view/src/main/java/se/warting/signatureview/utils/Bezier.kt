@@ -3,17 +3,17 @@ package se.warting.signatureview.utils
 import kotlin.math.sqrt
 
 internal data class Bezier(
-    var startPoint: TimedPoint? = null,
-    var control1: TimedPoint? = null,
-    var control2: TimedPoint? = null,
-    var endPoint: TimedPoint? = null,
+    var startPoint: TimedPoint,
+    var control1: TimedPoint,
+    var control2: TimedPoint,
+    var endPoint: TimedPoint,
 ) {
 
     operator fun set(
-        startPoint: TimedPoint?,
-        control1: TimedPoint?,
-        control2: TimedPoint?,
-        endPoint: TimedPoint?
+        startPoint: TimedPoint,
+        control1: TimedPoint,
+        control2: TimedPoint,
+        endPoint: TimedPoint
     ): Bezier {
         this.startPoint = startPoint
         this.control1 = control1
@@ -35,12 +35,12 @@ internal data class Bezier(
         for (i in 0..steps) {
             val t = i.toFloat() / steps
             cx = point(
-                t, startPoint!!.x, control1!!.x,
-                control2!!.x, endPoint!!.x
+                t, startPoint.x, control1.x,
+                control2.x, endPoint.x
             )
             cy = point(
-                t, startPoint!!.y, control1!!.y,
-                control2!!.y, endPoint!!.y
+                t, startPoint.y, control1.y,
+                control2.y, endPoint.y
             )
             if (i > 0) {
                 xDiff = cx - px

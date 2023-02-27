@@ -46,10 +46,10 @@ internal class SvgBuilder {
 
     fun append(curve: Bezier, strokeWidth: Float): SvgBuilder {
         val roundedStrokeWidth: Int = strokeWidth.roundToInt()
-        val curveStartSvgPoint = SvgPoint(curve.startPoint!!)
-        val curveControlSvgPoint1 = SvgPoint(curve.control1!!)
-        val curveControlSvgPoint2 = SvgPoint(curve.control2!!)
-        val curveEndSvgPoint = SvgPoint(curve.endPoint!!)
+        val curveStartSvgPoint = SvgPoint(curve.startPoint)
+        val curveControlSvgPoint1 = SvgPoint(curve.control1)
+        val curveControlSvgPoint2 = SvgPoint(curve.control2)
+        val curveEndSvgPoint = SvgPoint(curve.endPoint)
         if (!isPathStarted) {
             startNewPath(roundedStrokeWidth, curveStartSvgPoint)
         }
