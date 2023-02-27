@@ -271,8 +271,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     override fun onDraw(canvas: Canvas) {
         ensureSignatureBitmapInOnDraw()
-        forward()
-        canvas.drawBitmap(mSignatureTransparentBitmap!!, 0f, 0f, mPaint)
+        mSignatureTransparentBitmap?.let {
+            forward()
+            canvas.drawBitmap(it, 0f, 0f, mPaint)
+        }
     }
 
     fun setOnSignedListener(listener: SignedListener?) {
@@ -527,8 +529,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return max(mMaxWidth / (velocity + 1), mMinWidth.toFloat())
     }
 
-    private fun ensureSignatureBitmapInOnDraw() {
-        if (mSignatureTransparentBitmap == null) {
+    private fun ensureSignatureBitmapInOnDraw(): Boolean {
+        if (mSignatureTransparentBitmap == null && width > 0 && height > 0) {
             mSignatureTransparentBitmap = Bitmap.createBitmap(
                 width, height,
                 Bitmap.Config.ARGB_8888
@@ -536,6 +538,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
                 mSignatureBitmapCanvas = Canvas(it)
             }
         }
+        return mSignatureTransparentBitmap != null
     }
 
     private fun convertDpToPx(dp: Float): Int {
