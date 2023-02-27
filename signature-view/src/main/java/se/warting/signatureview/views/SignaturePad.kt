@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -48,8 +49,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     // Cache
     private val mPointsCache: MutableList<TimedPoint?> = ArrayList()
-    private val mControlTimedPointsCached = ControlTimedPoints()
-    private val mBezierCached = Bezier()
 
     // Configurable parameters
     private var mMinWidth = 0
@@ -94,12 +93,26 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     override fun onRestoreInstanceState(state: Parcelable) {
         var mutableState: Parcelable? = state
         if (state is Bundle) {
-            val events: List<Event> =
-                state.getParcelableArray("events")?.map { it as Event } ?: listOf()
+
+            val events: Array<Event> =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    state.getParcelableArray("events", Event::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    state.getParcelableArray("events")?.map { it as Event }?.toTypedArray()
+                } ?: emptyArray()
+
             originalEvents.clear()
             originalEvents.addAll(events)
             iter = originalEvents.iterator()
-            mutableState = state.getParcelable("superState")
+
+            mutableState =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    state.getParcelable("events", Parcelable::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    state.getParcelable("events")
+                }
             invalidate()
         }
         super.onRestoreInstanceState(mutableState)
@@ -427,10 +440,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             tmp = calculateCurveControlPoints(points[1], points[2], points[3], timestamp)
             val c3 = tmp.c1
             recyclePoint(tmp.c2)
-            val curve = mBezierCached.set(points[1], c2, c3, points[2])
+            val curve = Bezier(points[1], c2, c3, points[2])
             val startPoint = curve.startPoint
             val endPoint = curve.endPoint
-            var velocity = endPoint!!.velocityFrom(startPoint!!)
+            var velocity = endPoint.velocityFrom(startPoint)
 
             velocity = (mVelocityFilterWeight * velocity +
                     (1 - mVelocityFilterWeight) * mLastVelocity)
@@ -476,14 +489,14 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             val u = 1 - t
             val uu = u * u
             val uuu = uu * u
-            var x = uuu * curve.startPoint!!.x
-            x += 3 * uu * t * curve.control1!!.x
-            x += 3 * u * tt * curve.control2!!.x
-            x += ttt * curve.endPoint!!.x
-            var y = uuu * curve.startPoint!!.y
-            y += 3 * uu * t * curve.control1!!.y
-            y += 3 * u * tt * curve.control2!!.y
-            y += ttt * curve.endPoint!!.y
+            var x = uuu * curve.startPoint.x
+            x += 3 * uu * t * curve.control1.x
+            x += 3 * u * tt * curve.control2.x
+            x += ttt * curve.endPoint.x
+            var y = uuu * curve.startPoint.y
+            y += 3 * uu * t * curve.control1.y
+            y += 3 * u * tt * curve.control2.y
+            y += ttt * curve.endPoint.y
 
             // Set the incremental stroke width and draw.
             mPaint.strokeWidth = startWidth + ttt * widthDelta
@@ -517,7 +530,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val cmY = m2Y + dym * k
         val tx = s2.x - cmX
         val ty = s2.y - cmY
-        return mControlTimedPointsCached.set(
+        return ControlTimedPoints(
             getNewTimedPoint(m1X + tx, m1Y + ty, timestamp),
             getNewTimedPoint(m2X + tx, m2Y + ty, timestamp)
         )
