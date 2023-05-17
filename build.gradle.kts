@@ -22,7 +22,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.46.0"
     id("io.gitlab.arturbosch.detekt") version "1.22.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.0"
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.1"
 }
 
 apiValidation {
