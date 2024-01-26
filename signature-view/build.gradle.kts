@@ -19,7 +19,7 @@ val PUBLISH_ARTIFACT_ID by extra("signature-view")
 apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
 
 android {
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 21
@@ -41,12 +41,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding = false
         compose = false
+        buildConfig = true
     }
     dataBinding {
         enable = true
@@ -56,7 +57,7 @@ android {
         kotlinCompilerExtensionVersion = "1.4.4"
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
         freeCompilerArgs = listOfNotNull(
             "-opt-in=kotlin.RequiresOptIn",
             "-Xskip-prerelease-check"
@@ -75,6 +76,12 @@ android {
         sarifOutput = file("../lint-results-signature-view.sarif")
     }
     namespace = "se.warting.signatureview"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 dependencies {
