@@ -86,5 +86,5 @@ java {
 
 dependencies {
     api(project(":signature-core"))
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.13.1")
 }
