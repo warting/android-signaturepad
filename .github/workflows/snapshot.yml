@@ -1,13 +1,12 @@
-name: Auto deploy artifacts on release
+name: Auto deploy snapshot artifacts on draft release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-20.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -22,7 +21,6 @@ jobs:
         run: |
           git describe --tags --always --first-parent
           git tag
-
       - name: Setup java
         uses: actions/setup-java@v4
         with:
@@ -35,7 +33,7 @@ jobs:
       - name: Generate cache key
         run: ./scripts/checksum.sh ./ checksum.txt
 
-      - uses: actions/cache@v4.0.2
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches/modules-*
@@ -45,7 +43,9 @@ jobs:
           key: gradle-${{ hashFiles('checksum.txt') }}
 
       - name: Publish application
-        run: ./gradlew publishAllPublicationsToMavenCentralRepository --rerun-tasks --no-configuration-cache
+        run: |
+          echo VERSION_NAME=2.0.0-SNAPSHOT > ./local.properties
+          ./gradlew publishAllPublicationsToMavenCentralRepository --rerun-tasks --no-configuration-cache
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}

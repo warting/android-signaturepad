@@ -1,5 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import java.io.FileInputStream
+import java.util.Properties
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
@@ -9,42 +11,59 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.2.2")
-
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
-        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0")
+        classpath(libs.com.android.tools.build.gradle)
+        classpath(libs.org.jetbrains.kotlin.kotlin.gradle.plugin)
+        classpath(libs.io.gitlab.arturbosch.detekt.detekt.gradle.plugin)
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle.kts files
     }
 }
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.51.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.2"
+    alias(libs.plugins.com.github.ben.manes.versions)
+    alias(libs.plugins.io.gitlab.arturbosch.detekt)
+    alias(libs.plugins.io.github.gradle.nexus.publish.plugin)
+    alias(libs.plugins.org.jetbrains.kotlinx.binary.compatibility.validator)
+    alias(libs.plugins.nl.littlerobots.version.catalog.update)
+    alias(libs.plugins.com.android.application).apply(false)
+    alias(libs.plugins.com.android.library).apply(false)
+    alias(libs.plugins.kotlin.android).apply(false)
+    alias(libs.plugins.compose.compiler).apply(false)
+    alias(libs.plugins.com.gladed.androidgitversion)
+}
+
+androidGitVersion {
+    tagPattern = "^v[0-9]+.*"
+}
+
+
+val localPropertiesFile: File = rootProject.file("local.properties")
+val localProperties = Properties()
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+val gitOrLocalVersion: String =
+    localProperties.getProperty("VERSION_NAME") ?: androidGitVersion.name().replace("v", "")
+
+version = gitOrLocalVersion
+group = "se.warting.signature"
+
+
+versionCatalogUpdate {
+    sortByKey.set(true)
+    keep {
+        // keep versions without any library or plugin reference
+        keepUnusedVersions.set(false)
+        // keep all libraries that aren't used in the project
+        keepUnusedLibraries.set(false)
+        // keep all plugins that aren't used in the project
+        keepUnusedPlugins.set(false)
+    }
 }
 
 apiValidation {
     ignoredProjects.add("app")
-}
-
-allprojects {
-    apply(plugin = "io.gitlab.arturbosch.detekt")
-
-    dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.4")
-    }
-
-    detekt {
-        autoCorrect = true
-    }
-
-    // https://github.com/otormaigh/playground-android/issues/27
-    repositories {
-        google()
-        mavenCentral()
-    }
 }
 
 detekt {
@@ -75,5 +94,3 @@ tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
 task<Delete>("clean") {
     delete(rootProject.buildDir)
 }
-
-apply(from = "${rootDir}/gradle/publish-root.gradle")

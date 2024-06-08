@@ -59,15 +59,18 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     // Double click detector
     private val doubleClickGestureDetector =
-        GestureDetector(context, object : SimpleOnGestureListener() {
-            override fun onDoubleTap(e: MotionEvent): Boolean {
-                if (mClearOnDoubleClick) {
-                    clearView()
-                    return true
+        GestureDetector(
+            context,
+            object : SimpleOnGestureListener() {
+                override fun onDoubleTap(e: MotionEvent): Boolean {
+                    if (mClearOnDoubleClick) {
+                        clearView()
+                        return true
+                    }
+                    return false
                 }
-                return false
             }
-        })
+        )
 
     // Default attribute values
     companion object {
@@ -93,7 +96,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     override fun onRestoreInstanceState(state: Parcelable) {
         var mutableState: Parcelable? = state
         if (state is Bundle) {
-
             val events: Array<Event> =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     state.getParcelableArray("events", Event::class.java)
@@ -203,14 +205,12 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     private fun current(event: Event) {
-
         val timestamp = event.timestamp
         val eventX = event.x
         val eventY = event.y
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-
                 points.clear()
                 mLastTouchX = eventX
                 mLastTouchY = eventY
@@ -447,8 +447,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             val endPoint = curve.endPoint
             var velocity = endPoint.velocityFrom(startPoint)
 
-            velocity = (mVelocityFilterWeight * velocity +
-                    (1 - mVelocityFilterWeight) * mLastVelocity)
+            velocity = (
+                mVelocityFilterWeight * velocity +
+                    (1 - mVelocityFilterWeight) * mLastVelocity
+                )
 
             // The new width is a function of the velocity. Higher velocities
             // correspond to thinner strokes.
@@ -483,7 +485,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val drawSteps = ceil(curve.length().toDouble()).toFloat()
         var i = 0
         while (i < drawSteps) {
-
             // Calculate the Bezier (x, y) coordinate for this step.
             val t = i.toFloat() / drawSteps
             val tt = t * t
@@ -562,7 +563,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val a = context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.SignaturePad,
-            0, 0
+            0,
+            0
         )
 
         // Configurable parameters

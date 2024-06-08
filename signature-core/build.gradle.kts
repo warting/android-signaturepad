@@ -1,23 +1,64 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+    alias(libs.plugins.com.android.library)
+    alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "1.8.20"
-    id("com.gladed.androidgitversion") version "0.4.14"
+    alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.com.gladed.androidgitversion)
+    alias(libs.plugins.io.gitlab.arturbosch.detekt)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.com.vanniktech.maven.publish)
+}
+
+mavenPublishing {
+
+    publishToMavenCentral(SonatypeHost.DEFAULT)
+    signAllPublications()
+
+    pom {
+        name.set("Signature - Core")
+        description.set("Android Signature Pad is an Android library for drawing smooth signatures")
+        inceptionYear.set("2021")
+        url.set("https://github.com/warting/android-signaturepad/")
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/licenses/MIT")
+                distribution.set("https://opensource.org/licenses/MIT")
+            }
+        }
+        developers {
+            developer {
+                id.set("warting")
+                name.set("Stefan Wärting")
+                url.set("https://github.com/warting/")
+            }
+        }
+        scm {
+            url.set("https://github.com/warting/android-signaturepad/")
+            connection.set("scm:git:git://github.com/warting/android-signaturepad.git")
+            developerConnection.set("scm:git:ssh://git@github.com/warting/android-signaturepad.git")
+        }
+    }
+}
+
+detekt {
+    autoCorrect = true
+    buildUponDefaultConfig = true
 }
 
 androidGitVersion {
     tagPattern = "^v[0-9]+.*"
 }
 
-val PUBLISH_GROUP_ID: String by extra("se.warting.signature")
-val PUBLISH_VERSION: String by extra(androidGitVersion.name().replace("v", ""))
-val PUBLISH_ARTIFACT_ID by extra("signature-core")
+val PUBLISH_GROUP_ID: String by extra(rootProject.group as String)
+val PUBLISH_VERSION: String by extra(rootProject.version as String)
 
-apply(from = "${rootProject.projectDir}/gradle/publish-module.gradle")
-
+group = PUBLISH_GROUP_ID
+version = PUBLISH_VERSION
 
 android {
     compileSdk = 34
@@ -41,14 +82,11 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.4"
-    }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
         freeCompilerArgs = listOfNotNull(
-                "-opt-in=kotlin.RequiresOptIn",
-                "-Xskip-prerelease-check"
+            "-opt-in=kotlin.RequiresOptIn",
+            "-Xskip-prerelease-check"
         )
     }
     lint {
@@ -72,11 +110,11 @@ java {
     }
 }
 
-
-        dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2023.05.01")
+dependencies {
+    val composeBom = platform(libs.androidx.compose.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    implementation("androidx.compose.runtime:runtime")
+    implementation(libs.androidx.compose.runtime)
+    detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }

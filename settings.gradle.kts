@@ -1,26 +1,40 @@
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+develocity{
+    buildScan {
+        termsOfUseUrl.set("https://gradle.com/help/legal-terms-of-use")
+        termsOfUseAgree.set("yes")
+        publishing.onlyIf { false }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 plugins {
-    id("com.gradle.enterprise") version "3.17.3"
+    id("com.gradle.develocity") version "3.17.4"
 }
 
 buildCache {
     local {
         isEnabled = true
-        directory = File(rootDir, "build-cache")
-        removeUnusedEntriesAfterDays = 30
     }
     remote<HttpBuildCache> {
         isEnabled = false
     }
 }
 
-// https://github.com/otormaigh/playground-android/issues/27
-//dependencyResolutionManagement {
-//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-//    repositories {
-//        google()
-//        mavenCentral()
-//    }
-//}
+
 rootProject.name = "Signaturepad"
 include(":app")
 include(":signature-pad")

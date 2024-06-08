@@ -56,6 +56,6 @@ internal data class Bezier(
     @SuppressWarnings("MagicNumber")
     fun point(t: Float, start: Float, c1: Float, c2: Float, end: Float): Double {
         return start * (1.0 - t) * (1.0 - t) * (1.0 - t) + 3.0 * c1 * (1.0 - t) * (1.0 - t) * t +
-                3.0 * c2 * (1.0 - t) * t * t + end * t * t * t
+            3.0 * c2 * (1.0 - t) * t * t + end * t * t * t
     }
 }
