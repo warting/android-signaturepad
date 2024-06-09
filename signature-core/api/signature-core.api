@@ -8,7 +8,7 @@ public final class se/warting/signaturecore/Event : android/os/Parcelable {
 	public final fun component4 ()F
 	public final fun copy (JIFF)Lse/warting/signaturecore/Event;
 	public static synthetic fun copy$default (Lse/warting/signaturecore/Event;JIFFILjava/lang/Object;)Lse/warting/signaturecore/Event;
-	public fun describeContents ()I
+	public final fun describeContents ()I
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAction ()I
 	public final fun getTimestamp ()J
@@ -16,7 +16,7 @@ public final class se/warting/signaturecore/Event : android/os/Parcelable {
 	public final fun getY ()F
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun writeToParcel (Landroid/os/Parcel;I)V
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
 public final class se/warting/signaturecore/Event$Creator : android/os/Parcelable$Creator {
@@ -38,13 +38,13 @@ public final class se/warting/signaturecore/Signature : android/os/Parcelable {
 	public final fun component2 ()Ljava/util/List;
 	public final fun copy (ILjava/util/List;)Lse/warting/signaturecore/Signature;
 	public static synthetic fun copy$default (Lse/warting/signaturecore/Signature;ILjava/util/List;ILjava/lang/Object;)Lse/warting/signaturecore/Signature;
-	public fun describeContents ()I
+	public final fun describeContents ()I
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEvents ()Ljava/util/List;
 	public final fun getVersionCode ()I
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public fun writeToParcel (Landroid/os/Parcel;I)V
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
 public final class se/warting/signaturecore/Signature$Creator : android/os/Parcelable$Creator {
