@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.com.vanniktech.maven.publish)
+    id("com.google.devtools.ksp")
+    alias(libs.plugins.androidx.room)
 }
 
 mavenPublishing {
@@ -61,6 +63,10 @@ group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
 android {
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
     compileSdk = 34
 
     defaultConfig {
@@ -71,6 +77,13 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
+            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
+        }
+        debug {
+            isMinifyEnabled = false
+            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
+            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
         }
     }
     compileOptions {
@@ -80,6 +93,7 @@ android {
     buildFeatures {
         viewBinding = false
         compose = true
+        buildConfig = true
     }
 
     kotlinOptions {
@@ -111,6 +125,11 @@ java {
 }
 
 dependencies {
+
+    implementation(libs.androidx.room.room.runtime)
+    ksp(libs.androidx.room.room.compiler)
+    implementation(libs.androidx.room.room.ktx)
+
     val composeBom = platform(libs.androidx.compose.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)

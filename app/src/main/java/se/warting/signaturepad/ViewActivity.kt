@@ -29,8 +29,10 @@ class ViewActivity : Activity() {
 
             override fun onSigned() {
                 Log.d("SignedListener", "OnSigned")
-                mSaveButton.isEnabled = !mSignaturePad.isEmpty
-                mClearButton.isEnabled = !mSignaturePad.isEmpty
+                runOnUiThread {
+                    mSaveButton.isEnabled = !mSignaturePad.isEmpty
+                    mClearButton.isEnabled = !mSignaturePad.isEmpty
+                }
             }
 
             override fun onClear() {

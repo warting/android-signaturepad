@@ -2,27 +2,13 @@ package se.warting.signatureview.utils
 
 import kotlin.math.sqrt
 
-internal data class Bezier(
+@SuppressWarnings("MagicNumber")
+data class Bezier(
     var startPoint: TimedPoint,
     var control1: TimedPoint,
     var control2: TimedPoint,
     var endPoint: TimedPoint,
 ) {
-
-    operator fun set(
-        startPoint: TimedPoint,
-        control1: TimedPoint,
-        control2: TimedPoint,
-        endPoint: TimedPoint
-    ): Bezier {
-        this.startPoint = startPoint
-        this.control1 = control1
-        this.control2 = control2
-        this.endPoint = endPoint
-        return this
-    }
-
-    @SuppressWarnings("MagicNumber")
     fun length(): Float {
         val steps = 10
         var length = 0f
@@ -53,9 +39,8 @@ internal data class Bezier(
         return length
     }
 
-    @SuppressWarnings("MagicNumber")
     fun point(t: Float, start: Float, c1: Float, c2: Float, end: Float): Double {
         return start * (1.0 - t) * (1.0 - t) * (1.0 - t) + 3.0 * c1 * (1.0 - t) * (1.0 - t) * t +
-            3.0 * c2 * (1.0 - t) * t * t + end * t * t * t
+                3.0 * c2 * (1.0 - t) * t * t + end * t * t * t
     }
 }

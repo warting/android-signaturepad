@@ -57,7 +57,7 @@ fun SignaturePadView(
             it.setMinWidth(penMinWidth.value)
             it.setMaxWidth(penMaxWidth.value)
             it.setPenColor(penColor.toArgb())
-            it.setVelocityFilterWeight(velocityFilterWeight)
+            it.eventManager.setVelocityFilterWeight(velocityFilterWeight)
             it.setClearOnDoubleClick(clearOnDoubleClick)
             onReady(SignaturePadAdapter(it))
         },
@@ -95,5 +95,9 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
         return signaturePad.setSignature(signature)
+    }
+
+    fun invalidate() {
+        return signaturePad.invalidate2()
     }
 }

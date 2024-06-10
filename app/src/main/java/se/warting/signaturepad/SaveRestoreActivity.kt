@@ -94,6 +94,11 @@ class SaveRestoreActivity : ComponentActivity() {
                             }) {
                                 Text("Restore")
                             }
+                            Button(onClick = {
+                                signaturePadAdapter?.invalidate()
+                            }) {
+                                Text("invalidate")
+                            }
                         }
 
                         Text(text = "Signature data: " + mutableSvg.value)

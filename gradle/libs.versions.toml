@@ -2,6 +2,8 @@
 androidx-compose-ui = "1.6.7"
 io-gitlab-arturbosch-detekt = "1.23.6"
 kotlin = "2.0.0"
+room = "2.6.1"
+coroutines_version = "2.6.1"
 
 [libraries]
 androidx-activity-activity-compose = "androidx.activity:activity-compose:1.9.0"
@@ -18,16 +20,21 @@ androidx-core-core-ktx = "androidx.core:core-ktx:1.13.1"
 androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.8.1"
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
-com-android-tools-build-gradle = "com.android.tools.build:gradle:8.4.1"
+com-android-tools-build-gradle = "com.android.tools.build:gradle:8.4.2"
 com-google-android-material = "com.google.android.material:material:1.12.0"
 io-gitlab-arturbosch-detekt-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "io-gitlab-arturbosch-detekt" }
 io-gitlab-arturbosch-detekt-detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "io-gitlab-arturbosch-detekt" }
 junit = "junit:junit:4.13.2"
 org-jetbrains-kotlin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+androidx-room-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+org-jetbrains-kotlinx-kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.8.1"
+org-jetbrains-kotlinx-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" }
 
 [plugins]
-com-android-application = "com.android.application:8.4.1"
-com-android-library = "com.android.library:8.4.1"
+com-android-application = "com.android.application:8.4.2"
+com-android-library = "com.android.library:8.4.2"
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -39,3 +46,4 @@ org-jetbrains-dokka = "org.jetbrains.dokka:1.9.20"
 org-jetbrains-kotlinx-binary-compatibility-validator = "org.jetbrains.kotlinx.binary-compatibility-validator:0.14.0"
 
 com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.28.0"
+androidx-room = { id = "androidx.room", version.ref = "room" }

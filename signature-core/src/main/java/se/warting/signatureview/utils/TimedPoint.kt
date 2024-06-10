@@ -3,7 +3,7 @@ package se.warting.signatureview.utils
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-internal class TimedPoint {
+class TimedPoint {
     var x = 0f
     var y = 0f
     var timestamp: Long = 0

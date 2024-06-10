@@ -10,6 +10,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.ui.platform.LocalContext
+import se.warting.signaturecore.Event
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +19,8 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-
+                    SignaturePadView2()
+                    /*
                     val context = LocalContext.current
 
                     Column {
@@ -48,6 +50,8 @@ class MainActivity : ComponentActivity() {
                             Text("SaveRestoreActivity")
                         }
                     }
+
+                     */
                 }
             }
         }
