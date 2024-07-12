@@ -26,7 +26,7 @@ junit = "junit:junit:4.13.2"
 org-jetbrains-kotlin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
-com-android-application = "com.android.application:8.4.1"
+com-android-application = "com.android.application:8.5.1"
 com-android-library = "com.android.library:8.4.1"
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
