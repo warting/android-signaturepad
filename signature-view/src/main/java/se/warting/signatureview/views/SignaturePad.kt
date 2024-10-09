@@ -503,7 +503,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
             // Set the incremental stroke width and draw.
             mPaint.strokeWidth = startWidth + ttt * widthDelta
-            mSignatureBitmapCanvas!!.drawPoint(x, y, mPaint)
+            mSignatureBitmapCanvas?.drawPoint(x, y, mPaint)
             i++
         }
         mPaint.strokeWidth = originalWidth
