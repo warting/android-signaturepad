@@ -12,38 +12,6 @@ plugins {
     alias(libs.plugins.com.vanniktech.maven.publish)
 }
 
-mavenPublishing {
-
-    publishToMavenCentral(SonatypeHost.DEFAULT)
-    signAllPublications()
-
-    pom {
-        name.set("Signature - View")
-        description.set("Android Signature Pad is an Android library for drawing smooth signatures")
-        inceptionYear.set("2021")
-        url.set("https://github.com/warting/android-signaturepad/")
-        licenses {
-            license {
-                name.set("MIT License")
-                url.set("https://opensource.org/licenses/MIT")
-                distribution.set("https://opensource.org/licenses/MIT")
-            }
-        }
-        developers {
-            developer {
-                id.set("warting")
-                name.set("Stefan Wärting")
-                url.set("https://github.com/warting/")
-            }
-        }
-        scm {
-            url.set("https://github.com/warting/android-signaturepad/")
-            connection.set("scm:git:git://github.com/warting/android-signaturepad.git")
-            developerConnection.set("scm:git:ssh://git@github.com/warting/android-signaturepad.git")
-        }
-    }
-}
-
 detekt {
     autoCorrect = true
     buildUponDefaultConfig = true
