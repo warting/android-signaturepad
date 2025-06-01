@@ -1,24 +1,24 @@
 [versions]
-androidx-compose-ui = "1.6.7"
-io-gitlab-arturbosch-detekt = "1.23.6"
-kotlin = "2.0.0"
+androidx-compose-ui = "1.8.2"
+io-gitlab-arturbosch-detekt = "1.23.8"
+kotlin = "2.1.21"
 
 [libraries]
-androidx-activity-activity-compose = "androidx.activity:activity-compose:1.9.0"
+androidx-activity-activity-compose = "androidx.activity:activity-compose:1.10.1"
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
-androidx-compose-compose-bom = "androidx.compose:compose-bom:2024.05.00"
-androidx-compose-foundation = "androidx.compose.foundation:foundation:1.6.7"
-androidx-compose-material = "androidx.compose.material:material:1.6.7"
-androidx-compose-runtime = "androidx.compose.runtime:runtime:1.6.7"
+androidx-compose-compose-bom = "androidx.compose:compose-bom:2025.05.01"
+androidx-compose-foundation = "androidx.compose.foundation:foundation:1.8.2"
+androidx-compose-material = "androidx.compose.material:material:1.8.2"
+androidx-compose-runtime = "androidx.compose.runtime:runtime:1.8.2"
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
-androidx-core-core-ktx = "androidx.core:core-ktx:1.13.1"
-androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.8.1"
-androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
-androidx-test-ext-junit = "androidx.test.ext:junit:1.1.5"
-com-android-tools-build-gradle = "com.android.tools.build:gradle:8.4.1"
+androidx-core-core-ktx = "androidx.core:core-ktx:1.16.0"
+androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.9.0"
+androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
+androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
+com-android-tools-build-gradle = "com.android.tools.build:gradle:8.10.1"
 com-google-android-material = "com.google.android.material:material:1.12.0"
 io-gitlab-arturbosch-detekt-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "io-gitlab-arturbosch-detekt" }
 io-gitlab-arturbosch-detekt-detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "io-gitlab-arturbosch-detekt" }
@@ -26,16 +26,14 @@ junit = "junit:junit:4.13.2"
 org-jetbrains-kotlin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
-com-android-application = "com.android.application:8.4.1"
-com-android-library = "com.android.library:8.4.1"
-com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
+com-android-application = "com.android.application:8.10.1"
+com-android-library = "com.android.library:8.10.1"
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
+com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.32.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 io-github-gradle-nexus-publish-plugin = "io.github.gradle-nexus.publish-plugin:2.0.0"
-io-gitlab-arturbosch-detekt = "io.gitlab.arturbosch.detekt:1.23.6"
+io-gitlab-arturbosch-detekt = "io.gitlab.arturbosch.detekt:1.23.8"
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.4"
-org-jetbrains-dokka = "org.jetbrains.dokka:1.9.20"
-org-jetbrains-kotlinx-binary-compatibility-validator = "org.jetbrains.kotlinx.binary-compatibility-validator:0.14.0"
-
-com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.28.0"
+nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
+org-jetbrains-dokka = "org.jetbrains.dokka:2.0.0"
+org-jetbrains-kotlinx-binary-compatibility-validator = "org.jetbrains.kotlinx.binary-compatibility-validator:0.17.0"
