@@ -98,6 +98,7 @@ android {
         disable.add("LintBaseline")
         disable.add("GradleDependency")
         disable.add("AndroidGradlePluginVersion")
+        disable.add("NewerVersionAvailable")
         checkDependencies = true
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-core.sarif")
