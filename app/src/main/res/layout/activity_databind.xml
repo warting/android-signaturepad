@@ -72,6 +72,15 @@
 
             <Button
                 style="?android:attr/buttonBarButtonStyle"
+                android:id="@+id/undo_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:text="Undo" />
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
                 android:id="@+id/save_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

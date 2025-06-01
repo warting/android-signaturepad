@@ -70,6 +70,10 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
         signaturePad.clear()
     }
 
+    fun undo(): Boolean {
+        return signaturePad.undo()
+    }
+
     val isEmpty: Boolean
         get() = signaturePad.isEmpty
 

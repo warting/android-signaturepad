@@ -29,6 +29,7 @@ class DataBindingActivity : Activity() {
                 Log.d("SignedListener", "OnSigned")
                 binding.saveButton.isEnabled = true
                 binding.clearButton.isEnabled = true
+                binding.undoButton.isEnabled = true
             }
 
             override fun onClear() {
@@ -36,10 +37,12 @@ class DataBindingActivity : Activity() {
 
                 binding.saveButton.isEnabled = false
                 binding.clearButton.isEnabled = false
+                binding.undoButton.isEnabled = false
             }
         }
         binding.binding = onStartSigning
         binding.clearButton.setOnClickListener { binding.signaturePad.clear() }
+        binding.undoButton.setOnClickListener { binding.signaturePad.undo() }
         binding.saveButton.setOnClickListener {
             val signatureBitmap = binding.signaturePad.getSignatureBitmap()
             val signatureSvg = binding.signaturePad.getSignatureSvg()

@@ -88,6 +88,12 @@ class ComposeActivity : ComponentActivity() {
                             }
 
                             Button(onClick = {
+                                signaturePadAdapter?.undo()
+                            }) {
+                                Text("Undo")
+                            }
+
+                            Button(onClick = {
                                 penColor.value = Color.Red
                             }) {
                                 Text("Red")

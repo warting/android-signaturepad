@@ -193,6 +193,64 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         clearView()
     }
 
+    fun undo(): Boolean {
+        return removeLastStroke()
+    }
+
+    private fun removeLastStroke(): Boolean {
+        val lastStrokeEndIndex = findLastStrokeEndIndex()
+        val lastStrokeStartIndex = if (lastStrokeEndIndex != -1) {
+            findStrokeStartIndex(lastStrokeEndIndex)
+        } else {
+            -1
+        }
+
+        if (lastStrokeStartIndex == -1 || lastStrokeEndIndex == -1) {
+            return false // No valid stroke to undo
+        }
+
+        // Remove the last stroke events
+        repeat(originalEvents.size - lastStrokeStartIndex) {
+            originalEvents.removeAt(originalEvents.size - 1)
+        }
+
+        // Reset view state and redraw
+        redrawFromEvents()
+        notifyListeners()
+        return true
+    }
+
+    private fun findLastStrokeEndIndex(): Int {
+        for (i in originalEvents.indices.reversed()) {
+            if (originalEvents[i].action == MotionEvent.ACTION_UP) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    private fun findStrokeStartIndex(endIndex: Int): Int {
+        for (i in endIndex downTo 0) {
+            if (originalEvents[i].action == MotionEvent.ACTION_DOWN) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    private fun redrawFromEvents() {
+        // Clear current state
+        mSvgBuilder.clear()
+        points.clear()
+        mLastVelocity = 0f
+        mLastWidth = (mMinWidth + mMaxWidth) / 2f
+        mSignatureTransparentBitmap = null
+
+        // Reset iterator and redraw
+        iter = originalEvents.iterator()
+        invalidate()
+    }
+
     private fun addEvent(event: Event) {
         originalEvents.add(event)
         current(event)
