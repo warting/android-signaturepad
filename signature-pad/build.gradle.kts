@@ -60,7 +60,7 @@ group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
 android {
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 21
@@ -96,6 +96,8 @@ android {
         abortOnError = true
         disable.add("LintBaseline")
         disable.add("GradleDependency")
+        disable.add("AndroidGradlePluginVersion")
+        disable.add("NewerVersionAvailable")
         checkDependencies = true
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-pad.sarif")

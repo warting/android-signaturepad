@@ -12,12 +12,12 @@ detekt {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "se.warting.signaturepad"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -65,6 +65,8 @@ android {
         disable.add("LintBaseline")
         disable.add("GradleDependency")
         disable.add("LogConditional")
+        disable.add("AndroidGradlePluginVersion")
+        disable.add("NewerVersionAvailable")
         checkDependencies = true
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-lib.sarif")
