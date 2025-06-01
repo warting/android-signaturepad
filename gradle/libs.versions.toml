@@ -27,7 +27,7 @@ org-jetbrains-kotlin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kot
 
 [plugins]
 com-android-application = "com.android.application:8.4.1"
-com-android-library = "com.android.library:8.4.1"
+com-android-library = "com.android.library:8.10.1"
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
