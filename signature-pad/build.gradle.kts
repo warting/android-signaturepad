@@ -102,7 +102,7 @@ android {
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-pad.sarif")
     }
-    namespace = "se.warting.signaturepad"
+    namespace = "se.warting.signaturepad.compose"
 }
 
 java {

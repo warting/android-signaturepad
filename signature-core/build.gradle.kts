@@ -103,7 +103,7 @@ android {
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-signature-core.sarif")
     }
-    namespace = "se.warting.signaturecore"
+    namespace = "se.warting.signaturepad.core"
 }
 
 java {
@@ -116,7 +116,7 @@ dependencies {
     val composeBom = platform(libs.androidx.compose.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
-
+    implementation(libs.androidx.core.core.ktx)
     implementation(libs.androidx.compose.runtime)
     detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }

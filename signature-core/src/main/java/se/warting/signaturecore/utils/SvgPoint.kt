@@ -1,4 +1,4 @@
-package se.warting.signatureview.utils
+package se.warting.signaturecore.utils
 
 import kotlin.math.roundToInt
 
@@ -39,7 +39,7 @@ internal class SvgPoint {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
+        if (other == null) return false
         val svgPoint = other as SvgPoint
         return if (x != svgPoint.x) false else y == svgPoint.y
     }

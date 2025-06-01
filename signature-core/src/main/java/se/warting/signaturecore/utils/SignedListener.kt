@@ -1,4 +1,4 @@
-package se.warting.signatureview.views
+package se.warting.signaturecore.utils
 
 interface SignedListener {
     fun onStartSigning()

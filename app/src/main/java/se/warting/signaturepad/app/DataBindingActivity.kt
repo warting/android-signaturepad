@@ -1,11 +1,11 @@
-package se.warting.signaturepad
+package se.warting.signaturepad.app
 
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
-import se.warting.signaturepad.databinding.ActivityDatabindBinding
-import se.warting.signatureview.views.SignedListener
+import se.warting.signaturepad.app.databinding.ActivityDatabindBinding
+import se.warting.signaturecore.utils.SignedListener
 
 class DataBindingActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {

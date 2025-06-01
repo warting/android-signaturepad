@@ -1,4 +1,4 @@
-package se.warting.signaturepad
+package se.warting.signaturepad.app
 
 import android.app.Activity
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import se.warting.signatureview.views.SignaturePad
-import se.warting.signatureview.views.SignedListener
+import se.warting.signaturecore.utils.SignedListener
 
 class ViewActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {

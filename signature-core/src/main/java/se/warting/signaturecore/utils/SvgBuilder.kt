@@ -1,8 +1,8 @@
-package se.warting.signatureview.utils
+package se.warting.signaturecore.utils
 
 import kotlin.math.roundToInt
 
-internal class SvgBuilder {
+class SvgBuilder {
     private val mSvgPathsBuilder = StringBuilder()
     private var mCurrentPathBuilder: SvgPathBuilder? = null
     fun clear() {

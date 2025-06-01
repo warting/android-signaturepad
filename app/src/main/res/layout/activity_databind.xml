@@ -7,7 +7,7 @@
 
         <variable
             name="binding"
-            type="se.warting.signatureview.views.SignedListener" />
+            type="se.warting.signaturecore.utils.SignedListener" />
     </data>
 
     <RelativeLayout

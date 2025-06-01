@@ -53,7 +53,7 @@ android {
     }
 
     dataBinding {
-        isEnabled = true
+        enable = true
     }
 
     lint {
@@ -71,7 +71,7 @@ android {
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-lib.sarif")
     }
-    namespace = "se.warting.signaturepad"
+    namespace = "se.warting.signaturepad.app"
 }
 
 java {

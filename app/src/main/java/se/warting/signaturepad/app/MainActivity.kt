@@ -1,4 +1,4 @@
-package se.warting.signaturepad
+package se.warting.signaturepad.app
 
 import android.content.Intent
 import android.os.Bundle

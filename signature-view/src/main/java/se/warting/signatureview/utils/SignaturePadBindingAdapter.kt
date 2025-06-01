@@ -1,8 +1,8 @@
 package se.warting.signatureview.utils
 
 import androidx.databinding.BindingAdapter
+import se.warting.signaturecore.utils.SignedListener
 import se.warting.signatureview.views.SignaturePad
-import se.warting.signatureview.views.SignedListener
 
 object SignaturePadBindingAdapter {
 

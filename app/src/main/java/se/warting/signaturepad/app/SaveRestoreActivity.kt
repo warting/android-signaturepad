@@ -1,4 +1,4 @@
-package se.warting.signaturepad
+package se.warting.signaturepad.app
 
 import android.os.Bundle
 import android.util.Log
@@ -14,20 +14,22 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import se.warting.signaturecore.Event
+import se.warting.signaturecore.ExperimentalSignatureApi
+import se.warting.signaturecore.Signature
+import se.warting.signaturepad.SignaturePadAdapter
+import se.warting.signaturepad.SignaturePadView
 
 private const val SIGNATURE_PAD_HEIGHT = 120
 
-@Suppress("LongMethod")
-class ComposeActivity : ComponentActivity() {
+@SuppressWarnings("LongMethod")
+class SaveRestoreActivity : ComponentActivity() {
+    @OptIn(ExperimentalSignatureApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -39,7 +41,6 @@ class ComposeActivity : ComponentActivity() {
                     Column {
 
                         var signaturePadAdapter: SignaturePadAdapter? = null
-                        val penColor = remember { mutableStateOf(Color.Black) }
 
                         Box(
                             modifier = Modifier
@@ -50,68 +51,77 @@ class ComposeActivity : ComponentActivity() {
                                     color = Color.Red,
                                 )
                         ) {
+
                             SignaturePadView(
                                 onReady = {
                                     signaturePadAdapter = it
                                 },
-                                penColor = penColor.value,
-
                                 onStartSigning = {
-                                    Log.d("SignedListener", "OnStartSigning")
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onStartSigning")
+                                    }
                                 },
                                 onSigning = {
-                                    Log.d("SignedListener", "onSigning")
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onStartSigning")
+                                    }
                                 },
                                 onSigned = {
-                                    Log.d("SignedListener", "onSigned")
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d("ComposeActivity", "onSigned")
+                                    }
                                 },
                                 onClear = {
-                                    Log.d(
-                                        "ComposeActivity",
-                                        "onClear isEmpty:" + signaturePadAdapter?.isEmpty
-                                    )
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d(
+                                            "ComposeActivity",
+                                            "onClear isEmpty:" + signaturePadAdapter?.isEmpty
+                                        )
+                                    }
                                 },
                             )
                         }
                         Row {
                             Button(onClick = {
-                                mutableSvg.value = signaturePadAdapter?.getSignatureSvg() ?: ""
+                                mutableSvg.value =
+                                    signaturePadAdapter?.getSignature()?.serialize() ?: ""
+                                signaturePadAdapter?.clear()
                             }) {
                                 Text("Save")
                             }
 
                             Button(onClick = {
+                                signaturePadAdapter?.setSignature(mutableSvg.value.deserialize())
                                 mutableSvg.value = ""
-                                signaturePadAdapter?.clear()
                             }) {
-                                Text("Clear")
-                            }
-
-                            Button(onClick = {
-                                penColor.value = Color.Red
-                            }) {
-                                Text("Red")
-                            }
-
-                            Button(onClick = {
-                                penColor.value = Color.Black
-                            }) {
-                                Text("Black")
+                                Text("Restore")
                             }
                         }
 
-                        Text(text = "SVG: " + mutableSvg.value)
+                        Text(text = "Signature data: " + mutableSvg.value)
                     }
                 }
             }
         }
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MaterialTheme {
-        SignaturePadView()
+    private fun Signature.serialize(): String {
+        // save version!
+        return this.events.joinToString(separator = "\n") {
+            ("${it.timestamp},${it.action},${it.x},${it.y}")
+        }
+    }
+
+    @SuppressWarnings("MagicNumber")
+    private fun String.deserialize(): Signature {
+        // restore version!
+        val events = this.split("\n").map {
+            val parts = it.split(",")
+            Event(parts[0].toLong(), parts[1].toInt(), parts[2].toFloat(), parts[3].toFloat())
+        }
+        return Signature(
+            versionCode = 0,
+            events = events
+        )
     }
 }

@@ -1,6 +1,6 @@
-package se.warting.signatureview.utils
+package se.warting.signaturecore.utils
 
-internal data class ControlTimedPoints(
+data class ControlTimedPoints(
     var c1: TimedPoint,
     var c2: TimedPoint
 ) {

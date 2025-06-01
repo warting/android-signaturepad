@@ -7,12 +7,12 @@ public class androidx/databinding/library/baseAdapters/BR {
 	public fun <init> ()V
 }
 
-public class se/warting/signatureview/BR {
+public class se/warting/signaturepad/view/BR {
 	public static field _all I
 	public fun <init> ()V
 }
 
-public final class se/warting/signatureview/BuildConfig {
+public final class se/warting/signaturepad/view/BuildConfig {
 	public static final field BUILD_TYPE Ljava/lang/String;
 	public static final field DEBUG Z
 	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
@@ -21,7 +21,7 @@ public final class se/warting/signatureview/BuildConfig {
 	public fun <init> ()V
 }
 
-public class se/warting/signatureview/DataBinderMapperImpl : androidx/databinding/DataBinderMapper {
+public class se/warting/signaturepad/view/DataBinderMapperImpl : androidx/databinding/DataBinderMapper {
 	public fun <init> ()V
 	public fun collectDependencies ()Ljava/util/List;
 	public fun convertBrIdToString (I)Ljava/lang/String;
@@ -30,7 +30,7 @@ public class se/warting/signatureview/DataBinderMapperImpl : androidx/databindin
 	public fun getLayoutId (Ljava/lang/String;)I
 }
 
-public class se/warting/signatureview/DataBindingTriggerClass {
+public class se/warting/signaturepad/view/DataBindingTriggerClass {
 	public fun <init> ()V
 }
 
@@ -79,7 +79,7 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 	public final fun setClearOnDoubleClick (Z)V
 	public final fun setMaxWidth (F)V
 	public final fun setMinWidth (F)V
-	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignedListener;)V
+	public final fun setOnSignedListener (Lse/warting/signaturecore/utils/SignedListener;)V
 	public final fun setPenColor (I)V
 	public final fun setPenColorRes (I)V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
@@ -87,12 +87,5 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 }
 
 public final class se/warting/signatureview/views/SignaturePad$Companion {
-}
-
-public abstract interface class se/warting/signatureview/views/SignedListener {
-	public abstract fun onClear ()V
-	public abstract fun onSigned ()V
-	public abstract fun onSigning ()V
-	public abstract fun onStartSigning ()V
 }
 
