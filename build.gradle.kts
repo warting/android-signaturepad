@@ -1,5 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -20,7 +19,6 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.com.github.ben.manes.versions)
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.io.github.gradle.nexus.publish.plugin)
     alias(libs.plugins.org.jetbrains.kotlinx.binary.compatibility.validator)
@@ -55,10 +53,6 @@ versionCatalogUpdate {
     keep {
         // keep versions without any library or plugin reference
         keepUnusedVersions.set(false)
-        // keep all libraries that aren't used in the project
-        keepUnusedLibraries.set(false)
-        // keep all plugins that aren't used in the project
-        keepUnusedPlugins.set(false)
     }
 }
 
@@ -75,22 +69,4 @@ detekt {
     reports {
         html.enabled = true
     }
-}
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
-}
-
-tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
-    rejectVersionIf {
-        isNonStable(candidate.version) && !isNonStable(currentVersion)
-    }
-}
-
-
-task<Delete>("clean") {
-    delete(rootProject.buildDir)
 }
