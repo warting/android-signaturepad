@@ -17,6 +17,8 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.get
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.Signature
@@ -325,11 +327,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     fun getSignatureBitmap(): Bitmap {
         val originalBitmap = mSignatureTransparentBitmap!!
-        val whiteBgBitmap = Bitmap.createBitmap(
-            originalBitmap.width,
-            originalBitmap.height,
-            Bitmap.Config.ARGB_8888
-        )
+        val whiteBgBitmap = createBitmap(originalBitmap.width, originalBitmap.height)
         val canvas = Canvas(whiteBgBitmap)
         canvas.drawColor(Color.WHITE)
         canvas.drawBitmap(originalBitmap, 0f, 0f, null)
@@ -354,7 +352,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         for (x in 0 until imgWidth) {
             var stop = false
             for (y in 0 until imgHeight) {
-                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!![x, y] != backgroundColor) {
                     xMin = x
                     stop = true
                     foundPixel = true
@@ -371,7 +369,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         for (y in 0 until imgHeight) {
             var stop = false
             for (x in xMin until imgWidth) {
-                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!![x, y] != backgroundColor) {
                     yMin = y
                     stop = true
                     break
@@ -384,7 +382,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         for (x in imgWidth - 1 downTo xMin) {
             var stop = false
             for (y in yMin until imgHeight) {
-                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!![x, y] != backgroundColor) {
                     xMax = x
                     stop = true
                     break
@@ -397,7 +395,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         for (y in imgHeight - 1 downTo yMin) {
             var stop = false
             for (x in xMin..xMax) {
-                if (mSignatureTransparentBitmap!!.getPixel(x, y) != backgroundColor) {
+                if (mSignatureTransparentBitmap!![x, y] != backgroundColor) {
                     yMax = y
                     stop = true
                     break
@@ -545,10 +543,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     private fun ensureSignatureBitmapInOnDraw(): Boolean {
         if (mSignatureTransparentBitmap == null && width > 0 && height > 0) {
-            mSignatureTransparentBitmap = Bitmap.createBitmap(
-                width, height,
-                Bitmap.Config.ARGB_8888
-            ).also {
+            mSignatureTransparentBitmap = createBitmap(width, height).also {
                 mSignatureBitmapCanvas = Canvas(it)
             }
         }
