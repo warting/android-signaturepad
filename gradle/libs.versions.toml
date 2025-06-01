@@ -1,5 +1,5 @@
 [versions]
-androidx-compose-ui = "1.6.7"
+androidx-compose-ui = "1.8.2"
 io-gitlab-arturbosch-detekt = "1.23.6"
 kotlin = "2.0.0"
 
