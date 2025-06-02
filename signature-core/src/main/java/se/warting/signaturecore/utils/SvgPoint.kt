@@ -39,7 +39,7 @@ internal class SvgPoint {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null) return false
+        if (other == null || javaClass != other.javaClass) return false
         val svgPoint = other as SvgPoint
         return if (x != svgPoint.x) false else y == svgPoint.y
     }
