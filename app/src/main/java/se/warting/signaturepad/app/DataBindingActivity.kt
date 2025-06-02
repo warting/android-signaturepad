@@ -3,12 +3,15 @@ package se.warting.signaturepad.app
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.databinding.DataBindingUtil
 import se.warting.signaturepad.app.databinding.ActivityDatabindBinding
 import se.warting.signaturecore.utils.SignedListener
 
-class DataBindingActivity : Activity() {
+class DataBindingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         // The layout for this activity is a Data Binding layout so it needs to be inflated using

@@ -4,24 +4,31 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                ) { innerPadding ->
 
                     val context = LocalContext.current
 
-                    Column {
+                    Column(Modifier.padding(innerPadding)) {
                         Button(onClick = {
                             val intent = Intent(context, ComposeActivity::class.java)
                             startActivity(intent)
@@ -49,6 +56,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
             }
         }
     }

@@ -2,24 +2,27 @@
 androidx-compose-ui = "1.8.2"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.1.21"
+composeBom = "2024.09.00"
 
 [libraries]
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-activity-activity-compose = "androidx.activity:activity-compose:1.10.1"
+androidx-activity-activity-ktx = "androidx.activity:activity-ktx:1.10.1"
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
 androidx-compose-compose-bom = "androidx.compose:compose-bom:2025.05.01"
 androidx-compose-foundation = "androidx.compose.foundation:foundation:1.8.2"
-androidx-compose-material = "androidx.compose.material:material:1.8.2"
 androidx-compose-runtime = "androidx.compose.runtime:runtime:1.8.2"
-androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose-ui" }
-androidx-compose-ui-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose-ui" }
-androidx-compose-ui-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-ui" }
-androidx-compose-ui-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-core-core-ktx = "androidx.core:core-ktx:1.16.0"
 androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.9.0"
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
 com-android-tools-build-gradle = "com.android.tools.build:gradle:8.10.1"
 com-google-android-material = "com.google.android.material:material:1.12.0"
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 io-gitlab-arturbosch-detekt-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "io-gitlab-arturbosch-detekt" }
 io-gitlab-arturbosch-detekt-detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "io-gitlab-arturbosch-detekt" }
 junit = "junit:junit:4.13.2"

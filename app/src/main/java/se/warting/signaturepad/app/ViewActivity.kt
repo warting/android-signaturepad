@@ -6,11 +6,14 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import se.warting.signatureview.views.SignaturePad
 import se.warting.signaturecore.utils.SignedListener
 
-class ViewActivity : Activity() {
+class ViewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_view)
