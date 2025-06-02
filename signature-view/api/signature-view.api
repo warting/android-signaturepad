@@ -65,7 +65,6 @@ public final class se/warting/signatureview/view/ViewCompat {
 }
 
 public final class se/warting/signatureview/views/SignaturePad : android/view/View {
-	public static final field Companion Lse/warting/signatureview/views/SignaturePad$Companion;
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
 	public final fun clear ()V
 	public final fun clearView ()V
@@ -84,8 +83,5 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 	public final fun setPenColorRes (I)V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 	public final fun setVelocityFilterWeight (F)V
-}
-
-public final class se/warting/signatureview/views/SignaturePad$Companion {
 }
 
