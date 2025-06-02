@@ -49,14 +49,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             }
         )
 
-    // Default attribute values
-    companion object {
-        private const val DEFAULT_ATTR_PEN_MIN_WIDTH_PX = 3
-        private const val DEFAULT_ATTR_PEN_MAX_WIDTH_PX = 7
-        private const val DEFAULT_ATTR_PEN_COLOR = Color.BLACK
-        private const val DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT = 0.9f
-        private const val DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK = false
-    }
+    // Default attribute values now come from SignatureSDK class
 
     override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
@@ -108,10 +101,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     fun setPenColor(@ColorInt color: Int) {
         // Update the pen color in the SDK
         signatureSDK.configure(
-            minWidth = convertDpToPx(DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
-            maxWidth = convertDpToPx(DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
+            minWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
+            maxWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
             penColor = color,
-            velocityFilterWeight = DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
+            velocityFilterWeight = SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
         )
     }
 
@@ -124,9 +117,9 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val minWidthPx = convertDpToPx(minWidth)
         signatureSDK.configure(
             minWidth = minWidthPx,
-            maxWidth = convertDpToPx(DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
-            penColor = DEFAULT_ATTR_PEN_COLOR,
-            velocityFilterWeight = DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
+            maxWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
+            penColor = SignatureSDK.DEFAULT_ATTR_PEN_COLOR,
+            velocityFilterWeight = SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
         )
     }
 
@@ -138,10 +131,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     fun setMaxWidth(maxWidth: Float) {
         val maxWidthPx = convertDpToPx(maxWidth)
         signatureSDK.configure(
-            minWidth = convertDpToPx(DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
+            minWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
             maxWidth = maxWidthPx,
-            penColor = DEFAULT_ATTR_PEN_COLOR,
-            velocityFilterWeight = DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
+            penColor = SignatureSDK.DEFAULT_ATTR_PEN_COLOR,
+            velocityFilterWeight = SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
         )
     }
 
@@ -152,9 +145,9 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      */
     fun setVelocityFilterWeight(velocityFilterWeight: Float) {
         signatureSDK.configure(
-            minWidth = convertDpToPx(DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
-            maxWidth = convertDpToPx(DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
-            penColor = DEFAULT_ATTR_PEN_COLOR,
+            minWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
+            maxWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
+            penColor = SignatureSDK.DEFAULT_ATTR_PEN_COLOR,
             velocityFilterWeight = velocityFilterWeight
         )
     }
@@ -269,20 +262,20 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         try {
             val minWidth = a.getDimensionPixelSize(
                 R.styleable.SignaturePad_penMinWidth,
-                convertDpToPx(DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat())
+                convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat())
             )
             val maxWidth = a.getDimensionPixelSize(
                 R.styleable.SignaturePad_penMaxWidth,
-                convertDpToPx(DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat())
+                convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat())
             )
-            val penColor = a.getColor(R.styleable.SignaturePad_penColor, DEFAULT_ATTR_PEN_COLOR)
+            val penColor = a.getColor(R.styleable.SignaturePad_penColor, SignatureSDK.DEFAULT_ATTR_PEN_COLOR)
             val velocityFilterWeight = a.getFloat(
                 R.styleable.SignaturePad_velocityFilterWeight,
-                DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
+                SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
             )
             mClearOnDoubleClick = a.getBoolean(
                 R.styleable.SignaturePad_clearOnDoubleClick,
-                DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK
+                SignatureSDK.DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK
             )
 
             // Configure the SignatureSDK with the attributes

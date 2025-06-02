@@ -28,6 +28,14 @@ class SignatureSDK {
     private val points = mutableListOf<TimedPoint>()
     private val pointsCache: MutableList<TimedPoint?> = ArrayList()
 
+    companion object {
+        const val DEFAULT_ATTR_PEN_MIN_WIDTH_PX = 3
+        const val DEFAULT_ATTR_PEN_MAX_WIDTH_PX = 7
+        const val DEFAULT_ATTR_PEN_COLOR = Color.BLACK
+        const val DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT = 0.9f
+        const val DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK = false
+    }
+
     // Touch tracking
     private var lastTouchX = 0f
     private var lastTouchY = 0f

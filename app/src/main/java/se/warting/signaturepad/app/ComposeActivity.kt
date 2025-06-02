@@ -15,11 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +44,7 @@ class ComposeActivity : ComponentActivity() {
                     Column(modifier = Modifier.padding(padding)) {
 
                         var signaturePadAdapter: SignaturePadAdapter? = null
-                        val penColor = remember { mutableStateOf(Color.Black) }
+                        var penColor by remember { mutableStateOf(Color.Black) }
 
                         Box(
                             modifier = Modifier
@@ -58,7 +59,7 @@ class ComposeActivity : ComponentActivity() {
                                 onReady = {
                                     signaturePadAdapter = it
                                 },
-                                penColor = penColor.value,
+                                penColor = penColor,
 
                                 onStartSigning = {
                                     Log.d("SignedListener", "OnStartSigning")
@@ -92,13 +93,13 @@ class ComposeActivity : ComponentActivity() {
                             }
 
                             Button(onClick = {
-                                penColor.value = Color.Red
+                                penColor = Color.Red
                             }) {
                                 Text("Red")
                             }
 
                             Button(onClick = {
-                                penColor.value = Color.Black
+                                penColor = Color.Black
                             }) {
                                 Text("Black")
                             }
