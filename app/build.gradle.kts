@@ -53,7 +53,7 @@ android {
     }
 
     dataBinding {
-        isEnabled = true
+        enable = true
     }
 
     lint {
@@ -71,7 +71,7 @@ android {
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-lib.sarif")
     }
-    namespace = "se.warting.signaturepad"
+    namespace = "se.warting.signaturepad.app"
 }
 
 java {
@@ -86,12 +86,12 @@ dependencies {
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.com.google.android.material)
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.material3)
     implementation(project(":signature-pad"))
     implementation(project(":signature-view"))
     implementation(libs.androidx.compose.ui.ui.tooling.preview)

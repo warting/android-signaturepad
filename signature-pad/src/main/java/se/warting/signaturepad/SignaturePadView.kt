@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.Signature
+import se.warting.signaturecore.utils.SignedListener
 import se.warting.signatureview.views.SignaturePad
-import se.warting.signatureview.views.SignedListener
 
 @SuppressWarnings("LongParameterList")
 @Composable

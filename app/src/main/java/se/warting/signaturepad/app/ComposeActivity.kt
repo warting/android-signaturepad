@@ -1,19 +1,21 @@
-package se.warting.signaturepad
+package se.warting.signaturepad.app
 
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,23 +25,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import se.warting.signaturepad.SignaturePadAdapter
+import se.warting.signaturepad.SignaturePadView
 
 private const val SIGNATURE_PAD_HEIGHT = 120
 
 @Suppress("LongMethod")
 class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
+                Scaffold { padding ->
 
                     val mutableSvg = remember { mutableStateOf("") }
-                    Column {
+                    Column(modifier = Modifier.padding(padding)) {
 
                         var signaturePadAdapter: SignaturePadAdapter? = null
-                        val penColor = remember { mutableStateOf(Color.Black) }
+                        var penColor by remember { mutableStateOf(Color.Black) }
 
                         Box(
                             modifier = Modifier
@@ -54,7 +59,7 @@ class ComposeActivity : ComponentActivity() {
                                 onReady = {
                                     signaturePadAdapter = it
                                 },
-                                penColor = penColor.value,
+                                penColor = penColor,
 
                                 onStartSigning = {
                                     Log.d("SignedListener", "OnStartSigning")
@@ -88,13 +93,13 @@ class ComposeActivity : ComponentActivity() {
                             }
 
                             Button(onClick = {
-                                penColor.value = Color.Red
+                                penColor = Color.Red
                             }) {
                                 Text("Red")
                             }
 
                             Button(onClick = {
-                                penColor.value = Color.Black
+                                penColor = Color.Black
                             }) {
                                 Text("Black")
                             }

@@ -55,3 +55,101 @@ public final class se/warting/signaturecore/Signature$Creator : android/os/Parce
 	public final fun newArray (I)[Lse/warting/signaturecore/Signature;
 }
 
+public final class se/warting/signaturecore/SignatureSDK {
+	public static final field $stable I
+	public static final field Companion Lse/warting/signaturecore/SignatureSDK$Companion;
+	public static final field DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK Z
+	public static final field DEFAULT_ATTR_PEN_COLOR I
+	public static final field DEFAULT_ATTR_PEN_MAX_WIDTH_PX I
+	public static final field DEFAULT_ATTR_PEN_MIN_WIDTH_PX I
+	public static final field DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT F
+	public fun <init> ()V
+	public final fun addEvent (Lse/warting/signaturecore/Event;)V
+	public final fun clear ()V
+	public final fun configure (IIIF)V
+	public final fun drawSignature (Landroid/graphics/Canvas;)V
+	public final fun getEvents ()Ljava/util/List;
+	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
+	public final fun getSignatureSvg (II)Ljava/lang/String;
+	public final fun getTransparentSignatureBitmap (Z)Landroid/graphics/Bitmap;
+	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturecore/SignatureSDK;ZILjava/lang/Object;)Landroid/graphics/Bitmap;
+	public final fun hasBitmap ()Z
+	public final fun initializeBitmap (II)V
+	public final fun isEmpty ()Z
+	public final fun restoreEvents (Ljava/util/List;)V
+	public final fun setOnSignedListener (Lse/warting/signaturecore/utils/SignedListener;)V
+}
+
+public final class se/warting/signaturecore/SignatureSDK$Companion {
+}
+
+public final class se/warting/signaturecore/utils/Bezier {
+	public static final field $stable I
+	public fun <init> (Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;)V
+	public final fun component1 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun component2 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun component3 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun component4 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun copy (Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;)Lse/warting/signaturecore/utils/Bezier;
+	public static synthetic fun copy$default (Lse/warting/signaturecore/utils/Bezier;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;ILjava/lang/Object;)Lse/warting/signaturecore/utils/Bezier;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getControl1 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun getControl2 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun getEndPoint ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun getStartPoint ()Lse/warting/signaturecore/utils/TimedPoint;
+	public fun hashCode ()I
+	public final fun length ()F
+	public final fun point (FFFFF)D
+	public final fun set (Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;)Lse/warting/signaturecore/utils/Bezier;
+	public final fun setControl1 (Lse/warting/signaturecore/utils/TimedPoint;)V
+	public final fun setControl2 (Lse/warting/signaturecore/utils/TimedPoint;)V
+	public final fun setEndPoint (Lse/warting/signaturecore/utils/TimedPoint;)V
+	public final fun setStartPoint (Lse/warting/signaturecore/utils/TimedPoint;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class se/warting/signaturecore/utils/ControlTimedPoints {
+	public static final field $stable I
+	public fun <init> (Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;)V
+	public final fun component1 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun component2 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun copy (Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;)Lse/warting/signaturecore/utils/ControlTimedPoints;
+	public static synthetic fun copy$default (Lse/warting/signaturecore/utils/ControlTimedPoints;Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;ILjava/lang/Object;)Lse/warting/signaturecore/utils/ControlTimedPoints;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getC1 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun getC2 ()Lse/warting/signaturecore/utils/TimedPoint;
+	public fun hashCode ()I
+	public final fun set (Lse/warting/signaturecore/utils/TimedPoint;Lse/warting/signaturecore/utils/TimedPoint;)Lse/warting/signaturecore/utils/ControlTimedPoints;
+	public final fun setC1 (Lse/warting/signaturecore/utils/TimedPoint;)V
+	public final fun setC2 (Lse/warting/signaturecore/utils/TimedPoint;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class se/warting/signaturecore/utils/SignedListener {
+	public abstract fun onClear ()V
+	public abstract fun onSigned ()V
+	public abstract fun onSigning ()V
+	public abstract fun onStartSigning ()V
+}
+
+public final class se/warting/signaturecore/utils/SvgBuilder {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun append (Lse/warting/signaturecore/utils/Bezier;F)Lse/warting/signaturecore/utils/SvgBuilder;
+	public final fun build (II)Ljava/lang/String;
+	public final fun clear ()V
+}
+
+public final class se/warting/signaturecore/utils/TimedPoint {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun getTimestamp ()J
+	public final fun getX ()F
+	public final fun getY ()F
+	public final fun set (FFJ)Lse/warting/signaturecore/utils/TimedPoint;
+	public final fun setTimestamp (J)V
+	public final fun setX (F)V
+	public final fun setY (F)V
+	public final fun velocityFrom (Lse/warting/signaturecore/utils/TimedPoint;)F
+}
+

@@ -1,4 +1,4 @@
-package se.warting.signatureview.utils
+package se.warting.signaturecore.utils
 
 /**
  * Build a SVG path as a string.
