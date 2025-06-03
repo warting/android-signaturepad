@@ -113,7 +113,7 @@ java {
 }
 
 dependencies {
-    val composeBom = platform(libs.androidx.compose.compose.bom)
+    val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
     implementation(libs.androidx.core.core.ktx)

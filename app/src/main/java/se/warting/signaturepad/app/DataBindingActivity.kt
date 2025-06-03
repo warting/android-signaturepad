@@ -1,13 +1,15 @@
 package se.warting.signaturepad.app
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
-import se.warting.signaturepad.app.databinding.ActivityDatabindBinding
 import se.warting.signaturecore.utils.SignedListener
+import se.warting.signaturepad.app.databinding.ActivityDatabindBinding
 
 class DataBindingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +21,22 @@ class DataBindingActivity : ComponentActivity() {
         val binding: ActivityDatabindBinding = DataBindingUtil.setContentView(
             this, R.layout.activity_databind
         )
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(
+                left = bars.left,
+                top = bars.top,
+                right = bars.right,
+                bottom = bars.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+
+
         val onStartSigning: SignedListener = object : SignedListener {
             override fun onStartSigning() {
                 Log.d("SignedListener", "OnStartSigning")
@@ -57,5 +75,6 @@ class DataBindingActivity : ComponentActivity() {
                 Log.d("DataBindingActivity", "Svg length: " + signatureSvg.length)
             }
         }
+
     }
 }

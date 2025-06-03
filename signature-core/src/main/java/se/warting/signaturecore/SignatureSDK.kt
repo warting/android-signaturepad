@@ -65,16 +65,30 @@ class SignatureSDK {
     }
 
     fun configure(
-        minWidth: Int,
-        maxWidth: Int,
-        penColor: Int,
-        velocityFilterWeight: Float
+        minWidth: Int? = null,
+        maxWidth: Int? = null,
+        penColor: Int? = null,
+        velocityFilterWeight: Float? = null
     ) {
-        this.minWidth = minWidth
-        this.maxWidth = maxWidth
-        this.paint.color = penColor
-        this.velocityFilterWeight = velocityFilterWeight
-        this.lastWidth = (minWidth + maxWidth) / 2f
+        minWidth?.let {
+            this.minWidth = it
+        }
+        maxWidth?.let {
+            this.maxWidth = it
+        }
+        penColor?.let {
+            this.paint.color = it
+        }
+
+        velocityFilterWeight?.let {
+            this.velocityFilterWeight = it
+        }
+
+        maxWidth?.let { maxW ->
+            minWidth?.let { minW ->
+                this.lastWidth = (minW + maxW) / 2f
+            }
+        }
     }
 
     fun setOnSignedListener(listener: SignedListener?) {

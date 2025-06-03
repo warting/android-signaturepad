@@ -1,15 +1,14 @@
 [versions]
-androidx-compose-ui = "1.8.2"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.1.21"
 composeBom = "2025.05.01"
+core = "1.16.0"
 
 [libraries]
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-activity-activity-compose = "androidx.activity:activity-compose:1.10.1"
 androidx-activity-activity-ktx = "androidx.activity:activity-ktx:1.10.1"
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
-androidx-compose-compose-bom = "androidx.compose:compose-bom:2025.05.01"
 androidx-compose-foundation = "androidx.compose.foundation:foundation:1.8.2"
 androidx-compose-runtime = "androidx.compose.runtime:runtime:1.8.2"
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -27,6 +26,7 @@ io-gitlab-arturbosch-detekt-detekt-formatting = { module = "io.gitlab.arturbosch
 io-gitlab-arturbosch-detekt-detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "io-gitlab-arturbosch-detekt" }
 junit = "junit:junit:4.13.2"
 org-jetbrains-kotlin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [plugins]
 com-android-application = "com.android.application:8.10.1"

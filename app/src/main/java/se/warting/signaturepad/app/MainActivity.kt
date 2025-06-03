@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
 
                     val context = LocalContext.current
 
-                    Column(Modifier.padding(innerPadding)) {
+                    Column(Modifier.padding(innerPadding).safeContentPadding()) {
                         Button(onClick = {
                             val intent = Intent(context, ComposeActivity::class.java)
                             startActivity(intent)

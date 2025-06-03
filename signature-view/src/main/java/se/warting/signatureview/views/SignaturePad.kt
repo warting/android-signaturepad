@@ -100,10 +100,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     fun setPenColor(@ColorInt color: Int) {
         // Update the pen color in the SDK
         signatureSDK.configure(
-            minWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
-            maxWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
             penColor = color,
-            velocityFilterWeight = SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
         )
     }
 
@@ -116,9 +113,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val minWidthPx = convertDpToPx(minWidth)
         signatureSDK.configure(
             minWidth = minWidthPx,
-            maxWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
-            penColor = SignatureSDK.DEFAULT_ATTR_PEN_COLOR,
-            velocityFilterWeight = SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
         )
     }
 
@@ -130,10 +124,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     fun setMaxWidth(maxWidth: Float) {
         val maxWidthPx = convertDpToPx(maxWidth)
         signatureSDK.configure(
-            minWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
             maxWidth = maxWidthPx,
-            penColor = SignatureSDK.DEFAULT_ATTR_PEN_COLOR,
-            velocityFilterWeight = SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
         )
     }
 
@@ -144,9 +135,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      */
     fun setVelocityFilterWeight(velocityFilterWeight: Float) {
         signatureSDK.configure(
-            minWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX.toFloat()),
-            maxWidth = convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat()),
-            penColor = SignatureSDK.DEFAULT_ATTR_PEN_COLOR,
             velocityFilterWeight = velocityFilterWeight
         )
     }
