@@ -20,22 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ComposeActivity"
-            android:theme="@style/Theme.SignaturePad"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ViewActivity"
-            android:theme="@style/Theme.SignaturePad"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".DataBindingActivity"
-            android:theme="@style/Theme.SignaturePad"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".SaveRestoreActivity"
-            android:theme="@style/Theme.SignaturePad"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
