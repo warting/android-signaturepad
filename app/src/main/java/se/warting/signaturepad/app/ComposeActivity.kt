@@ -42,7 +42,7 @@ class ComposeActivity : ComponentActivity() {
                 Scaffold { padding ->
 
                     val mutableSvg = remember { mutableStateOf("") }
-                    Column(modifier = Modifier.padding(padding)) {
+                    Column(modifier = Modifier.padding(padding).safeContentPadding()) {
 
                         var signaturePadAdapter: SignaturePadAdapter? = null
                         var penColor by remember { mutableStateOf(Color.Black) }
