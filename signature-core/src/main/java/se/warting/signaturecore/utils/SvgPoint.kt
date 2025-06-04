@@ -12,8 +12,8 @@ internal class SvgPoint {
     constructor(point: TimedPoint) {
         // one optimisation is to get rid of decimals as they are mostly non-significant in the
         // produced SVG image
-        x = point.x.roundToInt()
-        y = point.y.roundToInt()
+        x = if (point.x.isNaN()) 0 else point.x.roundToInt()
+        y = if (point.y.isNaN()) 0 else point.y.roundToInt()
     }
 
     constructor(x: Int, y: Int) {
