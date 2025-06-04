@@ -162,24 +162,28 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
         if (!isEnabled || didDoubleClick) return false
 
+        // Validate coordinates to prevent NaN/infinite values from entering the system
+        val x = if (event.x.isNaN() || event.x.isInfinite()) 0f else event.x
+        val y = if (event.y.isNaN() || event.y.isInfinite()) 0f else event.y
+
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
-                val downEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                val downEvent = Event(System.currentTimeMillis(), event.action, x, y)
                 signatureSDK.addEvent(downEvent)
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                val moveEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                val moveEvent = Event(System.currentTimeMillis(), event.action, x, y)
                 signatureSDK.addEvent(moveEvent)
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_UP -> {
-                val upEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                val upEvent = Event(System.currentTimeMillis(), event.action, x, y)
                 signatureSDK.addEvent(upEvent)
                 invalidate()
                 true
