@@ -75,6 +75,6 @@ Button(onClick = {
 3. Get signature data
 
 * `getSignatureBitmap()` - A signature bitmap with a white background.
-* `getTransparentSignatureBitmap()` - A signature bitmap with a transparent background.
+* `getTransparentSignatureBitmap(trimBlankSpace: Boolean = false)` - A signature bitmap with a transparent background. Set `trimBlankSpace = true` to crop the bitmap to the signature bounds, removing surrounding blank space.
 * `getSignatureSvg()` - A signature Scalable Vector Graphics document.
 
