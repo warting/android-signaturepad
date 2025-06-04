@@ -162,28 +162,32 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
         if (!isEnabled || didDoubleClick) return false
 
-        // Validate coordinates to prevent NaN/infinite values from entering the system
-        val x = if (event.x.isNaN() || event.x.isInfinite()) 0f else event.x
-        val y = if (event.y.isNaN() || event.y.isInfinite()) 0f else event.y
+        // Validate coordinates to detect and report source of invalid values
+        if (event.x.isNaN() || event.x.isInfinite()) {
+            throw IllegalArgumentException("Invalid X coordinate detected in onTouchEvent: ${event.x} (action=${event.action}, pointer=${event.getPointerId(0)})")
+        }
+        if (event.y.isNaN() || event.y.isInfinite()) {
+            throw IllegalArgumentException("Invalid Y coordinate detected in onTouchEvent: ${event.y} (action=${event.action}, pointer=${event.getPointerId(0)})")
+        }
 
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
-                val downEvent = Event(System.currentTimeMillis(), event.action, x, y)
+                val downEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(downEvent)
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                val moveEvent = Event(System.currentTimeMillis(), event.action, x, y)
+                val moveEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(moveEvent)
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_UP -> {
-                val upEvent = Event(System.currentTimeMillis(), event.action, x, y)
+                val upEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(upEvent)
                 invalidate()
                 true

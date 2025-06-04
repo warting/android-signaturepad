@@ -12,6 +12,21 @@ internal class SvgPoint {
     constructor(point: TimedPoint) {
         // one optimisation is to get rid of decimals as they are mostly non-significant in the
         // produced SVG image
+        
+        // Provide detailed error information for invalid coordinates to help identify the source
+        if (point.x.isNaN()) {
+            throw IllegalArgumentException("Cannot create SvgPoint: X coordinate is NaN (TimedPoint: x=${point.x}, y=${point.y}, time=${point.timestamp})")
+        }
+        if (point.x.isInfinite()) {
+            throw IllegalArgumentException("Cannot create SvgPoint: X coordinate is infinite (${point.x}) (TimedPoint: x=${point.x}, y=${point.y}, time=${point.timestamp})")
+        }
+        if (point.y.isNaN()) {
+            throw IllegalArgumentException("Cannot create SvgPoint: Y coordinate is NaN (TimedPoint: x=${point.x}, y=${point.y}, time=${point.timestamp})")
+        }
+        if (point.y.isInfinite()) {
+            throw IllegalArgumentException("Cannot create SvgPoint: Y coordinate is infinite (${point.y}) (TimedPoint: x=${point.x}, y=${point.y}, time=${point.timestamp})")
+        }
+        
         x = point.x.roundToInt()
         y = point.y.roundToInt()
     }
