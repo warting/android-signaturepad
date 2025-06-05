@@ -17,7 +17,7 @@ androidx-compose-ui-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui
 androidx-compose-ui-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-core-core-ktx = "androidx.core:core-ktx:1.16.0"
-androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.9.0"
+androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.9.1"
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
 com-android-tools-build-gradle = "com.android.tools.build:gradle:8.10.1"
