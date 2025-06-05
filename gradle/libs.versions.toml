@@ -9,7 +9,7 @@ navigation3UiAndroid = "1.0.0-alpha02"
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-activity-activity-compose = "androidx.activity:activity-compose:1.10.1"
 androidx-activity-activity-ktx = "androidx.activity:activity-ktx:1.10.1"
-androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
+androidx-appcompat = "androidx.appcompat:appcompat:1.7.1"
 androidx-compose-foundation = "androidx.compose.foundation:foundation:1.8.2"
 androidx-compose-runtime = "androidx.compose.runtime:runtime:1.8.2"
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
