@@ -163,11 +163,13 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         if (!isEnabled || didDoubleClick) return false
 
         // Validate coordinates to detect and report source of invalid values
-        if (event.x.isNaN() || event.x.isInfinite()) {
-            throw IllegalArgumentException("Invalid X coordinate detected in onTouchEvent: ${event.x} (action=${event.action}, pointer=${event.getPointerId(0)})")
+        require(!(event.x.isNaN() || event.x.isInfinite())) {
+            "Invalid X coordinate detected in onTouchEvent: ${event.x} " +
+                "(action=${event.action}, pointer=${event.getPointerId(0)})"
         }
-        if (event.y.isNaN() || event.y.isInfinite()) {
-            throw IllegalArgumentException("Invalid Y coordinate detected in onTouchEvent: ${event.y} (action=${event.action}, pointer=${event.getPointerId(0)})")
+        require(!(event.y.isNaN() || event.y.isInfinite())) {
+            "Invalid Y coordinate detected in onTouchEvent: ${event.y} " +
+                "(action=${event.action}, pointer=${event.getPointerId(0)})"
         }
 
         return when (event.action) {
