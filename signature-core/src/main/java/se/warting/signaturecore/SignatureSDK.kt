@@ -24,6 +24,9 @@ class SignatureSDK {
     private val originalEvents = mutableListOf<Event>()
     private var iter: MutableIterator<Event> = mutableListOf<Event>().iterator()
 
+    // Stroke tracking for undo functionality
+    private val strokeEndIndices = mutableListOf<Int>()
+
     // Point tracking
     private val points = mutableListOf<TimedPoint>()
     private val pointsCache: MutableList<TimedPoint?> = ArrayList()
@@ -138,6 +141,8 @@ class SignatureSDK {
                     timestamp
                 )
 
+                // Track the end of this stroke for undo functionality
+                strokeEndIndices.add(originalEvents.size - 1)
                 signedListener?.onSigned()
             }
 
@@ -157,6 +162,7 @@ class SignatureSDK {
         svgBuilder.clear()
         points.clear()
         originalEvents.clear()
+        strokeEndIndices.clear()
         iter = originalEvents.iterator()
         lastVelocity = 0f
         lastWidth = (minWidth + maxWidth) / 2f
@@ -171,8 +177,16 @@ class SignatureSDK {
         // Clear current state to ensure clean slate
         svgBuilder.clear()
         points.clear()
+        strokeEndIndices.clear()
         lastVelocity = 0f
         lastWidth = (minWidth + maxWidth) / 2f
+
+        // Rebuild stroke end indices
+        for (i in events.indices) {
+            if (events[i].action == MotionEvent.ACTION_UP) {
+                strokeEndIndices.add(i)
+            }
+        }
 
         // Reset the iterator to beginning of events
         iter = originalEvents.iterator()
@@ -197,6 +211,41 @@ class SignatureSDK {
 
     fun getEvents(): List<Event> {
         return originalEvents.toList()
+    }
+
+    /**
+     * Check if undo operation is available.
+     * @return true if there are completed strokes that can be undone
+     */
+    fun canUndo(): Boolean {
+        return strokeEndIndices.isNotEmpty()
+    }
+
+    /**
+     * Undo the last stroke by removing all events from the last completed stroke.
+     * This will redraw the signature without the last stroke.
+     */
+    fun undo() {
+        if (!canUndo()) return
+
+        // Get the end index of the last stroke
+        val lastStrokeEndIndex = strokeEndIndices.removeAt(strokeEndIndices.size - 1)
+
+        // Find the start of this stroke (the previous stroke's end + 1, or 0 if first stroke)
+        val strokeStartIndex = if (strokeEndIndices.isEmpty()) {
+            0
+        } else {
+            strokeEndIndices.last() + 1
+        }
+
+        // Remove events from the stroke start to stroke end (inclusive)
+        for (i in lastStrokeEndIndex downTo strokeStartIndex) {
+            originalEvents.removeAt(i)
+        }
+
+        // Recreate the signature from remaining events
+        restoreEvents(originalEvents.toList())
+        notifyListeners()
     }
 
     private fun notifyListeners() {
