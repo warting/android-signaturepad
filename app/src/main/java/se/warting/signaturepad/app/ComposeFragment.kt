@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,12 +51,12 @@ private fun ColorToggleGroup(
     selected: Color,
     onSelect: (Color) -> Unit
 ) {
-    Column {
+    Column(Modifier.fillMaxWidth()) {
         Text(title, style = MaterialTheme.typography.bodyMedium)
-        Row(Modifier.fillMaxWidth()) {
-            options.forEachIndexed { index, (label, color) ->
-                val isSelected = color == selected
-                val shape = when (index) {
+        Row {
+            options.forEachIndexed { idx, (label, color) ->
+                val isSel = color == selected
+                val shape = when (idx) {
                     0 -> RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
                     options.lastIndex -> RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
                     else -> RectangleShape
@@ -65,22 +66,21 @@ private fun ColorToggleGroup(
                     shape = shape,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (isSelected)
+                        containerColor = if (isSel)
                             MaterialTheme.colorScheme.primaryContainer
                         else
                             MaterialTheme.colorScheme.surface,
-                        contentColor = if (isSelected)
+                        contentColor = if (isSel)
                             MaterialTheme.colorScheme.onPrimaryContainer
                         else
                             MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.weight(1f)
-                ) {
-                    Text(label)
-                }
-                if (index < options.lastIndex) {
+                ) { Text(label) }
+
+                if (idx < options.lastIndex) {
                     Spacer(
-                        modifier = Modifier
+                        Modifier
                             .width(1.dp)
                             .fillMaxHeight()
                             .background(MaterialTheme.colorScheme.outline)
@@ -92,22 +92,65 @@ private fun ColorToggleGroup(
 }
 
 @Composable
+private fun SaveClearRow(
+    onSave: () -> Unit,
+    onClear: () -> Unit
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Button(modifier = Modifier.weight(1f), onClick = onSave) { Text("Save") }
+        Button(modifier = Modifier.weight(1f), onClick = onClear) { Text("Clear") }
+    }
+}
+
+private fun SignaturePadAdapter.extractBitmaps(
+    useOverride: Boolean,
+    bgColor: Color,
+    strokeColor: Color?
+): Pair<ImageBitmap?, ImageBitmap?> {
+    fun toBmp(op: SignaturePadAdapter.() -> android.graphics.Bitmap?) =
+        op()?.asImageBitmap()
+
+    return if (useOverride) {
+        toBmp { getSignatureBitmap(bgColor.toArgb(), strokeColor?.toArgb()) } to
+                toBmp { getTransparentSignatureBitmap(penColor = strokeColor?.toArgb()) }
+    } else {
+        toBmp { getSignatureBitmap() } to
+                toBmp { getTransparentSignatureBitmap() }
+    }
+}
+
+@Composable
 fun ComposeSample() {
     var svg by remember { mutableStateOf("") }
-    var savedBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    var savedTranparentBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var bmpPair by remember { mutableStateOf<Pair<ImageBitmap?, ImageBitmap?>>(null to null) }
     var adapter by remember { mutableStateOf<SignaturePadAdapter?>(null) }
 
-    var penColor by remember { mutableStateOf(Color.Black) }
-    var bgColor by remember { mutableStateOf(Color.White) }
-    var strokeOverride by remember { mutableStateOf<Color?>(null) }
+    data class Toggle(
+        val title: String,
+        val options: List<Pair<String, Color>>,
+        var state: MutableState<Color>
+    )
 
-    // Toggle to choose between default bitmap vs. override-color bitmap
+    val toggles = listOf(
+        Toggle(
+            "Pen color:",
+            listOf("Red" to Color.Red, "Black" to Color.Black, "White" to Color.White),
+            remember { mutableStateOf(Color.Black) }),
+        Toggle(
+            "Image background color:",
+            listOf("Red" to Color.Red, "Green" to Color.Green, "Blue" to Color.Blue),
+            remember { mutableStateOf(Color.White) }),
+        Toggle(
+            "Image pen color:",
+            listOf("Red" to Color.Red, "Black" to Color.Black, "White" to Color.White),
+            remember { mutableStateOf(Color.Black) })
+    )
+
     var useOverride by remember { mutableStateOf(false) }
 
     Column(
         Modifier
-            .padding(16.dp)
+            .padding(8.dp)
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
     ) {
@@ -119,7 +162,7 @@ fun ComposeSample() {
         ) {
             SignaturePadView(
                 onReady = { adapter = it },
-                penColor = penColor,
+                penColor = toggles[0].state.value,
                 onStartSigning = { Log.d("SignedListener", "onStartSigning") },
                 onSigning = { Log.d("SignedListener", "onSigning") },
                 onSigned = { Log.d("SignedListener", "onSigned") },
@@ -127,121 +170,63 @@ fun ComposeSample() {
             )
         }
 
-        Spacer(Modifier.height(12.dp))
-
-        ColorToggleGroup(
-            title = "Pen color:",
-            options = listOf("Red" to Color.Red, "Black" to Color.Black, "White" to Color.White),
-            selected = penColor,
-            onSelect = { penColor = it }
-        )
-
         Spacer(Modifier.height(8.dp))
 
-        ColorToggleGroup(
-            title = "Image background color:",
-            options = listOf("Red" to Color.Red, "Green" to Color.Green, "Blue" to Color.Blue),
-            selected = bgColor,
-            onSelect = { bgColor = it }
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        ColorToggleGroup(
-            title = "Image pen color:",
-            options = listOf("Red" to Color.Red, "Black" to Color.Black, "White" to Color.White),
-            selected = strokeOverride ?: Color.Black,
-            onSelect = { strokeOverride = it }
-        )
-
-        Spacer(Modifier.height(8.dp))
+        toggles.forEach { tol ->
+            ColorToggleGroup(tol.title, tol.options, tol.state.value) { tol.state.value = it }
+            Spacer(Modifier.height(8.dp))
+        }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 8.dp)
+            Modifier
+                .padding(vertical = 8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Use override colors", Modifier.weight(1f))
-            Switch(
-                checked = useOverride,
-                onCheckedChange = { useOverride = it }
-            )
+            Switch(useOverride, onCheckedChange = { useOverride = it })
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
 
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    svg = adapter?.getSignatureSvg().orEmpty()
+        SaveClearRow(
+            onSave = {
+                svg = adapter?.getSignatureSvg().orEmpty()
+                adapter?.let {
+                    bmpPair = it.extractBitmaps(
+                        useOverride = useOverride,
+                        bgColor = toggles[1].state.value,
+                        strokeColor = toggles[2].state.value
+                    )
+                }
+            },
+            onClear = {
+                svg = ""
+                adapter?.clear()
+            }
+        )
 
-                    savedBitmap = if (useOverride) {
-                        adapter
-                            ?.getSignatureBitmap(
-                                backgroundColor = bgColor.toArgb(),
-                                penColor = strokeOverride?.toArgb()
-                            )
-                            ?.asImageBitmap()
-                    } else {
-                        adapter
-                            ?.getSignatureBitmap()
-                            ?.asImageBitmap()
-                    }
-                    savedTranparentBitmap = if (useOverride) {
-                        adapter
-                            ?.getTransparentSignatureBitmap(
-                                penColor = strokeOverride?.toArgb()
-                            )
-                            ?.asImageBitmap()
-                    } else {
-                        adapter
-                            ?.getTransparentSignatureBitmap()
-                            ?.asImageBitmap()
-                    }
-                }
-            ) {
-                Text("Save")
-            }
-            Button(
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    svg = ""
-                    adapter?.clear()
-                }
-            ) {
-                Text("Clear")
-            }
-        }
         Text("Bitmap")
-        savedBitmap?.let { img ->
-            Spacer(Modifier.height(12.dp))
+        bmpPair.first?.let {
             Image(
-                bitmap = img,
-                contentDescription = "Signature bitmap",
-                modifier = Modifier
+                it, "Signature", Modifier
                     .fillMaxWidth()
                     .height(SIGNATURE_PAD_HEIGHT_DP.dp)
                     .border(1.dp, Color.Gray)
             )
         }
+
+        Spacer(Modifier.height(8.dp))
         Text("Transparent Bitmap")
-        savedTranparentBitmap?.let { img ->
-            Spacer(Modifier.height(12.dp))
+        bmpPair.second?.let {
             Image(
-                bitmap = img,
-                contentDescription = "Transparent bitmap",
-                modifier = Modifier
+                it, "Transparent", Modifier
                     .fillMaxWidth()
                     .height(SIGNATURE_PAD_HEIGHT_DP.dp)
-                    .border(1.dp, Color.Gray)
             )
         }
 
-
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
         Text("SVG:", style = MaterialTheme.typography.bodyMedium)
         Text(svg, style = MaterialTheme.typography.bodySmall)
     }
@@ -250,7 +235,5 @@ fun ComposeSample() {
 @Preview(showBackground = true)
 @Composable
 fun ComposeSamplePreview() {
-    MaterialTheme {
-        ComposeSample()
-    }
+    MaterialTheme { ComposeSample() }
 }
