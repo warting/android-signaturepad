@@ -37,10 +37,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.compose.AndroidFragment
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
-import se.warting.signaturepad.app.ComposeSample
-import se.warting.signaturepad.app.DataBindingSampleFragment
-import se.warting.signaturepad.app.SaveRestoreSample
-import se.warting.signaturepad.app.ViewFragment
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : FragmentActivity() {
