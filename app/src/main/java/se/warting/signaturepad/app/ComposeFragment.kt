@@ -64,34 +64,39 @@ fun ComposeSample() {
                 },
             )
         }
-        Row {
-            Button(onClick = {
-                mutableSvg.value = signaturePadAdapter?.getSignatureSvg() ?: ""
-            }) {
-                Text("Save")
-            }
+        Column {
+            Row {
+                Button(onClick = {
+                    mutableSvg.value = signaturePadAdapter?.getSignatureSvg() ?: ""
+                }) {
+                    Text("Save")
+                }
 
-            Button(onClick = {
-                mutableSvg.value = ""
-                signaturePadAdapter?.clear()
-            }) {
-                Text("Clear")
-            }
+                Button(onClick = {
+                    mutableSvg.value = ""
+                    signaturePadAdapter?.clear()
+                }) {
+                    Text("Clear")
+                }
 
-            Button(onClick = {
-                penColor = Color.Red
-            }) {
-                Text("Red")
+                Button(onClick = {
+                    penColor = Color.Red
+                }) {
+                    Text("Red")
+                }
+                Button(onClick = {
+                    penColor = Color.Black
+                }) {
+                    Text("Black")
+                }
             }
-
             Button(onClick = {
-                penColor = Color.Black
+                penColor = Color.White
             }) {
-                Text("Black")
+                Text("White")
             }
+            Text(text = "SVG: " + mutableSvg.value)
         }
-
-        Text(text = "SVG: " + mutableSvg.value)
     }
 }
 
