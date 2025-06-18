@@ -22,12 +22,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -53,7 +55,6 @@ private fun ColorToggleGroup(
         Row(Modifier.fillMaxWidth()) {
             options.forEachIndexed { index, (label, color) ->
                 val isSelected = color == selected
-                // round only the outer corners:
                 val shape = when (index) {
                     0 -> RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
                     options.lastIndex -> RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
@@ -99,6 +100,9 @@ fun ComposeSample() {
     var penColor by remember { mutableStateOf(Color.Black) }
     var bgColor by remember { mutableStateOf(Color.White) }
     var strokeOverride by remember { mutableStateOf<Color?>(null) }
+
+    // Toggle to choose between default bitmap vs. override-color bitmap
+    var useOverride by remember { mutableStateOf(false) }
 
     Column(
         Modifier
@@ -149,6 +153,19 @@ fun ComposeSample() {
             onSelect = { strokeOverride = it }
         )
 
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Text("Use override colors", Modifier.weight(1f))
+            Switch(
+                checked = useOverride,
+                onCheckedChange = { useOverride = it }
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
 
         Row(
@@ -159,12 +176,19 @@ fun ComposeSample() {
                 modifier = Modifier.weight(1f),
                 onClick = {
                     svg = adapter?.getSignatureSvg().orEmpty()
-                    savedBitmap = adapter
-                        ?.getSignatureBitmap(
-                            backgroundColor = bgColor.toArgb(),
-                            overrideStrokeColor = strokeOverride?.toArgb()
-                        )
-                        ?.asImageBitmap()
+
+                    savedBitmap = if (useOverride) {
+                        adapter
+                            ?.getSignatureBitmap(
+                                backgroundColor = bgColor.toArgb(),
+                                overrideStrokeColor = strokeOverride?.toArgb()
+                            )
+                            ?.asImageBitmap()
+                    } else {
+                        adapter
+                            ?.getSignatureBitmap()
+                            ?.asImageBitmap()
+                    }
                 }
             ) {
                 Text("Save")
