@@ -206,8 +206,8 @@ fun ComposeSample() {
             }
         )
 
-        Text("Bitmap")
         bmpPair.first?.let {
+            Text("Bitmap")
             Image(
                 it, "Signature", Modifier
                     .fillMaxWidth()
@@ -215,10 +215,9 @@ fun ComposeSample() {
                     .border(1.dp, Color.Gray)
             )
         }
-
         Spacer(Modifier.height(8.dp))
-        Text("Transparent Bitmap")
         bmpPair.second?.let {
+            Text("Transparent Bitmap")
             Image(
                 it, "Transparent", Modifier
                     .fillMaxWidth()
