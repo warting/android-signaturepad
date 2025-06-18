@@ -2,12 +2,21 @@ package se.warting.signaturepad.app
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +48,8 @@ fun ComposeSample() {
     ) {
         var signaturePadAdapter: SignaturePadAdapter? = null
         var penColor by remember { mutableStateOf(Color.Black) }
+        var imageBackgroundColor by remember { mutableStateOf<Color?>(null) }
+        var overrideStrokeColor by remember { mutableStateOf<Color?>(null) }
 
         Box(
             modifier = Modifier
@@ -69,26 +80,10 @@ fun ComposeSample() {
                 },
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
         Column {
+            Text("Pen color:")
             Row {
-                Button(onClick = {
-                    mutableSvg.value = signaturePadAdapter?.getSignatureSvg().orEmpty()
-                    val signatureBitmap = signaturePadAdapter?.getSignatureBitmap(
-                        backgroundColor = Color.Green.toArgb(),
-                        overrideStrokeColor = Color.Blue.toArgb()
-                    )
-                    savedBitmap.value = signatureBitmap?.asImageBitmap()
-                }) {
-                    Text("Save")
-                }
-
-                Button(onClick = {
-                    mutableSvg.value = ""
-                    signaturePadAdapter?.clear()
-                }) {
-                    Text("Clear")
-                }
-
                 Button(onClick = {
                     penColor = Color.Red
                 }) {
@@ -99,11 +94,74 @@ fun ComposeSample() {
                 }) {
                     Text("Black")
                 }
+                Button(onClick = {
+                    penColor = Color.White
+                }) {
+                    Text("White")
+                }
             }
-            Button(onClick = {
-                penColor = Color.White
-            }) {
-                Text("White")
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Signature image background color:")
+            Row {
+                Button(onClick = {
+                    imageBackgroundColor = Color.Red
+                }) {
+                    Text("Red")
+                }
+                Button(onClick = {
+                    imageBackgroundColor = Color.Green
+                }) {
+                    Text("Green")
+                }
+                Button(onClick = {
+                    imageBackgroundColor = Color.Blue
+                }) {
+                    Text("Blue")
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Signature image pen color:")
+            Row {
+                Button(onClick = {
+                    overrideStrokeColor = Color.Red
+                }) {
+                    Text("Red")
+                }
+                Button(onClick = {
+                    overrideStrokeColor = Color.Black
+                }) {
+                    Text("Black")
+                }
+                Button(onClick = {
+                    overrideStrokeColor = Color.White
+                }) {
+                    Text("White")
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            Row {
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 16.dp),
+                    onClick = {
+                    mutableSvg.value = signaturePadAdapter?.getSignatureSvg().orEmpty()
+                    val signatureBitmap = signaturePadAdapter?.getSignatureBitmap(
+                        backgroundColor = imageBackgroundColor?.toArgb() ?: Color.White.toArgb(),
+                        overrideStrokeColor = overrideStrokeColor?.toArgb()
+                    )
+                    savedBitmap.value = signatureBitmap?.asImageBitmap()
+                }) {
+                    Text("Save")
+                }
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                    mutableSvg.value = ""
+                    signaturePadAdapter?.clear()
+                }) {
+                    Text("Clear")
+                }
             }
             savedBitmap.value?.let { img ->
                 Image(
@@ -115,7 +173,11 @@ fun ComposeSample() {
                         .border(width = 1.dp, color = Color.Gray)
                 )
             }
-            Text(text = "SVG: " + mutableSvg.value)
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                Text(text = "SVG: " + mutableSvg.value)
+            }
         }
     }
 }
