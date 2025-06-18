@@ -236,8 +236,8 @@ class SignatureSDK {
     /**
      * Returns a bitmap containing the current signature.
      *
-     * @param backgroundColor Color placed behind the signature. Defaults to white for backward compatibility.
-     * @param penColor If provided, the stroke is recoloured to this value before returning.
+     * @param backgroundColor Color placed behind the signature
+     * @param penColor Color of the signature itself
      */
     fun getSignatureBitmap(
         backgroundColor: Int = Color.WHITE,
@@ -264,23 +264,18 @@ class SignatureSDK {
         trimBlankSpace: Boolean = false,
         penColor: Int? = null,
     ): Bitmap? {
-        // Ensure we have a source bitmap to start from
-        val sourceBitmap = signatureTransparentBitmap ?: return null
+        val originalTransparentBitmap = signatureTransparentBitmap ?: return null
 
-        // 1. Apply an optional stroke colour override on a copy of the source bitmap.
-        //    We do this first so the recoloured image is also considered when trimming.
         val processedBitmap: Bitmap = penColor?.let { color ->
-            // Create a new bitmap with a transparent background and draw the original
-            // bitmap onto it using a colour filter to override the stroke colour.
-            val recoloured = createBitmap(sourceBitmap.width, sourceBitmap.height)
+            val recoloured = createBitmap(originalTransparentBitmap.width, originalTransparentBitmap.height)
             val canvas = Canvas(recoloured)
             val paint = Paint().apply {
                 colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
                 isAntiAlias = true
             }
-            canvas.drawBitmap(sourceBitmap, 0f, 0f, paint)
+            canvas.drawBitmap(originalTransparentBitmap, 0f, 0f, paint)
             recoloured
-        } ?: sourceBitmap
+        } ?: originalTransparentBitmap
 
         if (!trimBlankSpace) {
             return processedBitmap
