@@ -68,6 +68,7 @@ Button(onClick = {
 * `penMinWidth` - The minimum width of the stroke (default: 3dp).
 * `penMaxWidth` - The maximum width of the stroke (default: 7dp).
 * `penColor` - The color of the stroke (default: Color.BLACK).
+
 * `velocityFilterWeight` - Weight used to modify new velocity based on the previous velocity (
   default: 0.9).
 * `clearOnDoubleClick` - Double click to clear pad (default: false)

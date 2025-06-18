@@ -37,6 +37,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.compose.AndroidFragment
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : FragmentActivity() {

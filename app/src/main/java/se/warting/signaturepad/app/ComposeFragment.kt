@@ -95,6 +95,7 @@ private fun ColorToggleGroup(
 fun ComposeSample() {
     var svg by remember { mutableStateOf("") }
     var savedBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var savedTranparentBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var adapter by remember { mutableStateOf<SignaturePadAdapter?>(null) }
 
     var penColor by remember { mutableStateOf(Color.Black) }
@@ -181,12 +182,23 @@ fun ComposeSample() {
                         adapter
                             ?.getSignatureBitmap(
                                 backgroundColor = bgColor.toArgb(),
-                                overrideStrokeColor = strokeOverride?.toArgb()
+                                penColor = strokeOverride?.toArgb()
                             )
                             ?.asImageBitmap()
                     } else {
                         adapter
                             ?.getSignatureBitmap()
+                            ?.asImageBitmap()
+                    }
+                    savedTranparentBitmap = if (useOverride) {
+                        adapter
+                            ?.getTransparentSignatureBitmap(
+                                penColor = strokeOverride?.toArgb()
+                            )
+                            ?.asImageBitmap()
+                    } else {
+                        adapter
+                            ?.getTransparentSignatureBitmap()
                             ?.asImageBitmap()
                     }
                 }
@@ -203,18 +215,31 @@ fun ComposeSample() {
                 Text("Clear")
             }
         }
-
+        Text("Bitmap")
         savedBitmap?.let { img ->
             Spacer(Modifier.height(12.dp))
             Image(
                 bitmap = img,
-                contentDescription = "Saved signature",
+                contentDescription = "Signature bitmap",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(SIGNATURE_PAD_HEIGHT_DP.dp)
                     .border(1.dp, Color.Gray)
             )
         }
+        Text("Transparent Bitmap")
+        savedTranparentBitmap?.let { img ->
+            Spacer(Modifier.height(12.dp))
+            Image(
+                bitmap = img,
+                contentDescription = "Transparent bitmap",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(SIGNATURE_PAD_HEIGHT_DP.dp)
+                    .border(1.dp, Color.Gray)
+            )
+        }
+
 
         Spacer(Modifier.height(12.dp))
         Text("SVG:", style = MaterialTheme.typography.bodyMedium)
