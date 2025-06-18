@@ -78,6 +78,10 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
         return signaturePad.getSignatureBitmap()
     }
 
+    fun getSignatureBitmap(backgroundColor: Int, overrideStrokeColor: Int? = null): Bitmap {
+        return signaturePad.getSignatureBitmap(backgroundColor, overrideStrokeColor)
+    }
+
     @Suppress("unused")
     fun getTransparentSignatureBitmap(trimBlankSpace: Boolean = false): Bitmap {
         return signaturePad.getTransparentSignatureBitmap(trimBlankSpace)

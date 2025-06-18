@@ -17,6 +17,8 @@ import se.warting.signaturecore.utils.TimedPoint
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 
 class SignatureSDK {
 
@@ -231,13 +233,28 @@ class SignatureSDK {
         }
     }
 
-    fun getSignatureBitmap(): Bitmap? {
+    /**
+     * Returns a bitmap containing the current signature.
+     *
+     * @param backgroundColor Color placed behind the signature. Defaults to white for backward compatibility.
+     * @param overrideStrokeColor If provided, the stroke is recoloured to this value before returning.
+     */
+    fun getSignatureBitmap(
+        backgroundColor: Int = Color.WHITE,
+        overrideStrokeColor: Int? = null,
+    ): Bitmap? {
         signatureTransparentBitmap?.let { originalBitmap ->
-            val whiteBgBitmap = createBitmap(originalBitmap.width, originalBitmap.height)
-            val canvas = Canvas(whiteBgBitmap)
-            canvas.drawColor(Color.WHITE)
-            canvas.drawBitmap(originalBitmap, 0f, 0f, null)
-            return whiteBgBitmap
+            val bitmapToReturn = createBitmap(originalBitmap.width, originalBitmap.height)
+            val canvas = Canvas(bitmapToReturn)
+            canvas.drawColor(backgroundColor)
+            val paint: Paint? = overrideStrokeColor?.let { color ->
+                Paint().apply {
+                    colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+                    isAntiAlias = true
+                }
+            }
+            canvas.drawBitmap(originalBitmap, 0f, 0f, paint)
+            return bitmapToReturn
         }
         return null
     }

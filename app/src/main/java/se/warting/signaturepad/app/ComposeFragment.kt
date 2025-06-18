@@ -1,6 +1,7 @@
 package se.warting.signaturepad.app
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import se.warting.signaturepad.SignaturePadAdapter
@@ -29,6 +33,7 @@ private const val SIGNATURE_PAD_HEIGHT = 120
 fun ComposeSample() {
 
     val mutableSvg = remember { mutableStateOf("") }
+    val savedBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
     Column(
         modifier = Modifier
     ) {
@@ -67,7 +72,12 @@ fun ComposeSample() {
         Column {
             Row {
                 Button(onClick = {
-                    mutableSvg.value = signaturePadAdapter?.getSignatureSvg() ?: ""
+                    mutableSvg.value = signaturePadAdapter?.getSignatureSvg().orEmpty()
+                    val signatureBitmap = signaturePadAdapter?.getSignatureBitmap(
+                        backgroundColor = Color.Green.toArgb(),
+                        overrideStrokeColor = Color.Blue.toArgb()
+                    )
+                    savedBitmap.value = signatureBitmap?.asImageBitmap()
                 }) {
                     Text("Save")
                 }
@@ -94,6 +104,16 @@ fun ComposeSample() {
                 penColor = Color.White
             }) {
                 Text("White")
+            }
+            savedBitmap.value?.let { img ->
+                Image(
+                    bitmap = img,
+                    contentDescription = "Saved signature",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(SIGNATURE_PAD_HEIGHT.dp)
+                        .border(width = 1.dp, color = Color.Gray)
+                )
             }
             Text(text = "SVG: " + mutableSvg.value)
         }
