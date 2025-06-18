@@ -110,7 +110,7 @@ fun ComposeSample() {
             Modifier
                 .height(SIGNATURE_PAD_HEIGHT_DP.dp)
                 .fillMaxWidth()
-                .border(2.dp, Color.Red)
+                .border(2.dp, Color.Gray)
         ) {
             SignaturePadView(
                 onReady = { adapter = it },
