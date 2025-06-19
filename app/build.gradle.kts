@@ -83,7 +83,7 @@ java {
 dependencies {
 
     implementation(libs.androidx.navigation3.ui.android)
-    val composeBom = platform("androidx.compose:compose-bom:2025.06.00")
+    val composeBom = platform("androidx.compose:compose-bom:2025.06.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
