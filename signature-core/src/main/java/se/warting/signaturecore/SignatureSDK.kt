@@ -259,6 +259,12 @@ class SignatureSDK {
         return null
     }
 
+    /**
+     * Returns a bitmap containing the current signature.
+     *
+     * @param trimBlankSpace If true, bitmap is cropped to the signature bounds and surrounding blank space is removed
+     * @param penColor Color of the signature line in the bitmap
+     */
     @Suppress("LongMethod", "CyclomaticComplexMethod", "ReturnCount")
     fun getTransparentSignatureBitmap(
         trimBlankSpace: Boolean = false,
