@@ -1,18 +1,18 @@
 [versions]
 agp = "8.9.2"
 io-gitlab-arturbosch-detekt = "1.23.8"
-kotlin = "2.1.21"
-composeBom = "2025.06.00"
+kotlin = "2.2.0"
+composeBom = "2025.06.01"
 core = "1.16.0"
-navigation3UiAndroid = "1.0.0-alpha03"
+navigation3UiAndroid = "1.0.0-alpha04"
 
 [libraries]
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-activity-activity-compose = "androidx.activity:activity-compose:1.10.1"
 androidx-activity-activity-ktx = "androidx.activity:activity-ktx:1.10.1"
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.1"
-androidx-compose-foundation = "androidx.compose.foundation:foundation:1.8.2"
-androidx-compose-runtime = "androidx.compose.runtime:runtime:1.8.2"
+androidx-compose-foundation = "androidx.compose.foundation:foundation:1.8.3"
+androidx-compose-runtime = "androidx.compose.runtime:runtime:1.8.3"
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-ui-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -36,7 +36,7 @@ androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.8"
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 com-android-library = { id = "com.android.library", version.ref = "agp" }
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
-com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.32.0"
+com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.33.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 io-github-gradle-nexus-publish-plugin = "io.github.gradle-nexus.publish-plugin:2.0.0"
 io-gitlab-arturbosch-detekt = "io.gitlab.arturbosch.detekt:1.23.8"
