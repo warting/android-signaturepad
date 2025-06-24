@@ -247,13 +247,7 @@ class SignatureSDK {
             val bitmapToReturn = createBitmap(originalBitmap.width, originalBitmap.height)
             val canvas = Canvas(bitmapToReturn)
             canvas.drawColor(backgroundColor)
-            val paint: Paint? = penColor?.let { color ->
-                Paint().apply {
-                    colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
-                    isAntiAlias = true
-                }
-            }
-            canvas.drawBitmap(originalBitmap, 0f, 0f, paint)
+            canvas.drawBitmap(originalBitmap, 0f, 0f, penColor?.adjustPaint())
             return bitmapToReturn
         }
         return null
@@ -275,11 +269,7 @@ class SignatureSDK {
         val processedBitmap: Bitmap = penColor?.let { color ->
             val recoloured = createBitmap(originalTransparentBitmap.width, originalTransparentBitmap.height)
             val canvas = Canvas(recoloured)
-            val paint = Paint().apply {
-                colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
-                isAntiAlias = true
-            }
-            canvas.drawBitmap(originalTransparentBitmap, 0f, 0f, paint)
+            canvas.drawBitmap(originalTransparentBitmap, 0f, 0f, color.adjustPaint())
             recoloured
         } ?: originalTransparentBitmap
 
@@ -485,5 +475,10 @@ class SignatureSDK {
 
     private fun strokeWidth(velocity: Float): Float {
         return max(maxWidth / (velocity + 1), minWidth.toFloat())
+    }
+
+    private fun Int.adjustPaint(): Paint = Paint().apply {
+        colorFilter = PorterDuffColorFilter(this@adjustPaint, PorterDuff.Mode.SRC_IN)
+        isAntiAlias = true
     }
 }
