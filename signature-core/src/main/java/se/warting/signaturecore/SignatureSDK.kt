@@ -274,7 +274,7 @@ class SignatureSDK {
         } ?: originalTransparentBitmap
 
         if (!trimBlankSpace) {
-            return processedBitmap
+            return processedBitmap.copy(Bitmap.Config.ARGB_8888, false)
         }
 
         val bitmap = processedBitmap
