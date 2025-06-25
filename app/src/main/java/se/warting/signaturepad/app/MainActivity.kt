@@ -39,78 +39,82 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import androidx.compose.ui.graphics.Color
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-
-            var uiMode by rememberSaveable { mutableStateOf(AppUiMode.SYSTEM) }
-
-            val darkTheme = when (uiMode) {
-                AppUiMode.DARK -> true
-                AppUiMode.LIGHT -> false
-                AppUiMode.SYSTEM -> isSystemInDarkTheme()
-            }
-
-            SideEffect {
-                AppCompatDelegate.setDefaultNightMode(
-                    when (uiMode) {
-                        AppUiMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-                        AppUiMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-                        AppUiMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    }
-                )
-            }
-
-            val colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()
-
-            MaterialTheme(colorScheme = colorScheme) {
-
-                var menuExpanded by rememberSaveable { mutableStateOf(false) }
-
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = { Text(text = "SignaturePad Samples") },
-                            actions = {
-                                IconButton(onClick = { menuExpanded = true }) {
-                                    Icon(Icons.Filled.MoreVert, contentDescription = "Theme menu")
-                                }
-
-                                DropdownMenu(
-                                    expanded = menuExpanded,
-                                    onDismissRequest = { menuExpanded = false }
-                                ) {
-                                    DropdownMenuItem(text = { Text("Follow system") }, onClick = {
-                                        uiMode = AppUiMode.SYSTEM
-                                        menuExpanded = false
-                                    })
-                                    DropdownMenuItem(text = { Text("Light") }, onClick = {
-                                        uiMode = AppUiMode.LIGHT
-                                        menuExpanded = false
-                                    })
-                                    DropdownMenuItem(text = { Text("Dark") }, onClick = {
-                                        uiMode = AppUiMode.DARK
-                                        menuExpanded = false
-                                    })
-                                }
-                            }
-                        )
-                    }
-                ) { padding ->
-                    Box(modifier = Modifier
-                        .padding(padding)
-                        .safeContentPadding()) {
-                        Navigation()
-                    }
-                }
-            }
+            App()
         }
     }
 }
 
+@Composable
+fun App() {
+    var uiMode by rememberSaveable { mutableStateOf(AppUiMode.SYSTEM) }
+
+    val darkTheme = when (uiMode) {
+        AppUiMode.DARK -> true
+        AppUiMode.LIGHT -> false
+        AppUiMode.SYSTEM -> isSystemInDarkTheme()
+    }
+
+    SideEffect {
+        AppCompatDelegate.setDefaultNightMode(
+            when (uiMode) {
+                AppUiMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                AppUiMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                AppUiMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            }
+        )
+    }
+
+    val colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()
+
+    MaterialTheme(colorScheme = colorScheme) {
+
+        var menuExpanded by rememberSaveable { mutableStateOf(false) }
+
+        Scaffold(
+            topBar = {
+                @OptIn(ExperimentalMaterial3Api::class)
+                TopAppBar(
+                    title = { Text(text = "SignaturePad Samples") },
+                    actions = {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(Icons.Filled.MoreVert, contentDescription = "Theme menu")
+                        }
+
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(text = { Text("Follow system") }, onClick = {
+                                uiMode = AppUiMode.SYSTEM
+                                menuExpanded = false
+                            })
+                            DropdownMenuItem(text = { Text("Light") }, onClick = {
+                                uiMode = AppUiMode.LIGHT
+                                menuExpanded = false
+                            })
+                            DropdownMenuItem(text = { Text("Dark") }, onClick = {
+                                uiMode = AppUiMode.DARK
+                                menuExpanded = false
+                            })
+                        }
+                    }
+                )
+            }
+        ) { padding ->
+            Box(modifier = Modifier
+                .padding(padding)
+                .safeContentPadding()) {
+                Navigation()
+            }
+        }
+    }
+}
 
 // Define the routes in your app and any arguments.
 sealed class Destination {

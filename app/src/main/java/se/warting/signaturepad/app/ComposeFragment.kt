@@ -119,6 +119,7 @@ private fun SignaturePadAdapter.extractBitmaps(
     }
 }
 
+@Suppress("LongMethod")
 @Composable
 fun ComposeSample() {
     var svg by remember { mutableStateOf("") }
