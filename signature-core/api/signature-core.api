@@ -70,10 +70,11 @@ public final class se/warting/signaturecore/SignatureSDK {
 	public static synthetic fun configure$default (Lse/warting/signaturecore/SignatureSDK;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Float;ILjava/lang/Object;)V
 	public final fun drawSignature (Landroid/graphics/Canvas;)V
 	public final fun getEvents ()Ljava/util/List;
-	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
+	public final fun getSignatureBitmap (ILjava/lang/Integer;)Landroid/graphics/Bitmap;
+	public static synthetic fun getSignatureBitmap$default (Lse/warting/signaturecore/SignatureSDK;ILjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun getSignatureSvg (II)Ljava/lang/String;
-	public final fun getTransparentSignatureBitmap (Z)Landroid/graphics/Bitmap;
-	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturecore/SignatureSDK;ZILjava/lang/Object;)Landroid/graphics/Bitmap;
+	public final fun getTransparentSignatureBitmap (ZLjava/lang/Integer;)Landroid/graphics/Bitmap;
+	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturecore/SignatureSDK;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun hasBitmap ()Z
 	public final fun initializeBitmap (II)V
 	public final fun isEmpty ()Z

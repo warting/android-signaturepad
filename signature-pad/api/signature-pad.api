@@ -4,9 +4,11 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 	public final fun clear ()V
 	public final fun getSignature ()Lse/warting/signaturecore/Signature;
 	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
+	public final fun getSignatureBitmap (ILjava/lang/Integer;)Landroid/graphics/Bitmap;
+	public static synthetic fun getSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadAdapter;ILjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun getSignatureSvg ()Ljava/lang/String;
-	public final fun getTransparentSignatureBitmap (Z)Landroid/graphics/Bitmap;
-	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadAdapter;ZILjava/lang/Object;)Landroid/graphics/Bitmap;
+	public final fun getTransparentSignatureBitmap (ZLjava/lang/Integer;)Landroid/graphics/Bitmap;
+	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadAdapter;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 }
