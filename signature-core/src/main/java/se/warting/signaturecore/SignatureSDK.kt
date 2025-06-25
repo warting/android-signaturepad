@@ -168,6 +168,7 @@ class SignatureSDK {
 
     fun restoreEvents(events: List<Event>) {
         originalEvents.clear()
+        @Suppress("MemberExtensionConflict") // False positive? Try remove later
         originalEvents.addAll(events)
 
         // Clear current state to ensure clean slate
