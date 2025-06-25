@@ -222,8 +222,19 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return signatureSDK.getSignatureBitmap() ?: createBitmap(1, 1)
     }
 
-    fun getTransparentSignatureBitmap(trimBlankSpace: Boolean = false): Bitmap {
-        return signatureSDK.getTransparentSignatureBitmap(trimBlankSpace)
+    fun getSignatureBitmap(
+        backgroundColor: Int,
+        penColor: Int? = null,
+    ): Bitmap {
+        return signatureSDK.getSignatureBitmap(backgroundColor, penColor)
+            ?: createBitmap(1, 1)
+    }
+
+    fun getTransparentSignatureBitmap(
+        trimBlankSpace: Boolean = false,
+        penColor: Int? = null,
+    ): Bitmap {
+        return signatureSDK.getTransparentSignatureBitmap(trimBlankSpace, penColor)
             ?: createBitmap(1, 1)
     }
 

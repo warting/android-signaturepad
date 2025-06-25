@@ -1,4 +1,5 @@
 [versions]
+agp = "8.9.2"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.2.0"
 composeBom = "2025.06.01"
@@ -20,7 +21,7 @@ androidx-core-core-ktx = "androidx.core:core-ktx:1.16.0"
 androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.9.1"
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
-com-android-tools-build-gradle = "com.android.tools.build:gradle:8.10.1"
+com-android-tools-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 com-google-android-material = "com.google.android.material:material:1.12.0"
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 io-gitlab-arturbosch-detekt-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "io-gitlab-arturbosch-detekt" }
@@ -32,8 +33,8 @@ androidx-navigation3-ui-android = { group = "androidx.navigation3", name = "navi
 androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.8"
 
 [plugins]
-com-android-application = "com.android.application:8.10.1"
-com-android-library = "com.android.library:8.10.1"
+com-android-application = { id = "com.android.application", version.ref = "agp" }
+com-android-library = { id = "com.android.library", version.ref = "agp" }
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
 com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.33.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

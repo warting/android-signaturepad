@@ -78,9 +78,19 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
         return signaturePad.getSignatureBitmap()
     }
 
+    /**
+     * Returns a bitmap containing the current signature.
+     *
+     * @param backgroundColor Color of the bitmap's surface behind the signature
+     * @param penColor Color of the signature line in the bitmap
+     */
+    fun getSignatureBitmap(backgroundColor: Int, penColor: Int? = null): Bitmap {
+        return signaturePad.getSignatureBitmap(backgroundColor, penColor)
+    }
+
     @Suppress("unused")
-    fun getTransparentSignatureBitmap(trimBlankSpace: Boolean = false): Bitmap {
-        return signaturePad.getTransparentSignatureBitmap(trimBlankSpace)
+    fun getTransparentSignatureBitmap(trimBlankSpace: Boolean = false, penColor: Int? = null): Bitmap {
+        return signaturePad.getTransparentSignatureBitmap(trimBlankSpace, penColor)
     }
 
     fun getSignatureSvg(): String {

@@ -17,6 +17,8 @@ import se.warting.signaturecore.utils.TimedPoint
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 
 class SignatureSDK {
 
@@ -231,25 +233,51 @@ class SignatureSDK {
         }
     }
 
-    fun getSignatureBitmap(): Bitmap? {
+    /**
+     * Returns a bitmap containing the current signature.
+     *
+     * @param backgroundColor Color placed behind the signature
+     * @param penColor Color of the signature itself
+     */
+    fun getSignatureBitmap(
+        backgroundColor: Int = Color.WHITE,
+        penColor: Int? = null,
+    ): Bitmap? {
         signatureTransparentBitmap?.let { originalBitmap ->
-            val whiteBgBitmap = createBitmap(originalBitmap.width, originalBitmap.height)
-            val canvas = Canvas(whiteBgBitmap)
-            canvas.drawColor(Color.WHITE)
-            canvas.drawBitmap(originalBitmap, 0f, 0f, null)
-            return whiteBgBitmap
+            val bitmapToReturn = createBitmap(originalBitmap.width, originalBitmap.height)
+            val canvas = Canvas(bitmapToReturn)
+            canvas.drawColor(backgroundColor)
+            canvas.drawBitmap(originalBitmap, 0f, 0f, penColor?.adjustPaint())
+            return bitmapToReturn
         }
         return null
     }
 
+    /**
+     * Returns a bitmap containing the current signature.
+     *
+     * @param trimBlankSpace If true, bitmap is cropped to the signature bounds and surrounding blank space is removed
+     * @param penColor Color of the signature line in the bitmap
+     */
     @Suppress("LongMethod", "CyclomaticComplexMethod", "ReturnCount")
-    fun getTransparentSignatureBitmap(trimBlankSpace: Boolean = false): Bitmap? {
+    fun getTransparentSignatureBitmap(
+        trimBlankSpace: Boolean = false,
+        penColor: Int? = null,
+    ): Bitmap? {
+        val originalTransparentBitmap = signatureTransparentBitmap ?: return null
+
+        val processedBitmap: Bitmap = penColor?.let { color ->
+            val recoloured = createBitmap(originalTransparentBitmap.width, originalTransparentBitmap.height)
+            val canvas = Canvas(recoloured)
+            canvas.drawBitmap(originalTransparentBitmap, 0f, 0f, color.adjustPaint())
+            recoloured
+        } ?: originalTransparentBitmap
+
         if (!trimBlankSpace) {
-            return signatureTransparentBitmap
+            return processedBitmap.copy(Bitmap.Config.ARGB_8888, false)
         }
 
-        val bitmap = signatureTransparentBitmap ?: return null
-
+        val bitmap = processedBitmap
         val imgHeight = bitmap.height
         val imgWidth = bitmap.width
         val backgroundColor = Color.TRANSPARENT
@@ -447,5 +475,10 @@ class SignatureSDK {
 
     private fun strokeWidth(velocity: Float): Float {
         return max(maxWidth / (velocity + 1), minWidth.toFloat())
+    }
+
+    private fun Int.adjustPaint(): Paint = Paint().apply {
+        colorFilter = PorterDuffColorFilter(this@adjustPaint, PorterDuff.Mode.SRC_IN)
+        isAntiAlias = true
     }
 }
