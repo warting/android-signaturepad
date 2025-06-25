@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.view.MotionEvent
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
@@ -17,8 +19,6 @@ import se.warting.signaturecore.utils.TimedPoint
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 
 class SignatureSDK {
 
