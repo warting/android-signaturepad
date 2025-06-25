@@ -20,7 +20,7 @@ androidx-core-core-ktx = "androidx.core:core-ktx:1.16.0"
 androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.9.1"
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.6.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
-com-android-tools-build-gradle = "com.android.tools.build:gradle:8.10.1"
+com-android-tools-build-gradle = "com.android.tools.build:gradle:8.11.0"
 com-google-android-material = "com.google.android.material:material:1.12.0"
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 io-gitlab-arturbosch-detekt-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "io-gitlab-arturbosch-detekt" }
