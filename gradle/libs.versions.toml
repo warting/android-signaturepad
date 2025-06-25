@@ -32,7 +32,7 @@ androidx-navigation3-ui-android = { group = "androidx.navigation3", name = "navi
 androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.8"
 
 [plugins]
-com-android-application = "com.android.application:8.10.1"
+com-android-application = "com.android.application:8.11.0"
 com-android-library = "com.android.library:8.10.1"
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
 com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.33.0"
