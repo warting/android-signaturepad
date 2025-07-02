@@ -79,10 +79,7 @@ android {
             buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+
     buildFeatures {
         viewBinding = false
         compose = false
@@ -116,10 +113,8 @@ android {
     namespace = "se.warting.signaturepad.view"
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
