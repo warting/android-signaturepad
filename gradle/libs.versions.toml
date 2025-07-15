@@ -36,7 +36,7 @@ androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.8"
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 com-android-library = { id = "com.android.library", version.ref = "agp" }
 com-gladed-androidgitversion = "com.gladed.androidgitversion:0.4.14"
-com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.33.0"
+com-vanniktech-maven-publish = "com.vanniktech.maven.publish:0.34.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 io-github-gradle-nexus-publish-plugin = "io.github.gradle-nexus.publish-plugin:2.0.0"
 io-gitlab-arturbosch-detekt = "io.gitlab.arturbosch.detekt:1.23.8"
