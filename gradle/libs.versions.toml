@@ -20,7 +20,7 @@ androidx-compose-ui-ui-tooling-preview = { group = "androidx.compose.ui", name =
 androidx-core-core-ktx = "androidx.core:core-ktx:1.16.0"
 androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.9.2"
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
-androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
+androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"
 com-android-tools-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 com-google-android-material = "com.google.android.material:material:1.12.0"
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
