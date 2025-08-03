@@ -70,6 +70,22 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
         signaturePad.clear()
     }
 
+    /**
+     * Check if undo operation is available.
+     * @return true if there are completed strokes that can be undone
+     */
+    fun canUndo(): Boolean {
+        return signaturePad.canUndo()
+    }
+
+    /**
+     * Undo the last stroke. This will remove the last completed stroke
+     * and redraw the signature without it.
+     */
+    fun undo() {
+        signaturePad.undo()
+    }
+
     val isEmpty: Boolean
         get() = signaturePad.isEmpty
 
