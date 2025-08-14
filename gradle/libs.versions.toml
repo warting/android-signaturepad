@@ -30,7 +30,7 @@ junit = "junit:junit:4.13.2"
 org-jetbrains-kotlin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-navigation3-ui-android = { group = "androidx.navigation3", name = "navigation3-ui-android", version.ref = "navigation3UiAndroid" }
-androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.8"
+androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.9"
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
