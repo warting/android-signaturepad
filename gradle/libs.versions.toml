@@ -12,7 +12,7 @@ androidx-activity-activity-compose = "androidx.activity:activity-compose:1.11.0"
 androidx-activity-activity-ktx = "androidx.activity:activity-ktx:1.11.0"
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.1"
 androidx-compose-foundation = "androidx.compose.foundation:foundation:1.9.2"
-androidx-compose-runtime = "androidx.compose.runtime:runtime:1.9.1"
+androidx-compose-runtime = "androidx.compose.runtime:runtime:1.9.2"
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-ui-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
