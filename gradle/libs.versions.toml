@@ -41,6 +41,6 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 io-github-gradle-nexus-publish-plugin = "io.github.gradle-nexus.publish-plugin:2.0.0"
 io-gitlab-arturbosch-detekt = "io.gitlab.arturbosch.detekt:1.23.8"
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
+nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.1"
 org-jetbrains-dokka = "org.jetbrains.dokka:2.0.0"
 org-jetbrains-kotlinx-binary-compatibility-validator = "org.jetbrains.kotlinx.binary-compatibility-validator:0.17.0"
