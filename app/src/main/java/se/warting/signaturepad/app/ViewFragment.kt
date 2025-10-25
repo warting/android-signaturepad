@@ -18,6 +18,7 @@ class ViewFragment : Fragment() {
 
     private lateinit var mSaveButton: Button
     private lateinit var mClearButton: Button
+    private lateinit var mUndoButton: Button
     private lateinit var mSignaturePad: SignaturePad
 
     override fun onCreateView(
@@ -48,6 +49,7 @@ class ViewFragment : Fragment() {
 
         mSaveButton = view.findViewById<View>(R.id.save_button) as Button
         mClearButton = view.findViewById<View>(R.id.clear_button) as Button
+        mUndoButton = view.findViewById<View>(R.id.undo_button) as Button
         mSignaturePad = view.findViewById<View>(R.id.signature_pad) as SignaturePad
 
         mSignaturePad.setOnSignedListener(object : SignedListener {
@@ -64,6 +66,7 @@ class ViewFragment : Fragment() {
                 Log.d("SignedListener", "OnSigned")
                 mSaveButton.isEnabled = !mSignaturePad.isEmpty
                 mClearButton.isEnabled = !mSignaturePad.isEmpty
+                mUndoButton.isEnabled = mSignaturePad.canUndo()
             }
 
             override fun onClear() {
@@ -73,9 +76,16 @@ class ViewFragment : Fragment() {
 
                 mSaveButton.isEnabled = !mSignaturePad.isEmpty
                 mClearButton.isEnabled = !mSignaturePad.isEmpty
+                mUndoButton.isEnabled = mSignaturePad.canUndo()
             }
         })
 
+        mUndoButton.setOnClickListener { 
+            mSignaturePad.undo()
+            mUndoButton.isEnabled = mSignaturePad.canUndo()
+            mSaveButton.isEnabled = !mSignaturePad.isEmpty
+            mClearButton.isEnabled = !mSignaturePad.isEmpty
+        }
         mClearButton.setOnClickListener { mSignaturePad.clear() }
         mSaveButton.setOnClickListener {
             val signatureBitmap = mSignaturePad.getSignatureBitmap()

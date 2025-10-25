@@ -1,6 +1,7 @@
 public final class se/warting/signaturepad/SignaturePadAdapter {
 	public static final field $stable I
 	public fun <init> (Lse/warting/signatureview/views/SignaturePad;)V
+	public final fun canUndo ()Z
 	public final fun clear ()V
 	public final fun getSignature ()Lse/warting/signaturecore/Signature;
 	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
@@ -11,6 +12,7 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadAdapter;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
+	public final fun undo ()V
 }
 
 public final class se/warting/signaturepad/SignaturePadViewKt {
