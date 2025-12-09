@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep Event class for Parcelable serialization (used in state restoration)
+# The Event class is saved in instance state and needs to be kept to prevent crashes
+# when restoring state after process death in minified builds
+-keep class se.warting.signaturecore.Event { *; }
+-keepclassmembers class se.warting.signaturecore.Event { *; }
