@@ -11,7 +11,7 @@ jobs:
   update_draft_release:
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v6.1.1
+      - uses: release-drafter/release-drafter@v6.2.0
         with:
           config-name: release-drafter.yml
           disable-autolabeler: false
