@@ -65,6 +65,7 @@ public final class se/warting/signaturecore/SignatureSDK {
 	public static final field DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT F
 	public fun <init> ()V
 	public final fun addEvent (Lse/warting/signaturecore/Event;)V
+	public final fun canUndo ()Z
 	public final fun clear ()V
 	public final fun configure (Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Float;)V
 	public static synthetic fun configure$default (Lse/warting/signaturecore/SignatureSDK;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Float;ILjava/lang/Object;)V
@@ -80,6 +81,7 @@ public final class se/warting/signaturecore/SignatureSDK {
 	public final fun isEmpty ()Z
 	public final fun restoreEvents (Ljava/util/List;)V
 	public final fun setOnSignedListener (Lse/warting/signaturecore/utils/SignedListener;)V
+	public final fun undo ()V
 }
 
 public final class se/warting/signaturecore/SignatureSDK$Companion {

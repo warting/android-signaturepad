@@ -157,6 +157,23 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         clearView()
     }
 
+    /**
+     * Check if undo operation is available.
+     * @return true if there are completed strokes that can be undone
+     */
+    fun canUndo(): Boolean {
+        return signatureSDK.canUndo()
+    }
+
+    /**
+     * Undo the last stroke. This will remove the last completed stroke
+     * and redraw the signature without it.
+     */
+    fun undo() {
+        signatureSDK.undo()
+        invalidate()
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
