@@ -2,7 +2,7 @@
 agp = "8.13.1"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.2.21"
-composeBom = "2025.09.00"
+composeBom = "2025.11.01"
 core = "1.17.0"
 navigation3UiAndroid = "1.0.0-alpha06"
 
