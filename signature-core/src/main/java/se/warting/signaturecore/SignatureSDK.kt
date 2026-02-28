@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.view.MotionEvent
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
 import se.warting.signaturecore.utils.Bezier
@@ -108,7 +107,7 @@ class SignatureSDK {
         val eventY = event.y
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
+            Event.ACTION_DOWN -> {
                 points.clear()
                 lastTouchX = eventX
                 lastTouchY = eventY
@@ -125,7 +124,7 @@ class SignatureSDK {
                 )
             }
 
-            MotionEvent.ACTION_MOVE -> {
+            Event.ACTION_MOVE -> {
                 addTimedPoint(
                     getNewTimedPoint(eventX, eventY, timestamp),
                     timestamp
@@ -134,7 +133,7 @@ class SignatureSDK {
                 signedListener?.onSigning()
             }
 
-            MotionEvent.ACTION_UP -> {
+            Event.ACTION_UP -> {
                 addTimedPoint(
                     getNewTimedPoint(eventX, eventY, timestamp),
                     timestamp

@@ -1,6 +1,10 @@
 public final class se/warting/signaturecore/Event : android/os/Parcelable {
 	public static final field $stable I
+	public static final field ACTION_DOWN I
+	public static final field ACTION_MOVE I
+	public static final field ACTION_UP I
 	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public static final field Companion Lse/warting/signaturecore/Event$Companion;
 	public fun <init> (JIFF)V
 	public final fun component1 ()J
 	public final fun component2 ()I
@@ -17,6 +21,9 @@ public final class se/warting/signaturecore/Event : android/os/Parcelable {
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class se/warting/signaturecore/Event$Companion {
 }
 
 public final class se/warting/signaturecore/Event$Creator : android/os/Parcelable$Creator {

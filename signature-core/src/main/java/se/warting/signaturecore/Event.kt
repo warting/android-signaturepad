@@ -9,4 +9,10 @@ data class Event(
     val action: Int,
     val x: Float,
     val y: Float,
-) : Parcelable
+) : Parcelable {
+    companion object {
+        const val ACTION_DOWN = 0
+        const val ACTION_MOVE = 2
+        const val ACTION_UP = 1
+    }
+}

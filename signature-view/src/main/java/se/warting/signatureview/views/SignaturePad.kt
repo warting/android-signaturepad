@@ -165,21 +165,24 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
-                val downEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                val downEvent =
+                    Event(System.currentTimeMillis(), Event.ACTION_DOWN, event.x, event.y)
                 signatureSDK.addEvent(downEvent)
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                val moveEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                val moveEvent =
+                    Event(System.currentTimeMillis(), Event.ACTION_MOVE, event.x, event.y)
                 signatureSDK.addEvent(moveEvent)
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_UP -> {
-                val upEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                val upEvent =
+                    Event(System.currentTimeMillis(), Event.ACTION_UP, event.x, event.y)
                 signatureSDK.addEvent(upEvent)
                 invalidate()
                 true
