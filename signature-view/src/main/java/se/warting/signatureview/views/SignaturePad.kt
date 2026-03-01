@@ -162,6 +162,16 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
         if (!isEnabled || didDoubleClick) return false
 
+        // Validate coordinates to detect and report source of invalid values
+        require(!(event.x.isNaN() || event.x.isInfinite())) {
+            "Invalid X coordinate detected in onTouchEvent: ${event.x} " +
+                "(action=${event.action}, pointer=${event.getPointerId(0)})"
+        }
+        require(!(event.y.isNaN() || event.y.isInfinite())) {
+            "Invalid Y coordinate detected in onTouchEvent: ${event.y} " +
+                "(action=${event.action}, pointer=${event.getPointerId(0)})"
+        }
+
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
