@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "se.warting.signaturepad"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -35,13 +35,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        freeCompilerArgs = listOfNotNull(
-            "-opt-in=kotlin.RequiresOptIn",
-            "-Xskip-prerelease-check"
-        )
     }
     buildFeatures {
         compose = true
@@ -72,12 +65,19 @@ android {
 
 kotlin {
     jvmToolchain(17)
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.addAll(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-Xskip-prerelease-check"
+        )
+    }
 }
 
 dependencies {
 
     implementation(libs.androidx.navigation3.ui.android)
-    val composeBom = platform("androidx.compose:compose-bom:2025.09.00")
+    val composeBom = platform("androidx.compose:compose-bom:2026.02.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.com.google.android.material)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.activity.activity.ktx)
     implementation(project(":signature-pad"))
     implementation(project(":signature-view"))
