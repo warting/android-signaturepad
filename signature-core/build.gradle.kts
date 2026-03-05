@@ -1,6 +1,6 @@
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.com.android.library)
-    alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
     id("maven-publish")
     id("signing")
@@ -58,6 +58,23 @@ val PUBLISH_VERSION: String by extra(rootProject.version as String)
 group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
+kotlin {
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_17.toString()
+                freeCompilerArgs = listOfNotNull(
+                    "-opt-in=kotlin.RequiresOptIn",
+                    "-Xskip-prerelease-check"
+                )
+            }
+        }
+        publishLibraryVariants("release")
+    }
+
+    jvmToolchain(17)
+}
+
 android {
     compileSdk = 36
 
@@ -77,13 +94,6 @@ android {
         compose = true
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        freeCompilerArgs = listOfNotNull(
-            "-opt-in=kotlin.RequiresOptIn",
-            "-Xskip-prerelease-check"
-        )
-    }
     lint {
         baseline = file("lint-baseline.xml")
         checkReleaseBuilds = true
@@ -99,10 +109,6 @@ android {
         sarifOutput = file("../lint-results-signature-core.sarif")
     }
     namespace = "se.warting.signaturepad.core"
-}
-
-kotlin {
-    jvmToolchain(17)
 }
 
 dependencies {
