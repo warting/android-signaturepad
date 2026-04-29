@@ -51,6 +51,12 @@ androidGitVersion {
     tagPattern = "^v[0-9]+.*"
 }
 
+dokka {
+    dokkaSourceSets.matching { it.name == "release" }.configureEach {
+        suppress.set(true)
+    }
+}
+
 val PUBLISH_GROUP_ID: String by extra(rootProject.group as String)
 val PUBLISH_VERSION: String by extra(rootProject.version as String)
 
