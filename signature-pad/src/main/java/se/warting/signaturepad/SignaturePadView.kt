@@ -6,7 +6,6 @@ import android.view.ViewConfiguration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -57,7 +56,7 @@ fun SignaturePadView(
     val density = LocalDensity.current
     val sdk = rememberSaveable(saver = SignatureSdkSaver) { SignatureSDK() }
     var redrawTick by remember { mutableIntStateOf(0) }
-    val adapter = remember(sdk) { SignaturePadAdapter(sdk) { redrawTick++ } }
+    val adapter = remember(sdk) { SignaturePadAdapter.create(sdk) { redrawTick++ } }
     var bitmapInitialized by remember(sdk) { mutableStateOf(sdk.hasBitmap()) }
 
     val minWidthPx = with(density) { penMinWidth.toPx() }.roundToInt()
@@ -127,7 +126,6 @@ fun SignaturePadView(
 
     Canvas(
         modifier = modifier
-            .fillMaxSize()
             .onSizeChanged { newSize ->
                 if (newSize.width > 0 && newSize.height > 0) {
                     adapter.size = newSize
@@ -225,10 +223,16 @@ fun SignaturePadView(
     }
 }
 
-class SignaturePadAdapter internal constructor(
+class SignaturePadAdapter private constructor(
     private val sdk: SignatureSDK,
     private val invalidate: () -> Unit,
 ) {
+
+    internal companion object {
+        @JvmSynthetic
+        internal fun create(sdk: SignatureSDK, invalidate: () -> Unit): SignaturePadAdapter =
+            SignaturePadAdapter(sdk, invalidate)
+    }
 
     internal var size: IntSize = IntSize.Zero
 

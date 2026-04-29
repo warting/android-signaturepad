@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -171,6 +172,7 @@ fun ComposeSample() {
                 .border(2.dp, Color.Gray)
         ) {
             SignaturePadView(
+                modifier = Modifier.fillMaxSize(),
                 onReady = { adapter = it },
                 penColor = toggles[0].state.value,
                 penMinWidth = penMinWidth.dp,
