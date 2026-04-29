@@ -75,13 +75,6 @@ android {
         compose = true
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
-        freeCompilerArgs = listOfNotNull(
-            "-opt-in=kotlin.RequiresOptIn",
-            "-Xskip-prerelease-check"
-        )
-    }
     lint {
         baseline = file("lint-baseline.xml")
         checkReleaseBuilds = true
@@ -97,10 +90,6 @@ android {
         sarifOutput = file("../lint-results-signature-pad.sarif")
     }
     namespace = "se.warting.signaturepad.compose"
-}
-
-kotlin {
-    jvmToolchain(21)
 }
 
 dependencies {

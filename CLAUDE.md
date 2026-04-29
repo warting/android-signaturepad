@@ -45,8 +45,8 @@ signature-pad (Compose) ──api──> signature-core
 - **Version catalog**: `gradle/libs.versions.toml` for all dependency versions
 - **JDK 21** required (configured via `jvmToolchain(21)`, auto-provisioned via the `foojay-resolver-convention` plugin in `settings.gradle.kts`)
 - **compileSdk 36**, **minSdk 23**
-- **Kotlin 2.2.x** with Compose compiler plugin
-- **AGP** (Android Gradle Plugin) 8.13.x
+- **Kotlin 2.3.x** with Compose compiler plugin
+- **AGP** (Android Gradle Plugin) 9.2.x (Gradle 9.4.1+)
 
 ### Common Build Commands
 

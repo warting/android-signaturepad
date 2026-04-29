@@ -30,18 +30,12 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
-        freeCompilerArgs = listOfNotNull(
-            "-opt-in=kotlin.RequiresOptIn",
-            "-Xskip-prerelease-check"
-        )
     }
     buildFeatures {
         compose = true
@@ -69,10 +63,6 @@ android {
         sarifOutput = file("../lint-results-lib.sarif")
     }
     namespace = "se.warting.signaturepad.app"
-}
-
-kotlin {
-    jvmToolchain(21)
 }
 
 dependencies {
