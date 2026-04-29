@@ -128,12 +128,12 @@ class SvgBuilder {
         val rounded = (alpha * 1000f).roundToInt() / 1000f
         return rounded.toString().trimEnd('0').trimEnd('.').ifEmpty { "0" }
     }
+
+    private fun TimedPoint.hasFiniteCoordinates(): Boolean = x.isFinite() && y.isFinite()
+
+    private fun Bezier.hasFiniteCoordinates(): Boolean =
+        startPoint.hasFiniteCoordinates() &&
+            control1.hasFiniteCoordinates() &&
+            control2.hasFiniteCoordinates() &&
+            endPoint.hasFiniteCoordinates()
 }
-
-internal fun TimedPoint.hasFiniteCoordinates(): Boolean = x.isFinite() && y.isFinite()
-
-internal fun Bezier.hasFiniteCoordinates(): Boolean =
-    startPoint.hasFiniteCoordinates() &&
-        control1.hasFiniteCoordinates() &&
-        control2.hasFiniteCoordinates() &&
-        endPoint.hasFiniteCoordinates()

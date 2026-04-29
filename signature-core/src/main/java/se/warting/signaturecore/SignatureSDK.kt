@@ -44,6 +44,11 @@ class SignatureSDK {
     private var lastVelocity = 0f
     private var lastWidth = 0f
 
+    // Most recent finite touch coordinate. Used to substitute on a glitched
+    // ACTION_UP so the stroke still terminates cleanly.
+    private var lastValidX = 0f
+    private var lastValidY = 0f
+
     // SVG building
     private val svgBuilder = SvgBuilder()
 
@@ -101,10 +106,27 @@ class SignatureSDK {
         // Some devices/drivers occasionally deliver NaN or infinite touch
         // coordinates (e.g. palm rejection, stylus glitches). Propagating
         // those values produces NaN curve control points and crashes
-        // downstream in roundToInt(). Drop the sample at the input boundary.
-        if (!event.x.isFinite() || !event.y.isFinite()) return
-        originalEvents.add(event)
-        processCurrentEvent(event)
+        // downstream in roundToInt(). Filter at the input boundary.
+        val sanitized = sanitizeEvent(event) ?: return
+        originalEvents.add(sanitized)
+        processCurrentEvent(sanitized)
+    }
+
+    private fun sanitizeEvent(event: Event): Event? {
+        if (event.x.isFinite() && event.y.isFinite()) {
+            lastValidX = event.x
+            lastValidY = event.y
+            return event
+        }
+        // ACTION_DOWN and ACTION_MOVE are safe to drop — we just lose one
+        // sample. ACTION_UP must still be delivered or onSigned() never
+        // fires and the stroke is left dangling (undo state, originalEvents
+        // become inconsistent). Replay it with the last valid coordinate.
+        return if (event.action == MotionEvent.ACTION_UP) {
+            Event(event.timestamp, event.action, lastValidX, lastValidY)
+        } else {
+            null
+        }
     }
 
     private fun processCurrentEvent(event: Event) {
