@@ -70,3 +70,18 @@ detekt {
         html.enabled = true
     }
 }
+
+subprojects {
+    plugins.withId("org.jetbrains.kotlin.android") {
+        extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
+            jvmToolchain(21)
+            compilerOptions {
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+                freeCompilerArgs.addAll(
+                    "-opt-in=kotlin.RequiresOptIn",
+                    "-Xskip-prerelease-check",
+                )
+            }
+        }
+    }
+}

@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "2.1.0"
-    id("com.gladed.androidgitversion") version "0.4.14"
+    alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.com.gladed.androidgitversion)
     id("kotlin-kapt")
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.com.vanniktech.maven.publish)
@@ -89,13 +89,6 @@ android {
         enable = true
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
-        freeCompilerArgs = listOfNotNull(
-            "-opt-in=kotlin.RequiresOptIn",
-            "-Xskip-prerelease-check"
-        )
-    }
     lint {
         baseline = file("lint-baseline.xml")
         checkReleaseBuilds = true
@@ -111,10 +104,6 @@ android {
         sarifOutput = file("../lint-results-signature-view.sarif")
     }
     namespace = "se.warting.signaturepad.view"
-}
-
-kotlin {
-    jvmToolchain(21)
 }
 
 dependencies {
