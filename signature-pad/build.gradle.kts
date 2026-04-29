@@ -76,7 +76,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
         freeCompilerArgs = listOfNotNull(
             "-opt-in=kotlin.RequiresOptIn",
             "-Xskip-prerelease-check"
@@ -100,7 +100,7 @@ android {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 dependencies {
