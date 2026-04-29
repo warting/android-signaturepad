@@ -53,6 +53,12 @@ class SvgBuilder {
     }
 
     fun append(curve: Bezier, strokeWidth: Float): SvgBuilder {
+        // Defensive guard against NaN/infinite coordinates leaking through to
+        // SvgPoint, where roundToInt() would throw IllegalArgumentException.
+        // The primary filter lives at the input boundary (SignatureSDK.addEvent),
+        // but skipping a curve here is cheaper than crashing if any internal
+        // arithmetic ever produces a non-finite value.
+        if (!curve.hasFiniteCoordinates() || !strokeWidth.isFinite()) return this
         val roundedStrokeWidth: Int = strokeWidth.roundToInt()
         val curveStartSvgPoint = SvgPoint(curve.startPoint)
         val curveControlSvgPoint1 = SvgPoint(curve.control1)
@@ -123,3 +129,11 @@ class SvgBuilder {
         return rounded.toString().trimEnd('0').trimEnd('.').ifEmpty { "0" }
     }
 }
+
+internal fun TimedPoint.hasFiniteCoordinates(): Boolean = x.isFinite() && y.isFinite()
+
+internal fun Bezier.hasFiniteCoordinates(): Boolean =
+    startPoint.hasFiniteCoordinates() &&
+        control1.hasFiniteCoordinates() &&
+        control2.hasFiniteCoordinates() &&
+        endPoint.hasFiniteCoordinates()

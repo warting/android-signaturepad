@@ -98,6 +98,11 @@ class SignatureSDK {
     }
 
     fun addEvent(event: Event) {
+        // Some devices/drivers occasionally deliver NaN or infinite touch
+        // coordinates (e.g. palm rejection, stylus glitches). Propagating
+        // those values produces NaN curve control points and crashes
+        // downstream in roundToInt(). Drop the sample at the input boundary.
+        if (!event.x.isFinite() || !event.y.isFinite()) return
         originalEvents.add(event)
         processCurrentEvent(event)
     }

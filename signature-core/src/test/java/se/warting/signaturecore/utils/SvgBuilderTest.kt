@@ -82,6 +82,33 @@ class SvgBuilderTest {
     }
 
     @Test
+    fun append_skipsCurveWithNonFiniteCoordinates() {
+        val builder = SvgBuilder()
+
+        // A NaN coordinate anywhere in the curve must not crash the builder.
+        // Regression test for issue #336 — previously SvgPoint.<init> threw
+        // IllegalArgumentException("Cannot round NaN value") when downstream
+        // arithmetic produced NaN/Inf for a control point.
+        builder.append(makeBezier(0f, 0f, Float.NaN, 0f, 10f, 5f, 15f, 10f), strokeWidth = 4f)
+        builder.append(makeBezier(0f, 0f, 5f, 0f, 10f, 5f, 15f, Float.POSITIVE_INFINITY), strokeWidth = 4f)
+        builder.append(makeBezier(0f, 0f, 5f, 0f, 10f, 5f, 15f, 10f), strokeWidth = Float.NaN)
+
+        val svg = builder.build(width = 50, height = 50, penColor = null, backgroundColor = null)
+        assertFalse("Skipped curves must not emit a <path>", svg.contains("<path "))
+    }
+
+    @Test
+    fun append_emitsPathWhenCurveIsValidAfterSkippedOne() {
+        val builder = SvgBuilder().apply {
+            append(makeBezier(Float.NaN, 0f, 5f, 0f, 10f, 5f, 15f, 10f), strokeWidth = 4f)
+            append(makeBezier(0f, 0f, 5f, 0f, 10f, 5f, 15f, 10f), strokeWidth = 4f)
+        }
+
+        val svg = builder.build(width = 50, height = 50, penColor = null, backgroundColor = null)
+        assertTrue("Valid curve should still produce a <path>", svg.contains("<path "))
+    }
+
+    @Test
     fun build_isIdempotentWithAppendedCurves() {
         val builder = SvgBuilder().apply {
             append(makeBezier(0f, 0f, 5f, 0f, 10f, 5f, 15f, 10f), strokeWidth = 4f)
