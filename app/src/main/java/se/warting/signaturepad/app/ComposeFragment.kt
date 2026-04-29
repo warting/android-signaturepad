@@ -94,10 +94,12 @@ private fun ColorToggleGroup(
 @Composable
 private fun SaveClearRow(
     onSave: () -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
+    onUndo: () -> Unit
 ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(modifier = Modifier.weight(1f), onClick = onSave) { Text("Save") }
+        Button(modifier = Modifier.weight(1f), onClick = onUndo) { Text("Undo") }
         Button(modifier = Modifier.weight(1f), onClick = onClear) { Text("Clear") }
     }
 }
@@ -204,6 +206,9 @@ fun ComposeSample() {
             onClear = {
                 svg = ""
                 adapter?.clear()
+            },
+            onUndo = {
+                adapter?.undo()
             }
         )
 

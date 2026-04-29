@@ -198,6 +198,25 @@ class SignatureSDK {
         }
     }
 
+    /**
+     * Returns true when there is at least one completed or in-progress stroke
+     * that can be removed by [undo].
+     */
+    fun canUndo(): Boolean = originalEvents.any { it.action == MotionEvent.ACTION_DOWN }
+
+    /**
+     * Removes the last stroke (the events from the most recent
+     * [MotionEvent.ACTION_DOWN] through the end of the event list) and
+     * redraws the signature. No-op when there is no stroke to undo.
+     */
+    fun undo() {
+        val lastDown = originalEvents.indexOfLast { it.action == MotionEvent.ACTION_DOWN }
+        if (lastDown < 0) return
+        val remaining = originalEvents.subList(0, lastDown).toList()
+        restoreEvents(remaining)
+        notifyListeners()
+    }
+
     fun getEvents(): List<Event> {
         return originalEvents.toList()
     }
