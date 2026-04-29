@@ -182,19 +182,17 @@ class SignatureSDK {
 
         // Clear bitmap to prevent drawing artifacts
         if (signatureTransparentBitmap != null) {
-            // Get current dimensions
             val width = signatureTransparentBitmap!!.width
             val height = signatureTransparentBitmap!!.height
-
-            // Clear and reinitialize bitmap
             signatureTransparentBitmap = null
             signatureBitmapCanvas = null
             initializeBitmap(width, height)
+        }
 
-            // Process all events to recreate the signature with proper curves
-            if (!originalEvents.isEmpty()) {
-                forward()
-            }
+        // Process all events so both the bitmap (if any) and the SVG builder
+        // reflect the restored signature.
+        if (originalEvents.isNotEmpty()) {
+            forward()
         }
     }
 
