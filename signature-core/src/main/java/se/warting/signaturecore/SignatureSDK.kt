@@ -236,6 +236,24 @@ class SignatureSDK {
         return svgBuilder.build(width, height)
     }
 
+    /**
+     * Returns the current signature as an SVG document.
+     *
+     * @param width Width of the SVG canvas in pixels.
+     * @param height Height of the SVG canvas in pixels.
+     * @param penColor ARGB color used for the signature stroke. If null, the stroke defaults to black.
+     * @param backgroundColor ARGB color drawn as a filled rect behind the signature. If null, the
+     *                        SVG has no background (the area is transparent).
+     */
+    fun getSignatureSvg(
+        width: Int,
+        height: Int,
+        penColor: Int?,
+        backgroundColor: Int? = null,
+    ): String {
+        return svgBuilder.build(width, height, penColor, backgroundColor)
+    }
+
     fun initializeBitmap(width: Int, height: Int) {
         if (signatureTransparentBitmap == null && width > 0 && height > 0) {
             signatureTransparentBitmap = createBitmap(width, height).also {

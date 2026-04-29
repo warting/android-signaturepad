@@ -194,7 +194,16 @@ fun ComposeSample() {
 
         SaveClearRow(
             onSave = {
-                svg = adapter?.getSignatureSvg().orEmpty()
+                svg = adapter?.let { a ->
+                    if (useOverride) {
+                        a.getSignatureSvg(
+                            penColor = toggles[2].state.value.toArgb(),
+                            backgroundColor = toggles[1].state.value.toArgb(),
+                        )
+                    } else {
+                        a.getSignatureSvg()
+                    }
+                }.orEmpty()
                 adapter?.let {
                     bmpPair = it.extractBitmaps(
                         useOverride = useOverride,

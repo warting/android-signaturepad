@@ -79,7 +79,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
         freeCompilerArgs = listOfNotNull(
             "-opt-in=kotlin.RequiresOptIn",
             "-Xskip-prerelease-check"
@@ -103,7 +103,7 @@ android {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 dependencies {
@@ -112,5 +112,6 @@ dependencies {
     androidTestImplementation(composeBom)
     implementation(libs.androidx.core.core.ktx)
     implementation(libs.androidx.compose.runtime)
+    testImplementation(libs.junit)
     detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }

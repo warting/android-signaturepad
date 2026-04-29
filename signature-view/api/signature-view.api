@@ -74,6 +74,8 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 	public final fun getSignatureBitmap (ILjava/lang/Integer;)Landroid/graphics/Bitmap;
 	public static synthetic fun getSignatureBitmap$default (Lse/warting/signatureview/views/SignaturePad;ILjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun getSignatureSvg ()Ljava/lang/String;
+	public final fun getSignatureSvg (Ljava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/String;
+	public static synthetic fun getSignatureSvg$default (Lse/warting/signatureview/views/SignaturePad;Ljava/lang/Integer;Ljava/lang/Integer;ILjava/lang/Object;)Ljava/lang/String;
 	public final fun getTransparentSignatureBitmap (ZLjava/lang/Integer;)Landroid/graphics/Bitmap;
 	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signatureview/views/SignaturePad;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
