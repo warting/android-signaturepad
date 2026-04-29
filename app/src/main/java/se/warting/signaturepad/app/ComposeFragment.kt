@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +44,10 @@ import se.warting.signaturepad.SignaturePadAdapter
 import se.warting.signaturepad.SignaturePadView
 
 private const val SIGNATURE_PAD_HEIGHT_DP = 120
+private const val PEN_WIDTH_MIN_DP = 1f
+private const val PEN_WIDTH_MAX_DP = 20f
+private const val DEFAULT_PEN_MIN_WIDTH_DP = 3f
+private const val DEFAULT_PEN_MAX_WIDTH_DP = 7f
 
 @Composable
 private fun ColorToggleGroup(
@@ -150,6 +155,8 @@ fun ComposeSample() {
     )
 
     var useOverride by remember { mutableStateOf(false) }
+    var penMinWidth by remember { mutableStateOf(DEFAULT_PEN_MIN_WIDTH_DP) }
+    var penMaxWidth by remember { mutableStateOf(DEFAULT_PEN_MAX_WIDTH_DP) }
 
     Column(
         Modifier
@@ -166,6 +173,8 @@ fun ComposeSample() {
             SignaturePadView(
                 onReady = { adapter = it },
                 penColor = toggles[0].state.value,
+                penMinWidth = penMinWidth.dp,
+                penMaxWidth = penMaxWidth.dp,
                 onStartSigning = { Log.d("SignedListener", "onStartSigning") },
                 onSigning = { Log.d("SignedListener", "onSigning") },
                 onSigned = { Log.d("SignedListener", "onSigned") },
@@ -179,6 +188,32 @@ fun ComposeSample() {
             ColorToggleGroup(tol.title, tol.options, tol.state.value) { tol.state.value = it }
             Spacer(Modifier.height(8.dp))
         }
+
+        Text(
+            "Pen min width: ${"%.1f".format(penMinWidth)} dp",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Slider(
+            value = penMinWidth,
+            onValueChange = {
+                penMinWidth = it
+                if (penMaxWidth < it) penMaxWidth = it
+            },
+            valueRange = PEN_WIDTH_MIN_DP..PEN_WIDTH_MAX_DP,
+        )
+        Text(
+            "Pen max width: ${"%.1f".format(penMaxWidth)} dp",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Slider(
+            value = penMaxWidth,
+            onValueChange = {
+                penMaxWidth = it
+                if (penMinWidth > it) penMinWidth = it
+            },
+            valueRange = PEN_WIDTH_MIN_DP..PEN_WIDTH_MAX_DP,
+        )
+        Spacer(Modifier.height(8.dp))
 
         Row(
             Modifier
