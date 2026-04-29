@@ -74,11 +74,20 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+
+            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
+            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
+        }
+        debug {
+            isMinifyEnabled = false
+            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
+            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
         }
     }
     buildFeatures {
         viewBinding = false
         compose = true
+        buildConfig = true
     }
 
     lint {
@@ -103,9 +112,10 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     api(project(":signature-core"))
-    implementation(project(":signature-view"))
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.core.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.espresso.core)

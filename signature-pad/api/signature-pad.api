@@ -1,6 +1,5 @@
 public final class se/warting/signaturepad/SignaturePadAdapter {
 	public static final field $stable I
-	public fun <init> (Lse/warting/signatureview/views/SignaturePad;)V
 	public final fun canUndo ()Z
 	public final fun clear ()V
 	public final fun getSignature ()Lse/warting/signaturecore/Signature;
@@ -19,5 +18,14 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 
 public final class se/warting/signaturepad/SignaturePadViewKt {
 	public static final fun SignaturePadView-zeGgxi4 (Landroidx/compose/ui/Modifier;FFJFZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
+}
+
+public final class se/warting/signaturepad/compose/BuildConfig {
+	public static final field BUILD_TYPE Ljava/lang/String;
+	public static final field DEBUG Z
+	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
+	public static final field VERSION_CODE I
+	public static final field VERSION_NAME Ljava/lang/String;
+	public fun <init> ()V
 }
 
