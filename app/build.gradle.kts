@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "se.warting.signaturepad"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -78,15 +78,13 @@ kotlin {
 dependencies {
 
     implementation(libs.androidx.navigation3.ui.android)
-    val composeBom = platform("androidx.compose:compose-bom:2025.09.00")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
-
     implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.com.google.android.material)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.activity.activity.ktx)
     implementation(project(":signature-pad"))

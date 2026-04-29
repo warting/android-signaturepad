@@ -14,6 +14,9 @@ jobs:
       - uses: release-drafter/release-drafter@v7.1.1
         with:
           config-name: release-drafter.yml
-          disable-autolabeler: false
+          # On pull_request, GITHUB_REF is refs/pull/N/merge, which GitHub's
+          # release API rejects as target_commitish. Skip the release update on
+          # PRs (autolabeler still runs); the draft is updated on push to main.
+          dry-run: ${{ github.event_name == 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

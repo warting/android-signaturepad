@@ -61,7 +61,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -104,10 +104,8 @@ kotlin {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2025.09.00")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
-
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
 
     api(project(":signature-core"))
     implementation(project(":signature-view"))
