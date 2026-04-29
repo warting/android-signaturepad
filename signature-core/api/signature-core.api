@@ -39,6 +39,15 @@ public final class se/warting/signaturecore/Signature : android/os/Parcelable {
 	public final fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
+public final class se/warting/signaturecore/SignatureRenderingKt {
+	public static final fun toBitmap (Lse/warting/signaturecore/Signature;IIIIIIF)Landroid/graphics/Bitmap;
+	public static synthetic fun toBitmap$default (Lse/warting/signaturecore/Signature;IIIIIIFILjava/lang/Object;)Landroid/graphics/Bitmap;
+	public static final fun toSvg (Lse/warting/signaturecore/Signature;IILjava/lang/Integer;Ljava/lang/Integer;IIF)Ljava/lang/String;
+	public static synthetic fun toSvg$default (Lse/warting/signaturecore/Signature;IILjava/lang/Integer;Ljava/lang/Integer;IIFILjava/lang/Object;)Ljava/lang/String;
+	public static final fun toTransparentBitmap (Lse/warting/signaturecore/Signature;IIZIIIF)Landroid/graphics/Bitmap;
+	public static synthetic fun toTransparentBitmap$default (Lse/warting/signaturecore/Signature;IIZIIIFILjava/lang/Object;)Landroid/graphics/Bitmap;
+}
+
 public final class se/warting/signaturecore/SignatureSDK {
 	public static final field $stable I
 	public static final field Companion Lse/warting/signaturecore/SignatureSDK$Companion;

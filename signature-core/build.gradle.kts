@@ -78,6 +78,10 @@ android {
         compose = true
     }
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     lint {
         baseline = file("lint-baseline.xml")
         checkReleaseBuilds = true
