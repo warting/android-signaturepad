@@ -207,6 +207,19 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return signatureSDK.getSignatureSvg(width, height)
     }
 
+    /**
+     * Returns the current signature as an SVG document with optional coloring.
+     *
+     * @param penColor ARGB color of the signature stroke.
+     * @param backgroundColor ARGB color filled behind the signature. If null the SVG is transparent.
+     */
+    fun getSignatureSvg(
+        @ColorInt penColor: Int,
+        @ColorInt backgroundColor: Int? = null,
+    ): String {
+        return signatureSDK.getSignatureSvg(width, height, penColor, backgroundColor)
+    }
+
     @ExperimentalSignatureApi
     fun getSignature(): Signature {
         return Signature(BuildConfig.VERSION_CODE, signatureSDK.getEvents())

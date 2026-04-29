@@ -97,6 +97,16 @@ class SignaturePadAdapter(private val signaturePad: SignaturePad) {
         return signaturePad.getSignatureSvg()
     }
 
+    /**
+     * Returns the current signature as an SVG document with optional coloring.
+     *
+     * @param penColor ARGB color of the signature stroke.
+     * @param backgroundColor ARGB color filled behind the signature. If null the SVG is transparent.
+     */
+    fun getSignatureSvg(penColor: Int, backgroundColor: Int? = null): String {
+        return signaturePad.getSignatureSvg(penColor, backgroundColor)
+    }
+
     @ExperimentalSignatureApi
     fun getSignature(): Signature {
         return signaturePad.getSignature()
