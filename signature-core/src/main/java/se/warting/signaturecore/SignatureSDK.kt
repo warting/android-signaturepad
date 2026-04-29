@@ -199,22 +199,39 @@ class SignatureSDK {
     }
 
     /**
-     * Returns true when there is at least one completed or in-progress stroke
-     * that can be removed by [undo].
+     * Returns true when there is at least one completed stroke that can be
+     * removed by [undo]. A stroke is completed once its [MotionEvent.ACTION_UP]
+     * has been recorded.
      */
-    fun canUndo(): Boolean = originalEvents.any { it.action == MotionEvent.ACTION_DOWN }
+    fun canUndo(): Boolean = findLastCompletedStrokeStartIndex() >= 0
 
     /**
-     * Removes the last stroke (the events from the most recent
-     * [MotionEvent.ACTION_DOWN] through the end of the event list) and
-     * redraws the signature. No-op when there is no stroke to undo.
+     * Removes the last completed stroke (from its [MotionEvent.ACTION_DOWN]
+     * through its terminating [MotionEvent.ACTION_UP] and any events in
+     * between) and redraws the signature. No-op when there is no completed
+     * stroke to undo. An in-progress stroke is left untouched so the active
+     * touch sequence stays consistent.
      */
     fun undo() {
-        val lastDown = originalEvents.indexOfLast { it.action == MotionEvent.ACTION_DOWN }
-        if (lastDown < 0) return
-        val remaining = originalEvents.subList(0, lastDown).toList()
+        val lastCompletedStrokeStart = findLastCompletedStrokeStartIndex()
+        if (lastCompletedStrokeStart < 0) return
+        val remaining = originalEvents.subList(0, lastCompletedStrokeStart).toList()
         restoreEvents(remaining)
-        notifyListeners()
+        if (remaining.isEmpty()) {
+            signedListener?.onClear()
+        } else {
+            signedListener?.onSigned()
+        }
+    }
+
+    private fun findLastCompletedStrokeStartIndex(): Int {
+        val lastUp = originalEvents.indexOfLast { it.action == MotionEvent.ACTION_UP }
+        return if (lastUp < 0) {
+            -1
+        } else {
+            originalEvents.subList(0, lastUp + 1)
+                .indexOfLast { it.action == MotionEvent.ACTION_DOWN }
+        }
     }
 
     fun getEvents(): List<Event> {
