@@ -73,10 +73,10 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
             mutableState =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    state.getParcelable("events", Parcelable::class.java)
+                    state.getParcelable("superState", Parcelable::class.java)
                 } else {
                     @Suppress("DEPRECATION")
-                    state.getParcelable("events")
+                    state.getParcelable("superState")
                 }
             invalidate()
         }
