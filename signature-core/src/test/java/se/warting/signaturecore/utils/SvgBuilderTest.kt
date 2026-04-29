@@ -80,4 +80,34 @@ class SvgBuilderTest {
         val second = SvgBuilder().build(50, 25, penColor = 0xFF112233.toInt(), backgroundColor = null)
         assertEquals(first, second)
     }
+
+    @Test
+    fun build_isIdempotentWithAppendedCurves() {
+        val builder = SvgBuilder().apply {
+            append(makeBezier(0f, 0f, 5f, 0f, 10f, 5f, 15f, 10f), strokeWidth = 4f)
+            append(makeBezier(15f, 10f, 20f, 15f, 25f, 20f, 30f, 25f), strokeWidth = 4f)
+        }
+
+        val firstSvg = builder.build(width = 50, height = 50, penColor = null, backgroundColor = null)
+        val secondSvg = builder.build(width = 50, height = 50, penColor = null, backgroundColor = null)
+
+        assertTrue("Expected at least one <path> in SVG output", firstSvg.contains("<path "))
+        assertEquals("Repeated build() must produce identical output", firstSvg, secondSvg)
+    }
+
+    private fun makeBezier(
+        sx: Float,
+        sy: Float,
+        c1x: Float,
+        c1y: Float,
+        c2x: Float,
+        c2y: Float,
+        ex: Float,
+        ey: Float,
+    ): Bezier = Bezier(
+        TimedPoint().set(sx, sy, 0L),
+        TimedPoint().set(c1x, c1y, 0L),
+        TimedPoint().set(c2x, c2y, 0L),
+        TimedPoint().set(ex, ey, 0L),
+    )
 }

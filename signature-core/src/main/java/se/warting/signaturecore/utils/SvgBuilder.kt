@@ -18,9 +18,6 @@ class SvgBuilder {
         penColor: Int?,
         backgroundColor: Int?,
     ): String {
-        if (isPathStarted) {
-            appendCurrentPath()
-        }
         val sb = StringBuilder()
             .append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n")
             .append("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\" baseProfile=\"tiny\" ")
@@ -47,7 +44,10 @@ class SvgBuilder {
         appendStroke(sb, penColor)
         sb.append(">")
             .append(mSvgPathsBuilder)
-            .append("</g>")
+        if (isPathStarted) {
+            sb.append(mCurrentPathBuilder)
+        }
+        sb.append("</g>")
             .append("</svg>")
         return sb.toString()
     }
