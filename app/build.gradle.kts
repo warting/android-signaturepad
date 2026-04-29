@@ -63,6 +63,7 @@ android {
         disable.add("LogConditional")
         disable.add("AndroidGradlePluginVersion")
         disable.add("NewerVersionAvailable")
+        disable.add("OldTargetApi")
         checkDependencies = true
         checkGeneratedSources = false
         sarifOutput = file("../lint-results-lib.sarif")
