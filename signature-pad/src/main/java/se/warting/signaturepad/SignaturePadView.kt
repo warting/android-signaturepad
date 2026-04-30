@@ -46,7 +46,7 @@ import kotlin.math.roundToInt
 @Composable
 fun rememberSignaturePadState(): SignaturePadState {
     val sdk = rememberSaveable(saver = SignatureSdkSaver) { SignatureSDK() }
-    return remember(sdk) { SignaturePadState(sdk) }
+    return remember(sdk) { SignaturePadState.create(sdk) }
 }
 
 @SuppressWarnings("LongParameterList", "LongMethod", "CyclomaticComplexMethod")
@@ -122,7 +122,7 @@ fun SignaturePadView(
     }
 
     @Suppress("DEPRECATION")
-    val adapter = remember(state) { SignaturePadAdapter(state) }
+    val adapter = remember(state) { SignaturePadAdapter.create(state) }
 
     // The legacy AndroidView-backed implementation called onReady on every
     // recomposition (via AndroidView's update block). Some sample code captures
@@ -240,9 +240,14 @@ fun SignaturePadView(
  * Hoisted state for [SignaturePadView]. Use [rememberSignaturePadState] to create one.
  */
 @Stable
-class SignaturePadState internal constructor(
+class SignaturePadState private constructor(
     internal val sdk: SignatureSDK,
 ) {
+
+    internal companion object {
+        @JvmSynthetic
+        internal fun create(sdk: SignatureSDK): SignaturePadState = SignaturePadState(sdk)
+    }
 
     internal var size: IntSize = IntSize.Zero
 
@@ -327,9 +332,15 @@ class SignaturePadState internal constructor(
         "SignaturePadView instead. SignaturePadAdapter will be removed in a future release.",
     ReplaceWith("SignaturePadState"),
 )
-class SignaturePadAdapter internal constructor(
+class SignaturePadAdapter private constructor(
     private val state: SignaturePadState,
 ) {
+
+    internal companion object {
+        @JvmSynthetic
+        internal fun create(state: SignaturePadState): SignaturePadAdapter =
+            SignaturePadAdapter(state)
+    }
 
     fun clear() = state.clear()
 
