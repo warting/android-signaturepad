@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.Signature
-import se.warting.signaturepad.SignaturePadAdapter
 import se.warting.signaturepad.SignaturePadView
+import se.warting.signaturepad.rememberSignaturePadState
 
 private const val SIGNATURE_PAD_HEIGHT = 120
 
@@ -32,8 +32,7 @@ private const val SIGNATURE_PAD_HEIGHT = 120
 fun SaveRestoreSample() {
     Column {
         val mutableSvg = remember { mutableStateOf("") }
-
-        var signaturePadAdapter: SignaturePadAdapter? = null
+        val signaturePadState = rememberSignaturePadState()
 
         Box(
             modifier = Modifier
@@ -47,9 +46,7 @@ fun SaveRestoreSample() {
 
             SignaturePadView(
                 modifier = Modifier.fillMaxSize(),
-                onReady = {
-                    signaturePadAdapter = it
-                },
+                state = signaturePadState,
                 onStartSigning = {
                     if (BuildConfig.DEBUG) {
                         Log.d("SaveRestoreFragment", "onStartSigning")
@@ -69,7 +66,7 @@ fun SaveRestoreSample() {
                     if (BuildConfig.DEBUG) {
                         Log.d(
                             "SaveRestoreFragment",
-                            "onClear isEmpty:" + signaturePadAdapter?.isEmpty
+                            "onClear isEmpty:" + signaturePadState.isEmpty
                         )
                     }
                 },
@@ -77,15 +74,14 @@ fun SaveRestoreSample() {
         }
         Row {
             Button(onClick = {
-                mutableSvg.value =
-                    signaturePadAdapter?.getSignature()?.serialize() ?: ""
-                signaturePadAdapter?.clear()
+                mutableSvg.value = signaturePadState.getSignature().serialize()
+                signaturePadState.clear()
             }) {
                 Text("Save")
             }
 
             Button(onClick = {
-                signaturePadAdapter?.setSignature(mutableSvg.value.deserialize())
+                signaturePadState.setSignature(mutableSvg.value.deserialize())
                 mutableSvg.value = ""
             }) {
                 Text("Restore")

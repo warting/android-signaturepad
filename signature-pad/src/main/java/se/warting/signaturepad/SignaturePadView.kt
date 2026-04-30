@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,10 +39,21 @@ import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturepad.compose.BuildConfig
 import kotlin.math.roundToInt
 
+/**
+ * Creates and remembers a [SignaturePadState]. The underlying signature events are preserved
+ * across configuration changes via [rememberSaveable].
+ */
+@Composable
+fun rememberSignaturePadState(): SignaturePadState {
+    val sdk = rememberSaveable(saver = SignatureSdkSaver) { SignatureSDK() }
+    return remember(sdk) { SignaturePadState(sdk) }
+}
+
 @SuppressWarnings("LongParameterList", "LongMethod", "CyclomaticComplexMethod")
 @Composable
 fun SignaturePadView(
     modifier: Modifier = Modifier,
+    state: SignaturePadState = rememberSignaturePadState(),
     penMinWidth: Dp = 3.dp,
     penMaxWidth: Dp = 7.dp,
     penColor: Color = Color.Black,
@@ -54,9 +66,7 @@ fun SignaturePadView(
     onClear: () -> Unit = {},
 ) {
     val density = LocalDensity.current
-    val sdk = rememberSaveable(saver = SignatureSdkSaver) { SignatureSDK() }
-    var redrawTick by remember { mutableIntStateOf(0) }
-    val adapter = remember(sdk) { SignaturePadAdapter.create(sdk) { redrawTick++ } }
+    val sdk = state.sdk
     var bitmapInitialized by remember(sdk) { mutableStateOf(sdk.hasBitmap()) }
 
     val minWidthPx = with(density) { penMinWidth.toPx() }.roundToInt()
@@ -80,7 +90,7 @@ fun SignaturePadView(
             val restored = sdk.getEvents()
             if (restored.isNotEmpty()) {
                 sdk.restoreEvents(restored)
-                redrawTick++
+                state.invalidate()
             }
         }
     }
@@ -111,6 +121,9 @@ fun SignaturePadView(
         onDispose { sdk.setOnSignedListener(null) }
     }
 
+    @Suppress("DEPRECATION")
+    val adapter = remember(state) { SignaturePadAdapter(state) }
+
     // The legacy AndroidView-backed implementation called onReady on every
     // recomposition (via AndroidView's update block). Some sample code captures
     // the adapter into a non-remembered local var that gets reset on each
@@ -128,7 +141,7 @@ fun SignaturePadView(
         modifier = modifier
             .onSizeChanged { newSize ->
                 if (newSize.width > 0 && newSize.height > 0) {
-                    adapter.size = newSize
+                    state.size = newSize
                     canvasSize = newSize
                     if (!sdk.hasBitmap()) {
                         sdk.initializeBitmap(newSize.width, newSize.height)
@@ -148,7 +161,7 @@ fun SignaturePadView(
 
                     if (isDoubleTap) {
                         sdk.clear()
-                        redrawTick++
+                        state.invalidate()
                         lastTapUpTime = 0L
                         down.consume()
                         while (true) {
@@ -171,7 +184,7 @@ fun SignaturePadView(
                             down.position.y,
                         ),
                     )
-                    redrawTick++
+                    state.invalidate()
                     down.consume()
 
                     var moved = false
@@ -190,7 +203,7 @@ fun SignaturePadView(
                                     change.position.y,
                                 ),
                             )
-                            redrawTick++
+                            state.invalidate()
                             change.consume()
                             // Track tap time only when the gesture had no
                             // movement, so a double-stroke (drag-drag) does
@@ -207,7 +220,7 @@ fun SignaturePadView(
                                     change.position.y,
                                 ),
                             )
-                            redrawTick++
+                            state.invalidate()
                             change.consume()
                         }
                     }
@@ -215,7 +228,7 @@ fun SignaturePadView(
             },
     ) {
         @Suppress("UNUSED_EXPRESSION")
-        redrawTick
+        state.redrawTick
         if (!sdk.hasBitmap() && canvasSize.width > 0 && canvasSize.height > 0) {
             sdk.initializeBitmap(canvasSize.width, canvasSize.height)
         }
@@ -223,18 +236,27 @@ fun SignaturePadView(
     }
 }
 
-class SignaturePadAdapter private constructor(
-    private val sdk: SignatureSDK,
-    private val invalidate: () -> Unit,
+/**
+ * Hoisted state for [SignaturePadView]. Use [rememberSignaturePadState] to create one.
+ */
+@Stable
+class SignaturePadState internal constructor(
+    internal val sdk: SignatureSDK,
 ) {
 
-    internal companion object {
-        @JvmSynthetic
-        internal fun create(sdk: SignatureSDK, invalidate: () -> Unit): SignaturePadAdapter =
-            SignaturePadAdapter(sdk, invalidate)
+    internal var size: IntSize = IntSize.Zero
+
+    internal var redrawTick: Int by mutableIntStateOf(0)
+
+    internal fun invalidate() {
+        redrawTick++
     }
 
-    internal var size: IntSize = IntSize.Zero
+    private fun ensureBitmap() {
+        if (!sdk.hasBitmap() && size.width > 0 && size.height > 0) {
+            sdk.initializeBitmap(size.width, size.height)
+        }
+    }
 
     fun clear() {
         sdk.clear()
@@ -251,12 +273,6 @@ class SignaturePadAdapter private constructor(
         invalidate()
     }
 
-    private fun ensureBitmap() {
-        if (!sdk.hasBitmap() && size.width > 0 && size.height > 0) {
-            sdk.initializeBitmap(size.width, size.height)
-        }
-    }
-
     /**
      * @return true if a stroke is available to undo.
      */
@@ -266,9 +282,7 @@ class SignaturePadAdapter private constructor(
         get() = sdk.isEmpty
 
     @Suppress("unused")
-    fun getSignatureBitmap(): Bitmap {
-        return sdk.getSignatureBitmap() ?: createBitmap(1, 1)
-    }
+    fun getSignatureBitmap(): Bitmap = sdk.getSignatureBitmap() ?: createBitmap(1, 1)
 
     /**
      * Returns a bitmap containing the current signature.
@@ -276,21 +290,16 @@ class SignaturePadAdapter private constructor(
      * @param backgroundColor Color of the bitmap's surface behind the signature
      * @param penColor Color of the signature line in the bitmap
      */
-    fun getSignatureBitmap(backgroundColor: Int, penColor: Int? = null): Bitmap {
-        return sdk.getSignatureBitmap(backgroundColor, penColor) ?: createBitmap(1, 1)
-    }
+    fun getSignatureBitmap(backgroundColor: Int, penColor: Int? = null): Bitmap =
+        sdk.getSignatureBitmap(backgroundColor, penColor) ?: createBitmap(1, 1)
 
     @Suppress("unused")
     fun getTransparentSignatureBitmap(
         trimBlankSpace: Boolean = false,
         penColor: Int? = null,
-    ): Bitmap {
-        return sdk.getTransparentSignatureBitmap(trimBlankSpace, penColor) ?: createBitmap(1, 1)
-    }
+    ): Bitmap = sdk.getTransparentSignatureBitmap(trimBlankSpace, penColor) ?: createBitmap(1, 1)
 
-    fun getSignatureSvg(): String {
-        return sdk.getSignatureSvg(size.width, size.height)
-    }
+    fun getSignatureSvg(): String = sdk.getSignatureSvg(size.width, size.height)
 
     /**
      * Returns the current signature as an SVG document with optional coloring.
@@ -298,14 +307,11 @@ class SignaturePadAdapter private constructor(
      * @param penColor ARGB color of the signature stroke. If null the stroke defaults to black.
      * @param backgroundColor ARGB color filled behind the signature. If null the SVG is transparent.
      */
-    fun getSignatureSvg(penColor: Int? = null, backgroundColor: Int? = null): String {
-        return sdk.getSignatureSvg(size.width, size.height, penColor, backgroundColor)
-    }
+    fun getSignatureSvg(penColor: Int? = null, backgroundColor: Int? = null): String =
+        sdk.getSignatureSvg(size.width, size.height, penColor, backgroundColor)
 
     @ExperimentalSignatureApi
-    fun getSignature(): Signature {
-        return Signature(BuildConfig.VERSION_CODE, sdk.getEvents())
-    }
+    fun getSignature(): Signature = Signature(BuildConfig.VERSION_CODE, sdk.getEvents())
 
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
@@ -314,6 +320,47 @@ class SignaturePadAdapter private constructor(
         sdk.restoreEvents(signature.events)
         invalidate()
     }
+}
+
+@Deprecated(
+    "Hoist a SignaturePadState via rememberSignaturePadState() and pass it to " +
+        "SignaturePadView instead. SignaturePadAdapter will be removed in a future release.",
+    ReplaceWith("SignaturePadState"),
+)
+class SignaturePadAdapter internal constructor(
+    private val state: SignaturePadState,
+) {
+
+    fun clear() = state.clear()
+
+    fun undo() = state.undo()
+
+    fun canUndo(): Boolean = state.canUndo()
+
+    val isEmpty: Boolean get() = state.isEmpty
+
+    @Suppress("unused")
+    fun getSignatureBitmap(): Bitmap = state.getSignatureBitmap()
+
+    fun getSignatureBitmap(backgroundColor: Int, penColor: Int? = null): Bitmap =
+        state.getSignatureBitmap(backgroundColor, penColor)
+
+    @Suppress("unused")
+    fun getTransparentSignatureBitmap(
+        trimBlankSpace: Boolean = false,
+        penColor: Int? = null,
+    ): Bitmap = state.getTransparentSignatureBitmap(trimBlankSpace, penColor)
+
+    fun getSignatureSvg(): String = state.getSignatureSvg()
+
+    fun getSignatureSvg(penColor: Int? = null, backgroundColor: Int? = null): String =
+        state.getSignatureSvg(penColor, backgroundColor)
+
+    @ExperimentalSignatureApi
+    fun getSignature(): Signature = state.getSignature()
+
+    @ExperimentalSignatureApi
+    fun setSignature(signature: Signature) = state.setSignature(signature)
 }
 
 private val SignatureSdkSaver: Saver<SignatureSDK, ArrayList<Event>> = Saver(

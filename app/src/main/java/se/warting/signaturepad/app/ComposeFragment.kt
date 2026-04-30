@@ -41,8 +41,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import se.warting.signaturepad.SignaturePadAdapter
+import se.warting.signaturepad.SignaturePadState
 import se.warting.signaturepad.SignaturePadView
+import se.warting.signaturepad.rememberSignaturePadState
 
 private const val SIGNATURE_PAD_HEIGHT_DP = 120
 private const val PEN_WIDTH_MIN_DP = 1f
@@ -110,12 +111,12 @@ private fun SaveClearRow(
     }
 }
 
-private fun SignaturePadAdapter.extractBitmaps(
+private fun SignaturePadState.extractBitmaps(
     useOverride: Boolean,
     bgColor: Color,
     strokeColor: Color?
 ): Pair<ImageBitmap?, ImageBitmap?> {
-    fun toBmp(op: SignaturePadAdapter.() -> android.graphics.Bitmap?) =
+    fun toBmp(op: SignaturePadState.() -> android.graphics.Bitmap?) =
         op()?.asImageBitmap()
 
     return if (useOverride) {
@@ -132,7 +133,7 @@ private fun SignaturePadAdapter.extractBitmaps(
 fun ComposeSample() {
     var svg by remember { mutableStateOf("") }
     var bmpPair by remember { mutableStateOf<Pair<ImageBitmap?, ImageBitmap?>>(null to null) }
-    var adapter by remember { mutableStateOf<SignaturePadAdapter?>(null) }
+    val signatureState = rememberSignaturePadState()
 
     data class Toggle(
         val title: String,
@@ -173,14 +174,14 @@ fun ComposeSample() {
         ) {
             SignaturePadView(
                 modifier = Modifier.fillMaxSize(),
-                onReady = { adapter = it },
+                state = signatureState,
                 penColor = toggles[0].state.value,
                 penMinWidth = penMinWidth.dp,
                 penMaxWidth = penMaxWidth.dp,
                 onStartSigning = { Log.d("SignedListener", "onStartSigning") },
                 onSigning = { Log.d("SignedListener", "onSigning") },
                 onSigned = { Log.d("SignedListener", "onSigned") },
-                onClear = { Log.d("ComposeSample", "isEmpty=${adapter?.isEmpty}") }
+                onClear = { Log.d("ComposeSample", "isEmpty=${signatureState.isEmpty}") }
             )
         }
 
@@ -231,30 +232,26 @@ fun ComposeSample() {
 
         SaveClearRow(
             onSave = {
-                svg = adapter?.let { a ->
-                    if (useOverride) {
-                        a.getSignatureSvg(
-                            penColor = toggles[2].state.value.toArgb(),
-                            backgroundColor = toggles[1].state.value.toArgb(),
-                        )
-                    } else {
-                        a.getSignatureSvg()
-                    }
-                }.orEmpty()
-                adapter?.let {
-                    bmpPair = it.extractBitmaps(
-                        useOverride = useOverride,
-                        bgColor = toggles[1].state.value,
-                        strokeColor = toggles[2].state.value
+                svg = if (useOverride) {
+                    signatureState.getSignatureSvg(
+                        penColor = toggles[2].state.value.toArgb(),
+                        backgroundColor = toggles[1].state.value.toArgb(),
                     )
+                } else {
+                    signatureState.getSignatureSvg()
                 }
+                bmpPair = signatureState.extractBitmaps(
+                    useOverride = useOverride,
+                    bgColor = toggles[1].state.value,
+                    strokeColor = toggles[2].state.value
+                )
             },
             onClear = {
                 svg = ""
-                adapter?.clear()
+                signatureState.clear()
             },
             onUndo = {
-                adapter?.undo()
+                signatureState.undo()
             }
         )
 
