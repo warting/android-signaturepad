@@ -1,7 +1,7 @@
 [versions]
 agp = "9.2.1"
 androidx-activity = "1.13.0"
-composeBom = "2026.04.01"
+composeBom = "2026.05.00"
 core = "1.18.0"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.3.21"
