@@ -1,80 +1,334 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:signature="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:id="@+id/view_root"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".ViewActivity">
 
-
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/signature_pad_container"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/buttons_container">
-
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_above="@+id/signature_pad_description"
-            android:layout_marginBottom="8dp"
-            android:background="@android:color/darker_gray" />
-
-        <TextView
-            android:id="@+id/signature_pad_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="16dp"
-            android:text="@string/agreement"
-            android:textColor="@android:color/darker_gray" />
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
 
         <se.warting.signatureview.views.SignaturePad
             android:id="@+id/signature_pad"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             signature:clearOnDoubleClick="true" />
-    </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/buttons_container"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:paddingTop="16dp">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="40dp"
+            android:background="@android:color/darker_gray" />
 
-        <Button
-            style="?android:attr/buttonBarButtonStyle"
-            android:id="@+id/clear_button"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/signature_pad_description"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:enabled="false"
-            android:text="@string/clear_pad" />
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:text="@string/agreement"
+            android:textColor="@android:color/darker_gray" />
+    </FrameLayout>
 
-        <Button
-            style="?android:attr/buttonBarButtonStyle"
-            android:id="@+id/undo_button"
-            android:layout_width="0dp"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:enabled="false"
-            android:text="@string/undo" />
+            android:orientation="vertical"
+            android:paddingTop="8dp">
 
-        <Button
-            style="?android:attr/buttonBarButtonStyle"
-            android:id="@+id/save_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:enabled="false"
-            android:text="@string/save_signature" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pen_color_label" />
 
-</RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/pen_red_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_red" />
+
+                <Button
+                    android:id="@+id/pen_black_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_black" />
+
+                <Button
+                    android:id="@+id/pen_white_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_white" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shadow_color_label" />
+
+            <LinearLayout
+                android:id="@+id/shadow_color_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/shadow_black_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_black" />
+
+                <Button
+                    android:id="@+id/shadow_blue_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_blue" />
+
+                <Button
+                    android:id="@+id/shadow_red_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_red" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/image_background_color_label" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/image_background_red_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_red" />
+
+                <Button
+                    android:id="@+id/image_background_green_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_green" />
+
+                <Button
+                    android:id="@+id/image_background_blue_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_blue" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/image_pen_color_label" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/image_pen_red_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_red" />
+
+                <Button
+                    android:id="@+id/image_pen_black_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_black" />
+
+                <Button
+                    android:id="@+id/image_pen_white_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_white" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/pen_min_width_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                tools:text="Pen min width: 3.0 dp" />
+
+            <SeekBar
+                android:id="@+id/pen_min_width_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/pen_max_width_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                tools:text="Pen max width: 7.0 dp" />
+
+            <SeekBar
+                android:id="@+id/pen_max_width_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/shadow_intensity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                tools:text="Shadow intensity: 0.00" />
+
+            <SeekBar
+                android:id="@+id/shadow_intensity_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="0" />
+
+            <TextView
+                android:id="@+id/shadow_angle_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                tools:text="Shadow angle: 51 deg" />
+
+            <SeekBar
+                android:id="@+id/shadow_angle_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="360" />
+
+            <CheckBox
+                android:id="@+id/use_override_colors_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/use_override_colors" />
+
+            <LinearLayout
+                android:id="@+id/buttons_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp">
+
+                <Button
+                    android:id="@+id/save_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="@string/save" />
+
+                <Button
+                    android:id="@+id/undo_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="@string/undo" />
+
+                <Button
+                    android:id="@+id/clear_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="@string/clear" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/bitmap_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bitmap"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/bitmap_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/signature"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/transparent_bitmap_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/transparent_bitmap"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/transparent_bitmap_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/transparent"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/svg_label_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/svg_label"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/signature_svg_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

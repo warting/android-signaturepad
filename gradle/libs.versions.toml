@@ -5,6 +5,7 @@ composeBom = "2026.05.01"
 core = "1.18.0"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.3.21"
+material3 = "1.5.0-alpha17"
 navigation3UiAndroid = "1.2.0-alpha02"
 
 [libraries]
@@ -23,7 +24,7 @@ androidx-core = { module = "androidx.core:core", version.ref = "core" }
 androidx-core-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
 androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.9"
 androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.10.0"
-androidx-material3 = { module = "androidx.compose.material3:material3" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-navigation3-ui-android = { module = "androidx.navigation3:navigation3-ui-android", version.ref = "navigation3UiAndroid" }
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"

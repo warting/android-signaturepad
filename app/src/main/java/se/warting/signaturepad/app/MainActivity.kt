@@ -3,6 +3,7 @@ package se.warting.signaturepad.app
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -33,12 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.compose.AndroidFragment
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
-import androidx.compose.ui.graphics.Color
-
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,47 +73,67 @@ fun App() {
     val colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()
 
     MaterialTheme(colorScheme = colorScheme) {
-
-        var menuExpanded by rememberSaveable { mutableStateOf(false) }
-
         Scaffold(
             topBar = {
                 @OptIn(ExperimentalMaterial3Api::class)
                 TopAppBar(
-                    title = { Text(text = "SignaturePad Samples") },
+                    title = { Text(text = stringResource(R.string.signaturepad_samples)) },
                     actions = {
-                        IconButton(onClick = { menuExpanded = true }) {
-                            Icon(Icons.Filled.MoreVert, contentDescription = "Theme menu")
-                        }
-
-                        DropdownMenu(
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false }
-                        ) {
-                            DropdownMenuItem(text = { Text("Follow system") }, onClick = {
-                                uiMode = AppUiMode.SYSTEM
-                                menuExpanded = false
-                            })
-                            DropdownMenuItem(text = { Text("Light") }, onClick = {
-                                uiMode = AppUiMode.LIGHT
-                                menuExpanded = false
-                            })
-                            DropdownMenuItem(text = { Text("Dark") }, onClick = {
-                                uiMode = AppUiMode.DARK
-                                menuExpanded = false
-                            })
-                        }
+                        ThemeMenu { uiMode = it }
                     }
                 )
             }
         ) { padding ->
             Box(modifier = Modifier
-                .padding(padding)
-                .safeContentPadding()) {
+                .padding(padding)) {
                 Navigation()
             }
         }
     }
+}
+
+@Composable
+private fun ThemeMenu(
+    onUiModeChange: (AppUiMode) -> Unit
+) {
+    var menuExpanded by rememberSaveable { mutableStateOf(false) }
+
+    IconButton(onClick = { menuExpanded = true }) {
+        Icon(
+            Icons.Filled.MoreVert,
+            contentDescription = stringResource(R.string.theme_menu),
+        )
+    }
+
+    DropdownMenu(
+        expanded = menuExpanded,
+        onDismissRequest = { menuExpanded = false }
+    ) {
+        ThemeMenuItem(R.string.theme_follow_system) {
+            onUiModeChange(AppUiMode.SYSTEM)
+            menuExpanded = false
+        }
+        ThemeMenuItem(R.string.theme_light) {
+            onUiModeChange(AppUiMode.LIGHT)
+            menuExpanded = false
+        }
+        ThemeMenuItem(R.string.theme_dark) {
+            onUiModeChange(AppUiMode.DARK)
+            menuExpanded = false
+        }
+    }
+}
+
+@Composable
+private fun ThemeMenuItem(
+    @StringRes
+    titleRes: Int,
+    onClick: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(titleRes)) },
+        onClick = onClick,
+    )
 }
 
 // Define the routes in your app and any arguments.
@@ -187,23 +207,23 @@ fun Home(
             Button(onClick = {
                 nav(Destination.ComposeDestination)
             }) {
-                Text("Compose")
+                Text(stringResource(R.string.compose_sample))
             }
 
             Button(onClick = {
                 nav(Destination.ViewDestination)
             }) {
-                Text("View")
+                Text(stringResource(R.string.view_sample))
             }
             Button(onClick = {
-                nav(Destination.ViewDestination)
+                nav(Destination.DataBindingDestination)
             }) {
-                Text("databind")
+                Text(stringResource(R.string.databinding_sample))
             }
             Button(onClick = {
                 nav(Destination.SaveRestoreDestination)
             }) {
-                Text("SaveRestoreActivity")
+                Text(stringResource(R.string.save_restore_sample))
             }
         }
     }

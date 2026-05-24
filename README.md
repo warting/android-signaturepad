@@ -15,6 +15,7 @@ by [Square](https://squareup.com).
 * Bézier implementation for a smoother line
 * Variable point size based on velocity
 * Customizable pen color and size
+* Customizable live finger shadow color, intensity, and angle
 * Bitmap, SVG and Raw-data support
 
 ## Installation
@@ -68,6 +69,15 @@ Button(onClick = {
 * `penMinWidth` - The minimum width of the stroke (default: 3dp).
 * `penMaxWidth` - The maximum width of the stroke (default: 7dp).
 * `penColor` - The color of the stroke (default: Color.BLACK).
+* `shadowColor` - Color of the live finger shadow drawn at the active touch point
+  (default: `Color.BLACK` / black).
+* `shadowIntensity` - Opacity multiplier for the live finger shadow, from `0.0`
+  to `1.0` (default: `0.0`, so the shadow is disabled by default).
+* `shadowAngleDegrees` - Direction of the live finger shadow around the active
+  touch point, from `0.0` to `360.0` degrees (default: `50.710594`, matching the
+  shader's original direction).
+* Shadow options only affect the live pointer/finger overlay while signing; they
+  are not baked into exported bitmaps or SVGs.
 * `velocityFilterWeight` - Weight used to modify new velocity based on the previous velocity (
   default: 0.9).
 * `clearOnDoubleClick` - Double click to clear pad (default: false)
