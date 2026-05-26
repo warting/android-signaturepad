@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
@@ -58,7 +57,6 @@ private const val DEFAULT_PEN_MAX_WIDTH_DP = 7f
 private const val DEFAULT_SHADOW_INTENSITY = 0f
 private const val SHADOW_ANGLE_MIN_DEGREES = 0f
 private const val SHADOW_ANGLE_MAX_DEGREES = 360f
-private const val ACTION_BUTTON_COUNT = 3
 private val sampleShadowBlue = Color(0xFF1565C0)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -82,10 +80,12 @@ private fun ColorToggleGroup(
                     modifier = Modifier
                         .weight(1f)
                         .semantics { role = Role.RadioButton },
-                    shapes = connectedToggleButtonShapes(
-                        index = idx,
-                        count = options.size
-                    ),
+                    shapes = when {
+                        options.size == 1 -> ToggleButtonDefaults.shapes()
+                        idx == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                        idx == options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                    },
                 ) {
                     Text(stringResource(labelRes))
                 }
@@ -107,60 +107,35 @@ private fun SaveClearRow(
     ) {
         Button(
             onClick = onSave,
-            shapes = connectedActionButtonShapes(index = 0, count = ACTION_BUTTON_COUNT),
+            shapes = ButtonDefaults.shapes(
+                shape = ButtonGroupDefaults.connectedLeadingButtonShape,
+                pressedShape = ButtonGroupDefaults.connectedLeadingButtonPressShape,
+            ),
             modifier = Modifier.weight(1f)
         ) {
             Text(stringResource(R.string.save))
         }
         Button(
             onClick = onUndo,
-            shapes = connectedActionButtonShapes(index = 1, count = ACTION_BUTTON_COUNT),
+            shapes = ButtonDefaults.shapes(
+                shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
+                pressedShape = ButtonGroupDefaults.connectedMiddleButtonPressShape,
+            ),
             modifier = Modifier.weight(1f)
         ) {
             Text(stringResource(R.string.undo))
         }
         Button(
             onClick = onClear,
-            shapes = connectedActionButtonShapes(index = 2, count = ACTION_BUTTON_COUNT),
+            shapes = ButtonDefaults.shapes(
+                shape = ButtonGroupDefaults.connectedTrailingButtonShape,
+                pressedShape = ButtonGroupDefaults.connectedTrailingButtonPressShape,
+            ),
             modifier = Modifier.weight(1f)
         ) {
             Text(stringResource(R.string.clear))
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun connectedToggleButtonShapes(index: Int, count: Int) = when {
-    count == 1 -> ToggleButtonDefaults.shapes()
-    index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-    index == count - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun connectedActionButtonShapes(index: Int, count: Int) = ButtonDefaults.shapes(
-    shape = connectedButtonShape(index = index, count = count),
-    pressedShape = connectedPressedButtonShape(index = index, count = count)
-)
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun connectedButtonShape(index: Int, count: Int): Shape = when {
-    count == 1 -> ButtonDefaults.shape
-    index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShape
-    index == count - 1 -> ButtonGroupDefaults.connectedTrailingButtonShape
-    else -> ButtonGroupDefaults.connectedMiddleButtonShapes().shape
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun connectedPressedButtonShape(index: Int, count: Int): Shape = when {
-    count == 1 -> ButtonDefaults.shape
-    index == 0 -> ButtonGroupDefaults.connectedLeadingButtonPressShape
-    index == count - 1 -> ButtonGroupDefaults.connectedTrailingButtonPressShape
-    else -> ButtonGroupDefaults.connectedMiddleButtonPressShape
 }
 
 private fun SignaturePadState.extractBitmaps(

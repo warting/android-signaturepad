@@ -3,7 +3,6 @@ package se.warting.signaturepad.app
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -73,13 +72,47 @@ fun App() {
     val colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()
 
     MaterialTheme(colorScheme = colorScheme) {
+        var menuExpanded by rememberSaveable { mutableStateOf(false) }
+
         Scaffold(
             topBar = {
                 @OptIn(ExperimentalMaterial3Api::class)
                 TopAppBar(
                     title = { Text(text = stringResource(R.string.signaturepad_samples)) },
                     actions = {
-                        ThemeMenu { uiMode = it }
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                Icons.Filled.MoreVert,
+                                contentDescription = stringResource(R.string.theme_menu),
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.theme_follow_system)) },
+                                onClick = {
+                                    uiMode = AppUiMode.SYSTEM
+                                    menuExpanded = false
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.theme_light)) },
+                                onClick = {
+                                    uiMode = AppUiMode.LIGHT
+                                    menuExpanded = false
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.theme_dark)) },
+                                onClick = {
+                                    uiMode = AppUiMode.DARK
+                                    menuExpanded = false
+                                },
+                            )
+                        }
                     }
                 )
             }
@@ -90,50 +123,6 @@ fun App() {
             }
         }
     }
-}
-
-@Composable
-private fun ThemeMenu(
-    onUiModeChange: (AppUiMode) -> Unit
-) {
-    var menuExpanded by rememberSaveable { mutableStateOf(false) }
-
-    IconButton(onClick = { menuExpanded = true }) {
-        Icon(
-            Icons.Filled.MoreVert,
-            contentDescription = stringResource(R.string.theme_menu),
-        )
-    }
-
-    DropdownMenu(
-        expanded = menuExpanded,
-        onDismissRequest = { menuExpanded = false }
-    ) {
-        ThemeMenuItem(R.string.theme_follow_system) {
-            onUiModeChange(AppUiMode.SYSTEM)
-            menuExpanded = false
-        }
-        ThemeMenuItem(R.string.theme_light) {
-            onUiModeChange(AppUiMode.LIGHT)
-            menuExpanded = false
-        }
-        ThemeMenuItem(R.string.theme_dark) {
-            onUiModeChange(AppUiMode.DARK)
-            menuExpanded = false
-        }
-    }
-}
-
-@Composable
-private fun ThemeMenuItem(
-    @StringRes
-    titleRes: Int,
-    onClick: () -> Unit
-) {
-    DropdownMenuItem(
-        text = { Text(stringResource(titleRes)) },
-        onClick = onClick,
-    )
 }
 
 // Define the routes in your app and any arguments.
