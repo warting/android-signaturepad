@@ -26,6 +26,8 @@ import se.warting.signaturepad.view.BuildConfig
 import se.warting.signaturepad.view.R
 import kotlin.math.roundToInt
 
+private const val DEFAULT_ACTIVE_POINTER_PRESSURE = 1f
+
 @SuppressWarnings("TooManyFunctions")
 class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -241,7 +243,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             }
 
             MotionEvent.ACTION_UP -> {
-                updatePointerShadow(event, pressure = 0f)
+                updatePointerShadow(event, isActive = false)
                 val upEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(upEvent)
                 invalidate()
@@ -338,14 +340,26 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return (context.resources.displayMetrics.density * dp).roundToInt()
     }
 
-    private fun updatePointerShadow(event: MotionEvent, pressure: Float = event.pressure) {
+    private fun updatePointerShadow(event: MotionEvent, isActive: Boolean = true) {
         shadowPointerX = event.x
         shadowPointerY = event.y
-        shadowPointerPressure = pressure
+        shadowPointerPressure = if (isActive) {
+            normalizedActivePointerPressure(event.pressure)
+        } else {
+            0f
+        }
     }
 
     private fun clearPointerShadow() {
         shadowPointerPressure = 0f
+    }
+
+    private fun normalizedActivePointerPressure(pressure: Float): Float {
+        return if (pressure.isFinite() && pressure > 0f) {
+            pressure
+        } else {
+            DEFAULT_ACTIVE_POINTER_PRESSURE
+        }
     }
 
     init {

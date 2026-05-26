@@ -65,7 +65,8 @@
                 android:id="@+id/shadow_intensity_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/shadow_intensity" />
+                android:text="@string/shadow_intensity"
+                android:textColor="@android:color/black" />
 
             <SeekBar
                 android:id="@+id/shadow_intensity_seek_bar"
@@ -78,7 +79,8 @@
                 android:id="@+id/shadow_angle_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/shadow_angle" />
+                android:text="@string/shadow_angle"
+                android:textColor="@android:color/black" />
 
             <SeekBar
                 android:id="@+id/shadow_angle_seek_bar"

@@ -7,26 +7,31 @@ import se.warting.signatureview.views.SignaturePad
 object SignaturePadBindingAdapter {
 
     @BindingAdapter("onStartSigning")
+    @JvmStatic
     fun setOnSignedListener(view: SignaturePad, onStartSigningListener: OnStartSigningListener?) {
         setOnSignedListener(view, onStartSigningListener, null, null, null)
     }
 
     @BindingAdapter("onSigning")
+    @JvmStatic
     fun setOnSigningListener(view: SignaturePad, onSigningListener: OnSigningListener?) {
         setOnSignedListener(view, null, onSigningListener, null, null)
     }
 
     @BindingAdapter("onSigned")
+    @JvmStatic
     fun setOnSignedListener(view: SignaturePad, onSignedListener: OnSignedListener?) {
         setOnSignedListener(view, null, null, onSignedListener, null)
     }
 
     @BindingAdapter("onClear")
+    @JvmStatic
     fun setOnSignedListener(view: SignaturePad, onClearListener: OnClearListener?) {
         setOnSignedListener(view, null, null, null, onClearListener)
     }
 
     @BindingAdapter(value = ["onStartSigning", "onSigning", "onSigned", "onClear"], requireAll = false)
+    @JvmStatic
     fun setOnSignedListener(
         view: SignaturePad,
         onStartSigningListener: OnStartSigningListener?,

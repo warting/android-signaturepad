@@ -41,6 +41,8 @@ import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturepad.compose.BuildConfig
 import kotlin.math.roundToInt
 
+private const val DEFAULT_ACTIVE_POINTER_PRESSURE = 1f
+
 /**
  * Creates and remembers a [SignaturePadState]. The underlying signature events are preserved
  * across configuration changes via [rememberSaveable].
@@ -204,7 +206,7 @@ fun SignaturePadView(
                     shadowPointer = ShadowPointerState(
                         x = down.position.x,
                         y = down.position.y,
-                        pressure = down.pressure,
+                        pressure = normalizedActivePointerPressure(down.pressure),
                     )
                     sdk.addEvent(
                         Event(
@@ -251,7 +253,7 @@ fun SignaturePadView(
                             shadowPointer = ShadowPointerState(
                                 x = change.position.x,
                                 y = change.position.y,
-                                pressure = change.pressure,
+                                pressure = normalizedActivePointerPressure(change.pressure),
                             )
                             sdk.addEvent(
                                 Event(
@@ -291,6 +293,14 @@ private data class ShadowPointerState(
     val y: Float = 0f,
     val pressure: Float = 0f,
 )
+
+private fun normalizedActivePointerPressure(pressure: Float): Float {
+    return if (pressure.isFinite() && pressure > 0f) {
+        pressure
+    } else {
+        DEFAULT_ACTIVE_POINTER_PRESSURE
+    }
+}
 
 /**
  * Hoisted state for [SignaturePadView]. Use [rememberSignaturePadState] to create one.
