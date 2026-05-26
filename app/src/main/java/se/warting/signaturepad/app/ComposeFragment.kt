@@ -265,18 +265,10 @@ fun ComposeSample() {
                 shadowColor = shadowColor.value,
                 shadowIntensity = shadowIntensity,
                 shadowAngleDegrees = shadowAngleDegrees,
-                onStartSigning = {
-                    Log.d("SignedListener", "onStartSigning")
-                },
-                onSigning = {
-                    Log.d("SignedListener", "onSigning")
-                },
-                onSigned = {
-                    Log.d("SignedListener", "onSigned")
-                },
-                onClear = {
-                    Log.d("ComposeSample", "isEmpty=${signatureState.isEmpty}")
-                }
+                onStartSigning = { Log.d("SignedListener", "onStartSigning") },
+                onSigning = { Log.d("SignedListener", "onSigning") },
+                onSigned = { Log.d("SignedListener", "onSigned") },
+                onClear = { Log.d("ComposeSample", "isEmpty=${signatureState.isEmpty}") }
             )
         }
 

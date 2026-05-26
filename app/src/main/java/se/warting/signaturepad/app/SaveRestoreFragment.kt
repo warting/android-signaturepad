@@ -56,7 +56,7 @@ fun SaveRestoreSample() {
                 },
                 onSigning = {
                     if (BuildConfig.DEBUG) {
-                        Log.d("SaveRestoreFragment", "onSigning")
+                        Log.d("SaveRestoreFragment", "onStartSigning")
                     }
                 },
                 onSigned = {
@@ -66,7 +66,10 @@ fun SaveRestoreSample() {
                 },
                 onClear = {
                     if (BuildConfig.DEBUG) {
-                        Log.d("SaveRestoreFragment", "onClear isEmpty: ${signaturePadState.isEmpty}")
+                        Log.d(
+                            "SaveRestoreFragment",
+                            "onClear isEmpty:" + signaturePadState.isEmpty
+                        )
                     }
                 },
             )

@@ -173,15 +173,15 @@ class ViewFragment : Fragment() {
         mSignaturePad.setOnSignedListener(object : SignedListener {
 
             override fun onStartSigning() {
-                Log.d("SignedListener", "onStartSigning")
+                Log.d("SignedListener", "OnStartSigning")
             }
 
             override fun onSigning() {
-                Log.d("SignedListener", "onSigning")
+                Log.d("SignedListener", "OnSigning")
             }
 
             override fun onSigned() {
-                Log.d("SignedListener", "onSigned")
+                Log.d("SignedListener", "OnSigned")
                 updateActionButtons()
             }
 
@@ -371,12 +371,12 @@ class ViewFragment : Fragment() {
         updateSavedOutputVisibility(isVisible = true)
 
         if (BuildConfig.DEBUG) {
-            Log.d("ViewFragment", "Bitmap size: ${signatureBitmap.byteCount}")
+            Log.d("ViewFragment", "Bitmap size: " + signatureBitmap.byteCount)
             Log.d(
                 "ViewFragment",
-                "Bitmap transparent size: ${transparentSignatureBitmap.byteCount}"
+                "Bitmap trasparent size: " + transparentSignatureBitmap.byteCount
             )
-            Log.d("ViewFragment", "Svg length: ${signatureSvg.length}")
+            Log.d("ViewFragment", "Svg length: " + signatureSvg.length)
         }
     }
 

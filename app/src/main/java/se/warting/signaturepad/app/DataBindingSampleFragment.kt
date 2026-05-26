@@ -66,21 +66,21 @@ class DataBindingSampleFragment : Fragment() {
     private fun createSignatureListener(): SignedListener {
         return object : SignedListener {
             override fun onStartSigning() {
-                Log.d("SignedListener", "onStartSigning")
+                Log.d("SignedListener", "OnStartSigning")
             }
 
             override fun onSigning() {
-                Log.d("SignedListener", "onSigning")
+                Log.d("SignedListener", "OnSigning")
             }
 
             override fun onSigned() {
-                Log.d("SignedListener", "onSigned")
+                Log.d("SignedListener", "OnSigned")
                 binding.saveButton.isEnabled = true
                 binding.clearButton.isEnabled = true
             }
 
             override fun onClear() {
-                Log.d("SignedListener", "onClear")
+                Log.d("SignedListener", "OnClear")
 
                 binding.saveButton.isEnabled = false
                 binding.clearButton.isEnabled = false
@@ -142,12 +142,12 @@ class DataBindingSampleFragment : Fragment() {
         val transparentSignatureBitmap = binding.signaturePad.getTransparentSignatureBitmap()
 
         if (BuildConfig.DEBUG) {
-            Log.d("DataBindingFragment", "Bitmap size: ${signatureBitmap.byteCount}")
+            Log.d("DataBindingFragment", "Bitmap size: " + signatureBitmap.byteCount)
             Log.d(
                 "DataBindingFragment",
-                "Bitmap transparent size: ${transparentSignatureBitmap.byteCount}"
+                "Bitmap transparent size: " + transparentSignatureBitmap.byteCount
             )
-            Log.d("DataBindingFragment", "Svg length: ${signatureSvg.length}")
+            Log.d("DataBindingFragment", "Svg length: " + signatureSvg.length)
         }
     }
 }
