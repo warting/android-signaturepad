@@ -41,13 +41,7 @@ class DataBindingSampleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupEdgeToEdge()
-        binding.binding = createSignatureListener()
-        setupButtons()
-        setupShadowControls()
-    }
-
-    private fun setupEdgeToEdge() {
+        // Setup edge-to-edge content
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
@@ -61,10 +55,9 @@ class DataBindingSampleFragment : Fragment() {
             )
             WindowInsetsCompat.CONSUMED
         }
-    }
 
-    private fun createSignatureListener(): SignedListener {
-        return object : SignedListener {
+        // Create the signature listener
+        val onStartSigning: SignedListener = object : SignedListener {
             override fun onStartSigning() {
                 Log.d("SignedListener", "OnStartSigning")
             }
@@ -86,14 +79,26 @@ class DataBindingSampleFragment : Fragment() {
                 binding.clearButton.isEnabled = false
             }
         }
-    }
 
-    private fun setupButtons() {
+        // Set up data binding and click listeners
+        binding.binding = onStartSigning
+
         binding.clearButton.setOnClickListener { binding.signaturePad.clear() }
-        binding.saveButton.setOnClickListener { logSavedSignature() }
-    }
+        binding.saveButton.setOnClickListener {
+            val signatureBitmap = binding.signaturePad.getSignatureBitmap()
+            val signatureSvg = binding.signaturePad.getSignatureSvg()
+            val transparentSignatureBitmap = binding.signaturePad.getTransparentSignatureBitmap()
 
-    private fun setupShadowControls() {
+            if (BuildConfig.DEBUG) {
+                Log.d("DataBindingFragment", "Bitmap size: " + signatureBitmap.byteCount)
+                Log.d(
+                    "DataBindingFragment",
+                    "Bitmap transparent size: " + transparentSignatureBitmap.byteCount
+                )
+                Log.d("DataBindingFragment", "Svg length: " + signatureSvg.length)
+            }
+        }
+
         binding.shadowAngleSeekBar.progress = SignatureSDK.DEFAULT_ATTR_SHADOW_ANGLE_DEGREES.roundToInt()
         binding.shadowBlackButton.setOnClickListener {
             binding.signaturePad.setShadowColor(Color.BLACK)
@@ -134,20 +139,5 @@ class DataBindingSampleFragment : Fragment() {
                 override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit
             }
         )
-    }
-
-    private fun logSavedSignature() {
-        val signatureBitmap = binding.signaturePad.getSignatureBitmap()
-        val signatureSvg = binding.signaturePad.getSignatureSvg()
-        val transparentSignatureBitmap = binding.signaturePad.getTransparentSignatureBitmap()
-
-        if (BuildConfig.DEBUG) {
-            Log.d("DataBindingFragment", "Bitmap size: " + signatureBitmap.byteCount)
-            Log.d(
-                "DataBindingFragment",
-                "Bitmap transparent size: " + transparentSignatureBitmap.byteCount
-            )
-            Log.d("DataBindingFragment", "Svg length: " + signatureSvg.length)
-        }
     }
 }

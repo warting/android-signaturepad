@@ -1,6 +1,5 @@
 package se.warting.signaturepad.app
 
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -352,59 +351,45 @@ class ViewFragment : Fragment() {
             mSignaturePad.undo()
             updateActionButtons()
         }
-        mSaveButton.setOnClickListener { saveSignature() }
+        mSaveButton.setOnClickListener {
+            val signatureBitmap = if (useOverrideColors) {
+                mSignaturePad.getSignatureBitmap(imageBackgroundColor, imagePenColor)
+            } else {
+                mSignaturePad.getSignatureBitmap()
+            }
+            val signatureSvg = if (useOverrideColors) {
+                mSignaturePad.getSignatureSvg(
+                    penColor = imagePenColor,
+                    backgroundColor = imageBackgroundColor,
+                )
+            } else {
+                mSignaturePad.getSignatureSvg()
+            }
+            val transparentSignatureBitmap = if (useOverrideColors) {
+                mSignaturePad.getTransparentSignatureBitmap(penColor = imagePenColor)
+            } else {
+                mSignaturePad.getTransparentSignatureBitmap()
+            }
+            mBitmapImageView.setImageBitmap(signatureBitmap)
+            mTransparentBitmapImageView.setImageBitmap(transparentSignatureBitmap)
+            mSvgTextView.text = signatureSvg
+            updateSavedOutputVisibility(isVisible = true)
+
+            if (BuildConfig.DEBUG) {
+                Log.d("ViewFragment", "Bitmap size: " + signatureBitmap.byteCount)
+                Log.d(
+                    "ViewFragment",
+                    "Bitmap trasparent size: " + transparentSignatureBitmap.byteCount
+                )
+                Log.d("ViewFragment", "Svg length: " + signatureSvg.length)
+            }
+        }
     }
 
     internal fun updateActionButtons() {
         mSaveButton.isEnabled = !mSignaturePad.isEmpty
         mClearButton.isEnabled = !mSignaturePad.isEmpty
         mUndoButton.isEnabled = mSignaturePad.canUndo()
-    }
-
-    private fun saveSignature() {
-        val signatureBitmap = getSignatureBitmap()
-        val transparentSignatureBitmap = getTransparentSignatureBitmap()
-        val signatureSvg = getSignatureSvg()
-        mBitmapImageView.setImageBitmap(signatureBitmap)
-        mTransparentBitmapImageView.setImageBitmap(transparentSignatureBitmap)
-        mSvgTextView.text = signatureSvg
-        updateSavedOutputVisibility(isVisible = true)
-
-        if (BuildConfig.DEBUG) {
-            Log.d("ViewFragment", "Bitmap size: " + signatureBitmap.byteCount)
-            Log.d(
-                "ViewFragment",
-                "Bitmap trasparent size: " + transparentSignatureBitmap.byteCount
-            )
-            Log.d("ViewFragment", "Svg length: " + signatureSvg.length)
-        }
-    }
-
-    private fun getSignatureBitmap(): Bitmap {
-        return if (useOverrideColors) {
-            mSignaturePad.getSignatureBitmap(imageBackgroundColor, imagePenColor)
-        } else {
-            mSignaturePad.getSignatureBitmap()
-        }
-    }
-
-    private fun getTransparentSignatureBitmap(): Bitmap {
-        return if (useOverrideColors) {
-            mSignaturePad.getTransparentSignatureBitmap(penColor = imagePenColor)
-        } else {
-            mSignaturePad.getTransparentSignatureBitmap()
-        }
-    }
-
-    private fun getSignatureSvg(): String {
-        return if (useOverrideColors) {
-            mSignaturePad.getSignatureSvg(
-                penColor = imagePenColor,
-                backgroundColor = imageBackgroundColor,
-            )
-        } else {
-            mSignaturePad.getSignatureSvg()
-        }
     }
 
     private fun updateSavedOutputVisibility(isVisible: Boolean) {
