@@ -70,55 +70,45 @@ fun App() {
     }
 
     val colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()
+    val themeOptions = listOf(
+        R.string.theme_follow_system to AppUiMode.SYSTEM,
+        R.string.theme_light to AppUiMode.LIGHT,
+        R.string.theme_dark to AppUiMode.DARK,
+    )
 
     MaterialTheme(colorScheme = colorScheme) {
         var menuExpanded by rememberSaveable { mutableStateOf(false) }
 
-        Scaffold(
-            topBar = {
-                @OptIn(ExperimentalMaterial3Api::class)
-                TopAppBar(
-                    title = { Text(text = stringResource(R.string.signaturepad_samples)) },
-                    actions = {
-                        IconButton(onClick = { menuExpanded = true }) {
-                            Icon(
-                                Icons.Filled.MoreVert,
-                                contentDescription = stringResource(R.string.theme_menu),
-                            )
-                        }
+        Scaffold(topBar = {
+            @OptIn(ExperimentalMaterial3Api::class)
+            TopAppBar(
+                title = { Text(text = stringResource(R.string.signaturepad_samples)) },
+                actions = {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(
+                            Icons.Filled.MoreVert,
+                            contentDescription = stringResource(R.string.theme_menu),
+                        )
+                    }
 
-                        DropdownMenu(
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false }
-                        ) {
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        themeOptions.forEach { (labelRes, appUiMode) ->
                             DropdownMenuItem(
-                                text = { Text(stringResource(R.string.theme_follow_system)) },
+                                text = { Text(stringResource(labelRes)) },
                                 onClick = {
-                                    uiMode = AppUiMode.SYSTEM
-                                    menuExpanded = false
-                                },
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.theme_light)) },
-                                onClick = {
-                                    uiMode = AppUiMode.LIGHT
-                                    menuExpanded = false
-                                },
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.theme_dark)) },
-                                onClick = {
-                                    uiMode = AppUiMode.DARK
+                                    uiMode = appUiMode
                                     menuExpanded = false
                                 },
                             )
                         }
                     }
-                )
-            }
-        ) { padding ->
-            Box(modifier = Modifier
-                .padding(padding)) {
+                }
+            )
+        }) { padding ->
+            Box(modifier = Modifier.padding(padding)) {
                 Navigation()
             }
         }
