@@ -2,7 +2,6 @@
 
 package se.warting.signaturecore
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -14,6 +13,7 @@ import android.os.Build
 import android.view.MotionEvent
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
+import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
 import se.warting.signaturecore.utils.Bezier
@@ -79,7 +79,17 @@ class SignatureSDK {
     private var signatureBitmapCanvas: Canvas? = null
     private val paint = Paint()
     private val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
-    private val shadowPointerRenderer = ShadowPointerRenderer()
+
+    // Pointer-shadow rendering relies on RuntimeShader (API 33+). The shader-backed
+    // Api33PointerShadowRenderer is instantiated only behind the version guard below,
+    // so on older devices that class — and RuntimeShader — is never loaded or verified
+    // and cannot trigger a NoClassDefFoundError.
+    private val shadowPointerRenderer: PointerShadowRenderer =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Api33PointerShadowRenderer()
+        } else {
+            NoOpPointerShadowRenderer
+        }
 
     init {
         // Fixed paint parameters
@@ -662,6 +672,34 @@ class SignatureSDK {
     }
 }
 
+private interface PointerShadowRenderer {
+    fun draw(
+        canvas: Canvas,
+        width: Int,
+        height: Int,
+        pointerX: Float,
+        pointerY: Float,
+        pressure: Float,
+        @ColorInt shadowColor: Int,
+        shadowIntensity: Float,
+        shadowAngleDegrees: Float,
+    )
+}
+
+private object NoOpPointerShadowRenderer : PointerShadowRenderer {
+    override fun draw(
+        canvas: Canvas,
+        width: Int,
+        height: Int,
+        pointerX: Float,
+        pointerY: Float,
+        pressure: Float,
+        @ColorInt shadowColor: Int,
+        shadowIntensity: Float,
+        shadowAngleDegrees: Float,
+    ) = Unit
+}
+
 private data class ShadowFloat3(
     val x: Float,
     val y: Float,
@@ -676,12 +714,12 @@ private data class ShadowFloat3(
     )
 }
 
-private class ShadowPointerRenderer {
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+private class Api33PointerShadowRenderer : PointerShadowRenderer {
     private var shader: RuntimeShader? = null
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    @SuppressLint("NewApi")
-    fun draw(
+    override fun draw(
         canvas: Canvas,
         width: Int,
         height: Int,
@@ -734,13 +772,11 @@ private class ShadowPointerRenderer {
         pressure: Float,
         shadowIntensity: Float,
     ): Boolean = when {
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> true
         width <= 0 || height <= 0 -> true
         pressure <= 0f || shadowIntensity <= 0f -> true
         else -> false
     }
 
-    @SuppressLint("NewApi")
     private fun configureShader(
         shader: RuntimeShader,
         fingerPosition: ShadowFloat3,

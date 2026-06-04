@@ -16,15 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -59,7 +57,6 @@ private const val SHADOW_ANGLE_MIN_DEGREES = 0f
 private const val SHADOW_ANGLE_MAX_DEGREES = 360f
 private val sampleShadowBlue = Color(0xFF1565C0)
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ColorToggleGroup(
     @StringRes title: Int,
@@ -69,23 +66,13 @@ private fun ColorToggleGroup(
 ) {
     Column(Modifier.fillMaxWidth()) {
         Text(stringResource(title), style = MaterialTheme.typography.bodyMedium)
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
-        ) {
+        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
             options.forEachIndexed { idx, (labelRes, color) ->
-                ToggleButton(
-                    checked = color == selected,
-                    onCheckedChange = { onSelect(color) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .semantics { role = Role.RadioButton },
-                    shapes = when {
-                        options.size == 1 -> ToggleButtonDefaults.shapes()
-                        idx == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                        idx == options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                    },
+                SegmentedButton(
+                    selected = color == selected,
+                    onClick = { onSelect(color) },
+                    shape = SegmentedButtonDefaults.itemShape(idx, options.size),
+                    modifier = Modifier.semantics { role = Role.RadioButton },
                 ) {
                     Text(stringResource(labelRes))
                 }
@@ -94,7 +81,6 @@ private fun ColorToggleGroup(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SaveClearRow(
     onSave: () -> Unit,
@@ -103,36 +89,15 @@ private fun SaveClearRow(
 ) {
     Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Button(
-            onClick = onSave,
-            shapes = ButtonDefaults.shapes(
-                shape = ButtonGroupDefaults.connectedLeadingButtonShape,
-                pressedShape = ButtonGroupDefaults.connectedLeadingButtonPressShape,
-            ),
-            modifier = Modifier.weight(1f)
-        ) {
+        Button(onClick = onSave, modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.save))
         }
-        Button(
-            onClick = onUndo,
-            shapes = ButtonDefaults.shapes(
-                shape = ButtonGroupDefaults.connectedMiddleButtonShapes().shape,
-                pressedShape = ButtonGroupDefaults.connectedMiddleButtonPressShape,
-            ),
-            modifier = Modifier.weight(1f)
-        ) {
+        Button(onClick = onUndo, modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.undo))
         }
-        Button(
-            onClick = onClear,
-            shapes = ButtonDefaults.shapes(
-                shape = ButtonGroupDefaults.connectedTrailingButtonShape,
-                pressedShape = ButtonGroupDefaults.connectedTrailingButtonPressShape,
-            ),
-            modifier = Modifier.weight(1f)
-        ) {
+        Button(onClick = onClear, modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.clear))
         }
     }

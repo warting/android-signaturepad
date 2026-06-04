@@ -78,6 +78,9 @@ Button(onClick = {
   shader's original direction).
 * Shadow options only affect the live pointer/finger overlay while signing; they
   are not baked into exported bitmaps or SVGs.
+* The live finger shadow requires Android 13 (API 33) or newer, as it is drawn
+  with `RuntimeShader`. On older versions the shadow is not rendered, regardless
+  of the `shadowIntensity` value.
 * `velocityFilterWeight` - Weight used to modify new velocity based on the previous velocity (
   default: 0.9).
 * `clearOnDoubleClick` - Double click to clear pad (default: false)
