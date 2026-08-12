@@ -24,7 +24,7 @@
             android:id="@+id/signature_pad_container"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_above="@+id/buttons_container">
+            android:layout_above="@+id/shadow_controls_container">
 
             <FrameLayout
                 android:layout_width="fill_parent"
@@ -52,6 +52,74 @@
                 bind:onStartSigning="@{binding::onStartSigning}"
                 signature:clearOnDoubleClick="true" />
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/shadow_controls_container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttons_container"
+            android:orientation="vertical"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:id="@+id/shadow_intensity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shadow_intensity"
+                android:textColor="@android:color/black" />
+
+            <SeekBar
+                android:id="@+id/shadow_intensity_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="0" />
+
+            <TextView
+                android:id="@+id/shadow_angle_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shadow_angle"
+                android:textColor="@android:color/black" />
+
+            <SeekBar
+                android:id="@+id/shadow_angle_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="360"
+                android:progress="51" />
+
+            <LinearLayout
+                android:id="@+id/shadow_color_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/shadow_black_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_black" />
+
+                <Button
+                    android:id="@+id/shadow_blue_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_blue" />
+
+                <Button
+                    android:id="@+id/shadow_red_button"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_red" />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/buttons_container"

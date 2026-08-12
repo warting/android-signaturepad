@@ -14,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.FloatRange
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import se.warting.signaturecore.Event
@@ -25,6 +26,8 @@ import se.warting.signaturepad.view.BuildConfig
 import se.warting.signaturepad.view.R
 import kotlin.math.roundToInt
 
+private const val DEFAULT_ACTIVE_POINTER_PRESSURE = 1f
+
 @SuppressWarnings("TooManyFunctions")
 class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -32,6 +35,9 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     // Configurable parameters
     private var mClearOnDoubleClick = false
+    private var shadowPointerX = 0f
+    private var shadowPointerY = 0f
+    private var shadowPointerPressure = 0f
 
     // Double click detector
     private val doubleClickGestureDetector =
@@ -105,6 +111,45 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     /**
+     * Set the live finger shadow color from a given resource.
+     *
+     * @param colorRes the color resource.
+     */
+    fun setShadowColorRes(@ColorRes colorRes: Int) {
+        setShadowColor(ContextCompat.getColor(context, colorRes))
+    }
+
+    /**
+     * Set the live finger shadow color from a given color.
+     *
+     * @param color the color.
+     */
+    fun setShadowColor(@ColorInt color: Int) {
+        signatureSDK.configureShadow(shadowColor = color)
+        invalidate()
+    }
+
+    /**
+     * Set the live finger shadow intensity. A value of 0 disables the shadow.
+     *
+     * @param intensity the shadow opacity multiplier between 0 and 1.
+     */
+    fun setShadowIntensity(@FloatRange(from = 0.0, to = 1.0) intensity: Float) {
+        signatureSDK.configureShadow(shadowIntensity = intensity)
+        invalidate()
+    }
+
+    /**
+     * Set the live finger shadow angle in degrees.
+     *
+     * @param angleDegrees the shadow direction around the touch point.
+     */
+    fun setShadowAngleDegrees(@FloatRange(from = 0.0, to = 360.0) angleDegrees: Float) {
+        signatureSDK.configureShadowAngle(angleDegrees)
+        invalidate()
+    }
+
+    /**
      * Set the minimum width of the stroke in pixel.
      *
      * @param minWidth the width in dp.
@@ -173,11 +218,16 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
-        if (!isEnabled || didDoubleClick) return false
+        if (!isEnabled || didDoubleClick) {
+            clearPointerShadow()
+            invalidate()
+            return false
+        }
 
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
+                updatePointerShadow(event)
                 val downEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(downEvent)
                 invalidate()
@@ -185,6 +235,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             }
 
             MotionEvent.ACTION_MOVE -> {
+                updatePointerShadow(event)
                 val moveEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(moveEvent)
                 invalidate()
@@ -192,8 +243,15 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             }
 
             MotionEvent.ACTION_UP -> {
+                updatePointerShadow(event, isActive = false)
                 val upEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(upEvent)
+                invalidate()
+                true
+            }
+
+            MotionEvent.ACTION_CANCEL -> {
+                clearPointerShadow()
                 invalidate()
                 true
             }
@@ -206,6 +264,14 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     override fun onDraw(canvas: Canvas) {
         ensureSignatureBitmapInDraw()
+        signatureSDK.drawPointerShadow(
+            canvas = canvas,
+            width = width,
+            height = height,
+            pointerX = shadowPointerX,
+            pointerY = shadowPointerY,
+            pressure = shadowPointerPressure,
+        )
         signatureSDK.drawSignature(canvas)
     }
 
@@ -274,6 +340,28 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return (context.resources.displayMetrics.density * dp).roundToInt()
     }
 
+    private fun updatePointerShadow(event: MotionEvent, isActive: Boolean = true) {
+        shadowPointerX = event.x
+        shadowPointerY = event.y
+        shadowPointerPressure = if (isActive) {
+            normalizedActivePointerPressure(event.pressure)
+        } else {
+            0f
+        }
+    }
+
+    private fun clearPointerShadow() {
+        shadowPointerPressure = 0f
+    }
+
+    private fun normalizedActivePointerPressure(pressure: Float): Float {
+        return if (pressure.isFinite() && pressure > 0f) {
+            pressure
+        } else {
+            DEFAULT_ACTIVE_POINTER_PRESSURE
+        }
+    }
+
     init {
         val a = context.theme.obtainStyledAttributes(
             attrs,
@@ -292,10 +380,25 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
                 R.styleable.SignaturePad_penMaxWidth,
                 convertDpToPx(SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX.toFloat())
             )
-            val penColor = a.getColor(R.styleable.SignaturePad_penColor, SignatureSDK.DEFAULT_ATTR_PEN_COLOR)
+            val penColor = a.getColor(
+                R.styleable.SignaturePad_penColor,
+                SignatureSDK.DEFAULT_ATTR_PEN_COLOR
+            )
             val velocityFilterWeight = a.getFloat(
                 R.styleable.SignaturePad_velocityFilterWeight,
                 SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT
+            )
+            val shadowColor = a.getColor(
+                R.styleable.SignaturePad_shadowColor,
+                SignatureSDK.DEFAULT_ATTR_SHADOW_COLOR
+            )
+            val shadowIntensity = a.getFloat(
+                R.styleable.SignaturePad_shadowIntensity,
+                SignatureSDK.DEFAULT_ATTR_SHADOW_INTENSITY
+            )
+            val shadowAngleDegrees = a.getFloat(
+                R.styleable.SignaturePad_shadowAngleDegrees,
+                SignatureSDK.DEFAULT_ATTR_SHADOW_ANGLE_DEGREES
             )
             mClearOnDoubleClick = a.getBoolean(
                 R.styleable.SignaturePad_clearOnDoubleClick,
@@ -309,6 +412,11 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
                 penColor = penColor,
                 velocityFilterWeight = velocityFilterWeight
             )
+            signatureSDK.configureShadow(
+                shadowColor = shadowColor,
+                shadowIntensity = shadowIntensity,
+            )
+            signatureSDK.configureShadowAngle(shadowAngleDegrees)
         } finally {
             a.recycle()
         }

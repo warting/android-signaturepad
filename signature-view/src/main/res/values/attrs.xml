@@ -4,6 +4,9 @@
         <attr name="penMinWidth" format="dimension" />
         <attr name="penMaxWidth" format="dimension" />
         <attr name="penColor" format="color" />
+        <attr name="shadowColor" format="color" />
+        <attr name="shadowIntensity" format="float" />
+        <attr name="shadowAngleDegrees" format="float" />
         <attr name="velocityFilterWeight" format="float" />
         <attr name="clearOnDoubleClick" format="boolean"/>
     </declare-styleable>
