@@ -8,7 +8,7 @@ Bézier curve interpolation based
 on [Smoother Signatures](https://developer.squareup.com/blog/smoother-signatures) post
 by [Square](https://squareup.com).
 
-![Screenshot](/images/header.png)
+![Screenshot](/images/header.aix)
 
 ## Features
 
