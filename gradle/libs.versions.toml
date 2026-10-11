@@ -22,7 +22,7 @@ androidx-compose-ui-ui-tooling-preview = { module = "androidx.compose.ui:ui-tool
 androidx-core = { module = "androidx.core:core", version.ref = "core" }
 androidx-core-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
 androidx-fragment-fragment-compose = "androidx.fragment:fragment-compose:1.8.9"
-androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.10.0"
+androidx-lifecycle-lifecycle-runtime-ktx = "androidx.lifecycle:lifecycle-runtime-ktx:2.11.0"
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-navigation3-ui-android = { module = "androidx.navigation3:navigation3-ui-android", version.ref = "navigation3UiAndroid" }
 androidx-test-espresso-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
