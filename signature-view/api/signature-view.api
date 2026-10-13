@@ -1,5 +1,4 @@
 public abstract interface class androidx/databinding/DataBindingComponent {
-	public abstract fun getSignaturePadBindingAdapter ()Lse/warting/signatureview/utils/SignaturePadBindingAdapter;
 }
 
 public class androidx/databinding/library/baseAdapters/BR {
@@ -36,11 +35,11 @@ public class se/warting/signaturepad/view/DataBindingTriggerClass {
 
 public final class se/warting/signatureview/utils/SignaturePadBindingAdapter {
 	public static final field INSTANCE Lse/warting/signatureview/utils/SignaturePadBindingAdapter;
-	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
-	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;)V
-	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;)V
-	public final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
-	public final fun setOnSigningListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSigningListener;)V
+	public static final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
+	public static final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;)V
+	public static final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;)V
+	public static final fun setOnSignedListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnStartSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSigningListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSignedListener;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener;)V
+	public static final fun setOnSigningListener (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signatureview/utils/SignaturePadBindingAdapter$OnSigningListener;)V
 }
 
 public abstract interface class se/warting/signatureview/utils/SignaturePadBindingAdapter$OnClearListener {
@@ -86,6 +85,10 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 	public final fun setOnSignedListener (Lse/warting/signaturecore/utils/SignedListener;)V
 	public final fun setPenColor (I)V
 	public final fun setPenColorRes (I)V
+	public final fun setShadowAngleDegrees (F)V
+	public final fun setShadowColor (I)V
+	public final fun setShadowColorRes (I)V
+	public final fun setShadowIntensity (F)V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 	public final fun setVelocityFilterWeight (F)V
 	public final fun undo ()V

@@ -55,6 +55,9 @@ public final class se/warting/signaturecore/SignatureSDK {
 	public static final field DEFAULT_ATTR_PEN_COLOR I
 	public static final field DEFAULT_ATTR_PEN_MAX_WIDTH_PX I
 	public static final field DEFAULT_ATTR_PEN_MIN_WIDTH_PX I
+	public static final field DEFAULT_ATTR_SHADOW_ANGLE_DEGREES F
+	public static final field DEFAULT_ATTR_SHADOW_COLOR I
+	public static final field DEFAULT_ATTR_SHADOW_INTENSITY F
 	public static final field DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT F
 	public fun <init> ()V
 	public final fun addEvent (Lse/warting/signaturecore/Event;)V
@@ -62,6 +65,10 @@ public final class se/warting/signaturecore/SignatureSDK {
 	public final fun clear ()V
 	public final fun configure (Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Float;)V
 	public static synthetic fun configure$default (Lse/warting/signaturecore/SignatureSDK;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Float;ILjava/lang/Object;)V
+	public final fun configureShadow (Ljava/lang/Integer;Ljava/lang/Float;)V
+	public static synthetic fun configureShadow$default (Lse/warting/signaturecore/SignatureSDK;Ljava/lang/Integer;Ljava/lang/Float;ILjava/lang/Object;)V
+	public final fun configureShadowAngle (F)V
+	public final fun drawPointerShadow (Landroid/graphics/Canvas;IIFFF)V
 	public final fun drawSignature (Landroid/graphics/Canvas;)V
 	public final fun getEvents ()Ljava/util/List;
 	public final fun getSignatureBitmap (ILjava/lang/Integer;)Landroid/graphics/Bitmap;

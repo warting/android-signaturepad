@@ -3,6 +3,8 @@ package se.warting.signaturepad
 import android.graphics.Bitmap
 import android.view.MotionEvent
 import android.view.ViewConfiguration
+import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -39,6 +41,8 @@ import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturepad.compose.BuildConfig
 import kotlin.math.roundToInt
 
+private const val DEFAULT_ACTIVE_POINTER_PRESSURE = 1f
+
 /**
  * Creates and remembers a [SignaturePadState]. The underlying signature events are preserved
  * across configuration changes via [rememberSaveable].
@@ -59,6 +63,9 @@ fun SignaturePadView(
     penColor: Color = Color.Black,
     velocityFilterWeight: Float = 0.9F,
     clearOnDoubleClick: Boolean = false,
+    shadowColor: Color = Color.Black,
+    shadowIntensity: Float = 0f,
+    shadowAngleDegrees: Float = SignatureSDK.DEFAULT_ATTR_SHADOW_ANGLE_DEGREES,
     onReady: (svg: SignaturePadAdapter) -> Unit = {},
     onStartSigning: () -> Unit = {},
     onSigning: () -> Unit = {},
@@ -72,14 +79,32 @@ fun SignaturePadView(
     val minWidthPx = with(density) { penMinWidth.toPx() }.roundToInt()
     val maxWidthPx = with(density) { penMaxWidth.toPx() }.roundToInt()
     val penColorArgb = penColor.toArgb()
+    val shadowColorArgb = shadowColor.toArgb()
 
-    LaunchedEffect(sdk, minWidthPx, maxWidthPx, penColorArgb, velocityFilterWeight) {
+    LaunchedEffect(
+        sdk,
+        minWidthPx,
+        maxWidthPx,
+        penColorArgb,
+        shadowColorArgb,
+        shadowIntensity,
+        shadowAngleDegrees,
+        velocityFilterWeight,
+    ) {
         sdk.configure(
             minWidth = minWidthPx,
             maxWidth = maxWidthPx,
             penColor = penColorArgb,
             velocityFilterWeight = velocityFilterWeight,
         )
+        sdk.configureShadow(
+            shadowColor = shadowColorArgb,
+            shadowIntensity = shadowIntensity,
+        )
+        sdk.configureShadowAngle(shadowAngleDegrees)
+        if (sdk.hasBitmap()) {
+            state.invalidate()
+        }
     }
 
     // After bitmap initialization, replay any restored events so they render
@@ -136,6 +161,7 @@ fun SignaturePadView(
     val currentClearOnDoubleClick by rememberUpdatedState(clearOnDoubleClick)
 
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
+    var shadowPointer by remember { mutableStateOf(ShadowPointerState()) }
 
     Canvas(
         modifier = modifier
@@ -160,6 +186,7 @@ fun SignaturePadView(
                         (downTime - lastTapUpTime) < doubleTapTimeoutMs
 
                     if (isDoubleTap) {
+                        shadowPointer = ShadowPointerState()
                         sdk.clear()
                         state.invalidate()
                         lastTapUpTime = 0L
@@ -176,6 +203,11 @@ fun SignaturePadView(
                         return@awaitEachGesture
                     }
 
+                    shadowPointer = ShadowPointerState(
+                        x = down.position.x,
+                        y = down.position.y,
+                        pressure = normalizedActivePointerPressure(down.pressure),
+                    )
                     sdk.addEvent(
                         Event(
                             downTime,
@@ -193,8 +225,14 @@ fun SignaturePadView(
                         val event = awaitPointerEvent()
                         val change = event.changes.firstOrNull { it.id == down.id }
                         if (change == null) {
+                            shadowPointer = ShadowPointerState()
                             done = true
                         } else if (!change.pressed) {
+                            shadowPointer = ShadowPointerState(
+                                x = change.position.x,
+                                y = change.position.y,
+                                pressure = 0f,
+                            )
                             sdk.addEvent(
                                 Event(
                                     System.currentTimeMillis(),
@@ -212,6 +250,11 @@ fun SignaturePadView(
                             done = true
                         } else {
                             if (change.positionChanged()) moved = true
+                            shadowPointer = ShadowPointerState(
+                                x = change.position.x,
+                                y = change.position.y,
+                                pressure = normalizedActivePointerPressure(change.pressure),
+                            )
                             sdk.addEvent(
                                 Event(
                                     System.currentTimeMillis(),
@@ -232,7 +275,30 @@ fun SignaturePadView(
         if (!sdk.hasBitmap() && canvasSize.width > 0 && canvasSize.height > 0) {
             sdk.initializeBitmap(canvasSize.width, canvasSize.height)
         }
-        sdk.drawSignature(drawContext.canvas.nativeCanvas)
+        val nativeCanvas = drawContext.canvas.nativeCanvas
+        sdk.drawPointerShadow(
+            canvas = nativeCanvas,
+            width = canvasSize.width,
+            height = canvasSize.height,
+            pointerX = shadowPointer.x,
+            pointerY = shadowPointer.y,
+            pressure = shadowPointer.pressure,
+        )
+        sdk.drawSignature(nativeCanvas)
+    }
+}
+
+private data class ShadowPointerState(
+    val x: Float = 0f,
+    val y: Float = 0f,
+    val pressure: Float = 0f,
+)
+
+private fun normalizedActivePointerPressure(pressure: Float): Float {
+    return if (pressure.isFinite() && pressure > 0f) {
+        pressure
+    } else {
+        DEFAULT_ACTIVE_POINTER_PRESSURE
     }
 }
 
@@ -265,6 +331,33 @@ class SignaturePadState private constructor(
 
     fun clear() {
         sdk.clear()
+        ensureBitmap()
+        invalidate()
+    }
+
+    /**
+     * Set the live finger shadow color.
+     */
+    fun setShadowColor(@ColorInt color: Int) {
+        sdk.configureShadow(shadowColor = color)
+        ensureBitmap()
+        invalidate()
+    }
+
+    /**
+     * Set the live finger shadow intensity. A value of 0 disables the shadow.
+     */
+    fun setShadowIntensity(@FloatRange(from = 0.0, to = 1.0) intensity: Float) {
+        sdk.configureShadow(shadowIntensity = intensity)
+        ensureBitmap()
+        invalidate()
+    }
+
+    /**
+     * Set the live finger shadow angle in degrees.
+     */
+    fun setShadowAngleDegrees(@FloatRange(from = 0.0, to = 360.0) angleDegrees: Float) {
+        sdk.configureShadowAngle(angleDegrees)
         ensureBitmap()
         invalidate()
     }
@@ -343,6 +436,14 @@ class SignaturePadAdapter private constructor(
     }
 
     fun clear() = state.clear()
+
+    fun setShadowColor(@ColorInt color: Int) = state.setShadowColor(color)
+
+    fun setShadowIntensity(@FloatRange(from = 0.0, to = 1.0) intensity: Float) =
+        state.setShadowIntensity(intensity)
+
+    fun setShadowAngleDegrees(@FloatRange(from = 0.0, to = 360.0) angleDegrees: Float) =
+        state.setShadowAngleDegrees(angleDegrees)
 
     fun undo() = state.undo()
 

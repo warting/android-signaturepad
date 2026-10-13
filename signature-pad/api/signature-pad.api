@@ -13,6 +13,9 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 	public final fun getTransparentSignatureBitmap (ZLjava/lang/Integer;)Landroid/graphics/Bitmap;
 	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadAdapter;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
+	public final fun setShadowAngleDegrees (F)V
+	public final fun setShadowColor (I)V
+	public final fun setShadowIntensity (F)V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 	public final fun undo ()V
 }
@@ -32,12 +35,15 @@ public final class se/warting/signaturepad/SignaturePadState {
 	public final fun getTransparentSignatureBitmap (ZLjava/lang/Integer;)Landroid/graphics/Bitmap;
 	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadState;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
+	public final fun setShadowAngleDegrees (F)V
+	public final fun setShadowColor (I)V
+	public final fun setShadowIntensity (F)V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 	public final fun undo ()V
 }
 
 public final class se/warting/signaturepad/SignaturePadViewKt {
-	public static final fun SignaturePadView-4SN8Z9w (Landroidx/compose/ui/Modifier;Lse/warting/signaturepad/SignaturePadState;FFJFZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
+	public static final fun SignaturePadView-Q2OAE1U (Landroidx/compose/ui/Modifier;Lse/warting/signaturepad/SignaturePadState;FFJFZJFFLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
 	public static final fun rememberSignaturePadState (Landroidx/compose/runtime/Composer;I)Lse/warting/signaturepad/SignaturePadState;
 }
 

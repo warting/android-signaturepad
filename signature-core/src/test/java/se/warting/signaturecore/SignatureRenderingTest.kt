@@ -48,6 +48,29 @@ class SignatureRenderingTest {
     }
 
     @Test
+    fun configuredPointerShadow_isNotSerializedIntoSvg() {
+        val sdk = SignatureSDK().apply {
+            configure(
+                minWidth = SignatureSDK.DEFAULT_ATTR_PEN_MIN_WIDTH_PX,
+                maxWidth = SignatureSDK.DEFAULT_ATTR_PEN_MAX_WIDTH_PX,
+                penColor = SignatureSDK.DEFAULT_ATTR_PEN_COLOR,
+                velocityFilterWeight = SignatureSDK.DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT,
+            )
+            configureShadow(
+                shadowColor = 0x80112233.toInt(),
+                shadowIntensity = 0.5f,
+            )
+            restoreEvents(sampleStroke())
+        }
+
+        val svg = sdk.getSignatureSvg(width = 200, height = 100)
+
+        assertFalse("Pointer shadow should not be baked into SVG", svg.contains("signature-shadow"))
+        assertFalse(svg.contains("feDropShadow"))
+        assertFalse(svg.contains("filter=\"url("))
+    }
+
+    @Test
     fun toSvg_isStableForSameInput() {
         val signature = Signature(versionCode = 1, events = sampleStroke())
 

@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
@@ -28,6 +29,7 @@ private const val SIGNATURE_PAD_HEIGHT = 120
  * Sample demonstrates saving and restoring signature data
  */
 @Suppress("LongMethod")
+@OptIn(ExperimentalSignatureApi::class)
 @Composable
 fun SaveRestoreSample() {
     Column {
@@ -77,18 +79,18 @@ fun SaveRestoreSample() {
                 mutableSvg.value = signaturePadState.getSignature().serialize()
                 signaturePadState.clear()
             }) {
-                Text("Save")
+                Text(stringResource(R.string.save))
             }
 
             Button(onClick = {
                 signaturePadState.setSignature(mutableSvg.value.deserialize())
                 mutableSvg.value = ""
             }) {
-                Text("Restore")
+                Text(stringResource(R.string.restore))
             }
         }
 
-        Text(text = "Signature data: " + mutableSvg.value)
+        Text(text = stringResource(R.string.signature_data_format, mutableSvg.value))
     }
 }
 
