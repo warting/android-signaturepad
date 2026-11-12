@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.com.android.application)
-    alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
+    alias(libs.plugins.com.android.legacy.kapt)
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.compose.compiler)
 }
@@ -38,12 +37,9 @@ android {
         }
     }
     buildFeatures {
+        dataBinding = true
         compose = true
         buildConfig = true
-    }
-
-    dataBinding {
-        enable = true
     }
 
     lint {

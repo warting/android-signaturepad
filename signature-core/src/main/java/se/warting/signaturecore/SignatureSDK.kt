@@ -24,7 +24,6 @@ class SignatureSDK {
 
     // Event storage
     private val originalEvents = mutableListOf<Event>()
-    private var iter: MutableIterator<Event> = mutableListOf<Event>().iterator()
 
     // Point tracking
     private val points = mutableListOf<TimedPoint>()
@@ -176,20 +175,10 @@ class SignatureSDK {
         }
     }
 
-    private fun forward() {
-        while (iter.hasNext()) {
-            processCurrentEvent(iter.next())
-        }
-    }
-
     fun clear() {
-        svgBuilder.clear()
-        points.clear()
+        resetStrokeState()
         originalEvents.clear()
-        iter = originalEvents.iterator()
-        lastVelocity = 0f
-        lastWidth = (minWidth + maxWidth) / 2f
-        signatureTransparentBitmap = null
+        signatureTransparentBitmap?.eraseColor(Color.TRANSPARENT)
         notifyListeners()
     }
 
@@ -198,29 +187,19 @@ class SignatureSDK {
         @Suppress("MemberExtensionConflict") // False positive? Try remove later
         originalEvents.addAll(events)
 
-        // Clear current state to ensure clean slate
+        resetStrokeState()
+        signatureTransparentBitmap?.eraseColor(Color.TRANSPARENT)
+
+        // Process all events so both the bitmap (if any) and the SVG builder
+        // reflect the restored signature.
+        originalEvents.forEach(::processCurrentEvent)
+    }
+
+    private fun resetStrokeState() {
         svgBuilder.clear()
         points.clear()
         lastVelocity = 0f
         lastWidth = (minWidth + maxWidth) / 2f
-
-        // Reset the iterator to beginning of events
-        iter = originalEvents.iterator()
-
-        // Clear bitmap to prevent drawing artifacts
-        if (signatureTransparentBitmap != null) {
-            val width = signatureTransparentBitmap!!.width
-            val height = signatureTransparentBitmap!!.height
-            signatureTransparentBitmap = null
-            signatureBitmapCanvas = null
-            initializeBitmap(width, height)
-        }
-
-        // Process all events so both the bitmap (if any) and the SVG builder
-        // reflect the restored signature.
-        if (originalEvents.isNotEmpty()) {
-            forward()
-        }
     }
 
     /**
@@ -240,7 +219,8 @@ class SignatureSDK {
     fun undo() {
         val lastCompletedStrokeStart = findLastCompletedStrokeStartIndex()
         if (lastCompletedStrokeStart < 0) return
-        val remaining = originalEvents.subList(0, lastCompletedStrokeStart).toList()
+        val lastUp = originalEvents.indexOfLast { it.action == MotionEvent.ACTION_UP }
+        val remaining = originalEvents.take(lastCompletedStrokeStart) + originalEvents.drop(lastUp + 1)
         restoreEvents(remaining)
         if (remaining.isEmpty()) {
             signedListener?.onClear()
@@ -301,6 +281,16 @@ class SignatureSDK {
             signatureTransparentBitmap = createBitmap(width, height).also {
                 signatureBitmapCanvas = Canvas(it)
             }
+            // Events may have been restored before the view was measured.
+            // Replay them once onto the new bitmap without repeating input callbacks.
+            val listener = signedListener
+            signedListener = null
+            try {
+                resetStrokeState()
+                originalEvents.forEach(::processCurrentEvent)
+            } finally {
+                signedListener = listener
+            }
         }
     }
 
@@ -308,7 +298,6 @@ class SignatureSDK {
 
     fun drawSignature(canvas: Canvas) {
         signatureTransparentBitmap?.let {
-            forward()
             canvas.drawBitmap(it, 0f, 0f, paint)
         }
     }
@@ -382,7 +371,7 @@ class SignatureSDK {
         }
 
         // Image is empty...
-        if (!foundPixel) return bitmap
+        if (!foundPixel) return bitmap.copy(Bitmap.Config.ARGB_8888, false)
 
         // Find yMin
         for (y in 0 until imgHeight) {
@@ -422,13 +411,19 @@ class SignatureSDK {
             }
             if (stop) break
         }
-        return Bitmap.createBitmap(
+        val cropped = Bitmap.createBitmap(
             bitmap,
             xMin,
             yMin,
-            xMax - xMin,
-            yMax - yMin
+            xMax - xMin + 1,
+            yMax - yMin + 1
         )
+        // Android may return the source bitmap when the crop covers the whole image.
+        return if (cropped === originalTransparentBitmap) {
+            cropped.copy(Bitmap.Config.ARGB_8888, false)
+        } else {
+            cropped
+        }
     }
 
     private fun getNewTimedPoint(x: Float, y: Float, timestamp: Long): TimedPoint {
