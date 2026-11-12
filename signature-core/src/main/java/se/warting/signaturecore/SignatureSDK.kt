@@ -178,7 +178,9 @@ class SignatureSDK {
     fun clear() {
         resetStrokeState()
         originalEvents.clear()
-        signatureTransparentBitmap?.eraseColor(Color.TRANSPARENT)
+        // The view may have resized since allocation. Recreate at its current size.
+        signatureTransparentBitmap = null
+        signatureBitmapCanvas = null
         notifyListeners()
     }
 

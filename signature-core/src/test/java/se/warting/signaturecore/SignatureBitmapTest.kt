@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.view.MotionEvent
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,6 +19,26 @@ import se.warting.signaturecore.utils.SignedListener
 @Config(sdk = [35])
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SignatureBitmapTest {
+
+    @Test
+    fun clear_afterResize_recreatesBitmapAtCurrentSizeAndReplaysNewStroke() {
+        val sdk = signature(horizontal = true, penWidth = 5)
+
+        sdk.clear()
+        assertFalse(sdk.hasBitmap())
+        // A View may receive input before its next draw initializes the new bitmap.
+        sdk.addEvent(Event(0L, MotionEvent.ACTION_DOWN, 60.5f, 60.5f))
+        sdk.addEvent(Event(16L, MotionEvent.ACTION_MOVE, 70.5f, 60.5f))
+        sdk.addEvent(Event(32L, MotionEvent.ACTION_MOVE, 80.5f, 60.5f))
+        sdk.addEvent(Event(48L, MotionEvent.ACTION_UP, 90.5f, 60.5f))
+        sdk.initializeBitmap(100, 80)
+
+        val exported = requireNotNull(sdk.getTransparentSignatureBitmap())
+        assertEquals(100, exported.width)
+        assertEquals(80, exported.height)
+        assertTrue(Color.alpha(exported.getPixel(65, 60)) > 0)
+        assertEquals(Color.TRANSPARENT, exported.getPixel(15, 20))
+    }
 
     @Test
     fun initializeBitmap_replaysEventsRestoredBeforeMeasurement() {
