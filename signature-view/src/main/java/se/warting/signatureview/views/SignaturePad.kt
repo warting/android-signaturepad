@@ -35,6 +35,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     // Configurable parameters
     private var mClearOnDoubleClick = false
+    private var activePointerId = MotionEvent.INVALID_POINTER_ID
     private var shadowPointerX = 0f
     private var shadowPointerY = 0f
     private var shadowPointerPressure = 0f
@@ -239,29 +240,39 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
             return false
         }
 
-        return when (event.action) {
+        return when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 parent?.requestDisallowInterceptTouchEvent(true)
-                updatePointerShadow(event)
-                val downEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
+                activePointerId = event.getPointerId(event.actionIndex)
+                updatePointerShadow(event, event.actionIndex)
+                val downEvent = Event(System.currentTimeMillis(), MotionEvent.ACTION_DOWN, event.x, event.y)
                 signatureSDK.addEvent(downEvent)
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                updatePointerShadow(event)
-                val moveEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
-                signatureSDK.addEvent(moveEvent)
-                invalidate()
+                val index = event.findPointerIndex(activePointerId)
+                if (index >= 0) {
+                    updatePointerShadow(event, index)
+                    signatureSDK.addEvent(
+                        Event(System.currentTimeMillis(), MotionEvent.ACTION_MOVE, event.getX(index), event.getY(index))
+                    )
+                    invalidate()
+                }
+                true
+            }
+
+            MotionEvent.ACTION_POINTER_UP -> {
+                if (event.getPointerId(event.actionIndex) == activePointerId) {
+                    finishActivePointer(event, event.actionIndex)
+                }
                 true
             }
 
             MotionEvent.ACTION_UP -> {
-                updatePointerShadow(event, isActive = false)
-                val upEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
-                signatureSDK.addEvent(upEvent)
-                invalidate()
+                val index = event.findPointerIndex(activePointerId)
+                if (index >= 0) finishActivePointer(event, index)
                 true
             }
 
@@ -271,10 +282,19 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
                 true
             }
 
-            else -> {
-                false
-            }
+            MotionEvent.ACTION_POINTER_DOWN -> true
+            else -> false
         }
+    }
+
+    private fun finishActivePointer(event: MotionEvent, index: Int) {
+        clearPointerShadow()
+        // End the signing pointer's stroke, then ignore remaining fingers until a new gesture.
+        // The core only receives its supported DOWN/MOVE/UP event types.
+        signatureSDK.addEvent(
+            Event(System.currentTimeMillis(), MotionEvent.ACTION_UP, event.getX(index), event.getY(index))
+        )
+        invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -356,17 +376,14 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return (context.resources.displayMetrics.density * dp).roundToInt()
     }
 
-    private fun updatePointerShadow(event: MotionEvent, isActive: Boolean = true) {
-        shadowPointerX = event.x
-        shadowPointerY = event.y
-        shadowPointerPressure = if (isActive) {
-            normalizedActivePointerPressure(event.pressure)
-        } else {
-            0f
-        }
+    private fun updatePointerShadow(event: MotionEvent, index: Int) {
+        shadowPointerX = event.getX(index)
+        shadowPointerY = event.getY(index)
+        shadowPointerPressure = normalizedActivePointerPressure(event.getPressure(index))
     }
 
     private fun clearPointerShadow() {
+        activePointerId = MotionEvent.INVALID_POINTER_ID
         shadowPointerPressure = 0f
     }
 
