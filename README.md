@@ -136,6 +136,7 @@ extensions from `se.warting.signaturecore`. These APIs are experimental.
 
 Use JDK 21 and Android SDK 37. Set `ANDROID_HOME` or `sdk.dir` in your untracked
 `local.properties` file. Both ordinary Git clones and linked worktrees are supported.
+The published libraries support API 23 and newer; the sample app requires API 24 because of Navigation 3.
 
 ```shell
 ./gradlew check apiCheck :app:assembleDebug
@@ -143,6 +144,18 @@ Use JDK 21 and Android SDK 37. Set `ANDROID_HOME` or `sdk.dir` in your untracked
 
 `check` runs unit tests, Android lint, and Detekt. Bitmap regression tests use Robolectric's
 native graphics renderer; an emulator is not required. `apiCheck` verifies the published API snapshots.
+
+Review dependency updates with the existing Version Catalog Update plugin:
+
+```shell
+./gradlew versionCatalogUpdate --interactive
+# Review gradle/libs.versions.updates.toml before applying updates.
+./gradlew versionCatalogApplyUpdates
+./gradlew versionCatalogUpdate --check check apiCheck :app:assembleDebug
+```
+
+The catalog check prefers stable releases for dependencies already on stable versions.
+Gradle wrapper, settings plugins, and GitHub Actions versions must be checked separately.
 
 The build uses AGP 9's built-in Kotlin support and new DSL. Compose and Parcelize use the same
 Kotlin version as the compiler. The View library and sample app use AGP's `legacy-kapt` plugin

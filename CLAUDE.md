@@ -43,9 +43,9 @@ signature-view (View)   ──api──> signature-core
 - **Gradle** with Kotlin DSL (`.gradle.kts` files)
 - **Version catalog**: `gradle/libs.versions.toml` for all dependency versions
 - **JDK 21** for both the Gradle daemon (`gradle/gradle-daemon-jvm.properties`) and compilation (`jvmToolchain(21)`), with automatic provisioning via Foojay. CI also installs JDK 21.
-- **compileSdk 37**, **minSdk 23**
+- **compileSdk 37**, library **minSdk 23**, sample app **minSdk 24** (required by Navigation 3)
 - **Kotlin 2.4.x** with Compose compiler plugin
-- **AGP** (Android Gradle Plugin) 9.3.x and Gradle 9.7.x; exact versions live in the version catalog and wrapper properties
+- **AGP** (Android Gradle Plugin) 9.5.x and Gradle 9.9.x; exact versions live in the version catalog and wrapper properties
 - Uses AGP's built-in Kotlin support and new DSL. The Kotlin compiler version is pinned to match Compose and Parcelize. Data binding uses `com.android.legacy-kapt` because it does not support KSP.
 - Dokka documents the published release variant. Do not suppress the `release` source set: this produces empty documentation JARs with built-in Kotlin. Verify `./gradlew dokkaJavadocJar` when changing this setup.
 
@@ -67,8 +67,12 @@ signature-view (View)   ──api──> signature-core
 # Validate binary API compatibility
 ./gradlew apiCheck
 
-# Update version catalog
-./gradlew versionCatalogUpdate
+# Review and apply version catalog updates
+./gradlew versionCatalogUpdate --interactive
+# Inspect gradle/libs.versions.updates.toml, then apply the selected updates
+./gradlew versionCatalogApplyUpdates
+# Confirm no further updates are available under the configured version policy
+./gradlew versionCatalogUpdate --check
 ```
 
 ### Versioning
