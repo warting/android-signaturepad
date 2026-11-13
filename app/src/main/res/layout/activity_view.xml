@@ -15,7 +15,7 @@
         android:id="@+id/signature_pad_container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/buttons_container">
+        android:layout_above="@+id/shadow_toggle">
 
         <FrameLayout
             android:layout_width="fill_parent"
@@ -40,6 +40,13 @@
             android:layout_height="match_parent"
             signature:clearOnDoubleClick="true" />
     </RelativeLayout>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/shadow_toggle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttons_container"
+        android:text="@string/pointer_shadow" />
 
     <LinearLayout
         android:id="@+id/buttons_container"

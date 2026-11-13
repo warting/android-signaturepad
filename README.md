@@ -15,6 +15,7 @@ by [Square](https://squareup.com).
 * Bézier implementation for a smoother line
 * Variable point size based on velocity
 * Customizable pen color and size
+* Optional live finger shadow on Android 13+
 * Bitmap, SVG and raw signature data export
 * Jetpack Compose state API and classic Android Views
 * Undo the last stroke and restore saved signatures
@@ -131,6 +132,26 @@ Raw event persistence and standalone rendering are available with `@OptIn(Experi
 `getSignature()` / `setSignature(signature)` save and restore events, while `Signature.toBitmap()`,
 `Signature.toTransparentBitmap()`, and `Signature.toSvg()` render without a view. Import the rendering
 extensions from `se.warting.signaturecore`. These APIs are experimental.
+
+## Live finger shadow
+
+On Android 13 (API 33) and newer, an optional shadow follows the active pointer.
+It is disabled by default and never becomes part of bitmap, SVG, or raw event exports.
+Older Android versions and software-rendered canvases keep working without drawing the shadow.
+
+```kotlin
+SignaturePadView(
+    state = signatureState,
+    shadowIntensity = 0.5f, // 0..1; explicitly selects the shadow-enabled overload
+    shadowColor = Color.Black,
+    shadowAngleDegrees = 50.710594f,
+)
+```
+
+For Views, use `setShadowIntensity`, `setShadowColor`, and `setShadowAngleDegrees`,
+or the XML attributes `shadowIntensity`, `shadowColor`, and `shadowAngleDegrees`.
+The Compose and View samples include a switch to try the effect.
+The shader is adapted from [Romain Guy's shadow-pointer sample](https://github.com/romainguy/shadow-pointer).
 
 ## Development
 

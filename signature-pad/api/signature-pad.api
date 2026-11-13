@@ -38,6 +38,7 @@ public final class se/warting/signaturepad/SignaturePadState {
 
 public final class se/warting/signaturepad/SignaturePadViewKt {
 	public static final fun SignaturePadView-4SN8Z9w (Landroidx/compose/ui/Modifier;Lse/warting/signaturepad/SignaturePadState;FFJFZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
+	public static final fun SignaturePadView-Q2OAE1U (Landroidx/compose/ui/Modifier;Lse/warting/signaturepad/SignaturePadState;FFJFZJFFLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
 	public static final fun rememberSignaturePadState (Landroidx/compose/runtime/Composer;I)Lse/warting/signaturepad/SignaturePadState;
 }
 

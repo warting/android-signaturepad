@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
@@ -156,6 +159,7 @@ fun ComposeSample() {
             remember { mutableStateOf(Color.Black) })
     )
 
+    var showShadow by remember { mutableStateOf(false) }
     var useOverride by remember { mutableStateOf(false) }
     var penMinWidth by remember { mutableStateOf(DEFAULT_PEN_MIN_WIDTH_DP) }
     var penMaxWidth by remember { mutableStateOf(DEFAULT_PEN_MAX_WIDTH_DP) }
@@ -175,6 +179,7 @@ fun ComposeSample() {
             SignaturePadView(
                 modifier = Modifier.fillMaxSize(),
                 state = signatureState,
+                shadowIntensity = if (showShadow) 0.5f else 0f,
                 penColor = toggles[0].state.value,
                 penMinWidth = penMinWidth.dp,
                 penMaxWidth = penMaxWidth.dp,
@@ -186,6 +191,18 @@ fun ComposeSample() {
         }
 
         Spacer(Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.toggleable(
+                value = showShadow,
+                role = Role.Switch,
+                onValueChange = { showShadow = it },
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(stringResource(R.string.pointer_shadow), Modifier.weight(1f))
+            Switch(showShadow, onCheckedChange = null)
+        }
 
         toggles.forEach { tol ->
             ColorToggleGroup(tol.title, tol.options, tol.state.value) { tol.state.value = it }

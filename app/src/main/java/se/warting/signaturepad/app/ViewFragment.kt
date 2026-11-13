@@ -10,9 +10,12 @@ import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import com.google.android.material.switchmaterial.SwitchMaterial
 import androidx.fragment.app.Fragment
 import se.warting.signaturecore.utils.SignedListener
 import se.warting.signatureview.views.SignaturePad
+
+private const val SAMPLE_SHADOW_INTENSITY = 0.5f
 
 class ViewFragment : Fragment() {
 
@@ -51,6 +54,9 @@ class ViewFragment : Fragment() {
         mClearButton = view.findViewById<View>(R.id.clear_button) as Button
         mUndoButton = view.findViewById<View>(R.id.undo_button) as Button
         mSignaturePad = view.findViewById<View>(R.id.signature_pad) as SignaturePad
+        view.findViewById<SwitchMaterial>(R.id.shadow_toggle).setOnCheckedChangeListener { _, checked ->
+            mSignaturePad.setShadowIntensity(if (checked) SAMPLE_SHADOW_INTENSITY else 0f)
+        }
 
         mSignaturePad.setOnSignedListener(object : SignedListener {
 

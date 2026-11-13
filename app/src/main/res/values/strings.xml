@@ -4,4 +4,5 @@
     <string name="clear_pad">Clear Pad</string>
     <string name="undo">Undo</string>
     <string name="save_signature">Save Signature</string>
+    <string name="pointer_shadow">Finger shadow (Android 13+)</string>
 </resources>

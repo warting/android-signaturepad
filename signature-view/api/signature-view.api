@@ -81,11 +81,16 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 	public final fun isEmpty ()Z
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public final fun setClearOnDoubleClick (Z)V
+	public fun setEnabled (Z)V
 	public final fun setMaxWidth (F)V
 	public final fun setMinWidth (F)V
 	public final fun setOnSignedListener (Lse/warting/signaturecore/utils/SignedListener;)V
 	public final fun setPenColor (I)V
 	public final fun setPenColorRes (I)V
+	public final fun setShadowAngleDegrees (F)V
+	public final fun setShadowColor (I)V
+	public final fun setShadowColorRes (I)V
+	public final fun setShadowIntensity (F)V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 	public final fun setVelocityFilterWeight (F)V
 	public final fun undo ()V

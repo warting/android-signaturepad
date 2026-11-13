@@ -81,6 +81,10 @@ android {
         buildConfig = true
     }
 
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
     lint {
         baseline = file("lint-baseline.xml")
         checkReleaseBuilds = true
@@ -101,5 +105,7 @@ android {
 dependencies {
     api(project(":signature-core"))
     implementation(libs.androidx.core.core.ktx)
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }

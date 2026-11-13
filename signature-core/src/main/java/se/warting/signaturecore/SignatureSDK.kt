@@ -9,6 +9,8 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.view.MotionEvent
+import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
 import se.warting.signaturecore.utils.Bezier
@@ -35,6 +37,11 @@ class SignatureSDK {
         const val DEFAULT_ATTR_PEN_COLOR = Color.BLACK
         const val DEFAULT_ATTR_VELOCITY_FILTER_WEIGHT = 0.9f
         const val DEFAULT_ATTR_CLEAR_ON_DOUBLE_CLICK = false
+        const val DEFAULT_ATTR_SHADOW_COLOR = Color.BLACK
+        const val DEFAULT_ATTR_SHADOW_INTENSITY = 0f
+        const val DEFAULT_ATTR_SHADOW_ANGLE_DEGREES = 50.710594f
+
+        private const val FULL_CIRCLE_DEGREES = 360f
     }
 
     // Touch tracking
@@ -55,12 +62,17 @@ class SignatureSDK {
     private var minWidth = 0
     private var maxWidth = 0
     private var velocityFilterWeight = 0f
+    private var shadowColor = DEFAULT_ATTR_SHADOW_COLOR
+    private var shadowIntensity = DEFAULT_ATTR_SHADOW_INTENSITY
+    private var shadowAngleDegrees = DEFAULT_ATTR_SHADOW_ANGLE_DEGREES
     private var signedListener: SignedListener? = null
 
     // Canvas and bitmap management
     private var signatureTransparentBitmap: Bitmap? = null
     private var signatureBitmapCanvas: Canvas? = null
     private val paint = Paint()
+
+    private val shadowPointerRenderer by lazy { createPointerShadowRenderer() }
 
     init {
         // Fixed paint parameters
@@ -95,6 +107,44 @@ class SignatureSDK {
                 this.lastWidth = (minW + maxW) / 2f
             }
         }
+    }
+
+    /**
+     * Configure the live finger/pointer shadow drawn at the active touch.
+     *
+     * The shadow is disabled when [shadowIntensity] is 0f. Values above 1f are
+     * clamped so callers can safely drive this from sliders or animations.
+     */
+    fun configureShadow(
+        @ColorInt shadowColor: Int? = null,
+        @FloatRange(from = 0.0, to = 1.0) shadowIntensity: Float? = null,
+    ) {
+        shadowColor?.let {
+            this.shadowColor = it
+        }
+        shadowIntensity?.let {
+            val clampedIntensity = if (it.isFinite()) it.coerceIn(0f, 1f) else 0f
+            this.shadowIntensity = clampedIntensity
+        }
+    }
+
+    /**
+     * Configure the direction of the live finger/pointer shadow in degrees.
+     *
+     * The default angle preserves the shader direction used by Romain Guy's
+     * shadow-pointer sample adaptation.
+     */
+    fun configureShadowAngle(
+        @FloatRange(from = 0.0, to = 360.0) shadowAngleDegrees: Float,
+    ) {
+        if (shadowAngleDegrees.isFinite()) {
+            this.shadowAngleDegrees = normalizeAngleDegrees(shadowAngleDegrees)
+        }
+    }
+
+    private fun normalizeAngleDegrees(angleDegrees: Float): Float {
+        val normalized = angleDegrees % FULL_CIRCLE_DEGREES
+        return if (normalized < 0f) normalized + FULL_CIRCLE_DEGREES else normalized
     }
 
     fun setOnSignedListener(listener: SignedListener?) {
@@ -302,6 +352,33 @@ class SignatureSDK {
         signatureTransparentBitmap?.let {
             canvas.drawBitmap(it, 0f, 0f, paint)
         }
+    }
+
+    /**
+     * Draws a RuntimeShader-based finger shadow under the active pointer.
+     *
+     * This follows Romain Guy's capsule/cone soft-shadow shader on Android 13+
+     * and is a no-op on older Android versions or software canvases.
+     */
+    fun drawPointerShadow(
+        canvas: Canvas,
+        width: Int,
+        height: Int,
+        pointerX: Float,
+        pointerY: Float,
+        pressure: Float,
+    ) {
+        shadowPointerRenderer.draw(
+            canvas = canvas,
+            width = width,
+            height = height,
+            pointerX = pointerX,
+            pointerY = pointerY,
+            pressure = pressure,
+            shadowColor = shadowColor,
+            shadowIntensity = shadowIntensity,
+            shadowAngleDegrees = shadowAngleDegrees,
+        )
     }
 
     /**

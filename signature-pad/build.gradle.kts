@@ -78,6 +78,10 @@ android {
         buildConfig = true
     }
 
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
     lint {
         baseline = file("lint-baseline.xml")
         checkReleaseBuilds = true
@@ -107,5 +111,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.espresso.core)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.compose.ui.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.ui.test.manifest)
     detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }
