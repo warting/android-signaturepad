@@ -122,9 +122,6 @@ fun SignaturePadView(
         minWidthPx,
         maxWidthPx,
         penColorArgb,
-        shadowColorArgb,
-        shadowIntensity,
-        shadowAngleDegrees,
         velocityFilterWeight,
     ) {
         sdk.configure(
@@ -133,6 +130,10 @@ fun SignaturePadView(
             penColor = penColorArgb,
             velocityFilterWeight = velocityFilterWeight,
         )
+    }
+
+    // Shadow controls must not reset the pen's in-progress stroke width.
+    LaunchedEffect(sdk, shadowColorArgb, shadowIntensity, shadowAngleDegrees) {
         sdk.configureShadow(
             shadowColor = shadowColorArgb,
             shadowIntensity = shadowIntensity,
