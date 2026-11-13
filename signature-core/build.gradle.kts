@@ -53,7 +53,7 @@ group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 23

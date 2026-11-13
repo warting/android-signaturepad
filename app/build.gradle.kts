@@ -11,7 +11,7 @@ detekt {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "se.warting.signaturepad"

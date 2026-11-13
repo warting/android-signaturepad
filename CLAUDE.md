@@ -43,7 +43,7 @@ signature-view (View)   ──api──> signature-core
 - **Gradle** with Kotlin DSL (`.gradle.kts` files)
 - **Version catalog**: `gradle/libs.versions.toml` for all dependency versions
 - **JDK 21** for both the Gradle daemon (`gradle/gradle-daemon-jvm.properties`) and compilation (`jvmToolchain(21)`), with automatic provisioning via Foojay. CI also installs JDK 21.
-- **compileSdk 36**, **minSdk 23**
+- **compileSdk 37**, **minSdk 23**
 - **Kotlin 2.4.x** with Compose compiler plugin
 - **AGP** (Android Gradle Plugin) 9.3.x and Gradle 9.7.x; exact versions live in the version catalog and wrapper properties
 - Uses AGP's built-in Kotlin support and new DSL. The Kotlin compiler version is pinned to match Compose and Parcelize. Data binding uses `com.android.legacy-kapt` because it does not support KSP.

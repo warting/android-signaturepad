@@ -134,7 +134,7 @@ extensions from `se.warting.signaturecore`. These APIs are experimental.
 
 ## Development
 
-Use JDK 21 and Android SDK 36. Set `ANDROID_HOME` or `sdk.dir` in your untracked
+Use JDK 21 and Android SDK 37. Set `ANDROID_HOME` or `sdk.dir` in your untracked
 `local.properties` file. Both ordinary Git clones and linked worktrees are supported.
 
 ```shell
