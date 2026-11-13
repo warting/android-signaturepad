@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.warting.signature/signature-pad/badge.png)](https://maven-badges.herokuapp.com/maven-central/se.warting.signature/signature-pad)
+[![Maven Central](https://img.shields.io/maven-central/v/se.warting.signature/signature-pad?strategy=releaseProperty)](https://central.sonatype.com/artifact/se.warting.signature/signature-pad)
 
 Android Signature Pad
 ====================
@@ -92,8 +92,17 @@ fun SignatureForm(onSave: (String) -> Unit) {
 `rememberSaveable`. Use `isEmpty` and `canUndo()` to inspect the current state, and the
 `onStartSigning`, `onSigning`, `onSigned`, and `onClear` callbacks to respond to input.
 
-Existing `onReady` / `SignaturePadAdapter` integrations still work, but the adapter is deprecated.
+Existing named-argument `onReady` integrations still work after recompilation, but the adapter is deprecated.
 For new code, use `SignaturePadState` as shown above.
+
+### Upgrading from 0.2.x
+
+Version 0.3.0 introduces the native Compose state API. Recompile consumers of `signature-pad`:
+the Compose function's JVM signature has changed since 0.2.0. Calls using positional arguments
+must account for the new `state` parameter after `modifier`; named arguments are recommended.
+Direct construction of `SignaturePadAdapter(view)` is no longer supported: use
+`rememberSignaturePadState()`, or obtain the deprecated adapter through `onReady`.
+The classic View API remains available in `signature-view`.
 
 ### Android Views
 
@@ -185,3 +194,8 @@ for data binding. API checks include both Kotlin and generated Java classes and 
 Release versions come from `v*` Git tags. Development versions use `git describe`, including the
 commit and dirty suffix when applicable. To override the publication version, pass
 `-PVERSION_NAME=0.3.0-SNAPSHOT` or set `VERSION_NAME` in `local.properties`.
+
+Publishing a GitHub release with a `vMAJOR.MINOR.PATCH` tag triggers the release workflow.
+It runs `check`, signs all three library artifacts, publishes them through the Central Portal,
+and waits for publication to complete. The `OSSRH_USERNAME` / `OSSRH_PASSWORD` repository
+secret names are retained, but their values must be Central Portal user-token credentials.
