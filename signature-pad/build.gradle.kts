@@ -1,10 +1,8 @@
 plugins {
-    id("com.android.library")
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.com.android.library)
     id("maven-publish")
     id("signing")
     alias(libs.plugins.org.jetbrains.dokka)
-    alias(libs.plugins.com.gladed.androidgitversion)
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.com.vanniktech.maven.publish)
@@ -47,16 +45,6 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-androidGitVersion {
-    tagPattern = "^v[0-9]+.*"
-}
-
-dokka {
-    dokkaSourceSets.matching { it.name == "release" }.configureEach {
-        suppress.set(true)
-    }
-}
-
 val PUBLISH_GROUP_ID: String by extra(rootProject.group as String)
 val PUBLISH_VERSION: String by extra(rootProject.version as String)
 
@@ -64,7 +52,7 @@ group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 23
@@ -75,19 +63,23 @@ android {
         release {
             isMinifyEnabled = false
 
-            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
-            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
+            buildConfigField("int", "VERSION_CODE", rootProject.extra["libraryVersionCode"].toString())
+            buildConfigField("String", "VERSION_NAME", "\"${rootProject.extra["libraryVersionName"]}\"")
         }
         debug {
             isMinifyEnabled = false
-            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
-            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
+            buildConfigField("int", "VERSION_CODE", rootProject.extra["libraryVersionCode"].toString())
+            buildConfigField("String", "VERSION_NAME", "\"${rootProject.extra["libraryVersionName"]}\"")
         }
     }
     buildFeatures {
         viewBinding = false
         compose = true
         buildConfig = true
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
     }
 
     lint {
@@ -119,5 +111,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.espresso.core)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.compose.ui.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.ui.test.manifest)
     detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }

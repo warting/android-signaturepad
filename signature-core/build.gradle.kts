@@ -1,11 +1,9 @@
 plugins {
     alias(libs.plugins.com.android.library)
-    alias(libs.plugins.kotlin.android)
-    id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.parcelize)
     id("maven-publish")
     id("signing")
     alias(libs.plugins.org.jetbrains.dokka)
-    alias(libs.plugins.com.gladed.androidgitversion)
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.com.vanniktech.maven.publish)
@@ -48,16 +46,6 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-androidGitVersion {
-    tagPattern = "^v[0-9]+.*"
-}
-
-dokka {
-    dokkaSourceSets.matching { it.name == "release" }.configureEach {
-        suppress.set(true)
-    }
-}
-
 val PUBLISH_GROUP_ID: String by extra(rootProject.group as String)
 val PUBLISH_VERSION: String by extra(rootProject.version as String)
 
@@ -65,7 +53,7 @@ group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 23
@@ -86,6 +74,7 @@ android {
 
     testOptions {
         unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
     }
 
     lint {
@@ -112,5 +101,6 @@ dependencies {
     implementation(libs.androidx.core.core.ktx)
     implementation(libs.androidx.compose.runtime)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }

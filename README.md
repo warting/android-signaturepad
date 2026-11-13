@@ -15,32 +15,37 @@ by [Square](https://squareup.com).
 * Bézier implementation for a smoother line
 * Variable point size based on velocity
 * Customizable pen color and size
-* Customizable live finger shadow color, intensity, and angle
-* Bitmap, SVG and Raw-data support
+* Optional live finger shadow on Android 13+
+* Bitmap, SVG and raw signature data export
+* Jetpack Compose state API and classic Android Views
+* Undo the last stroke and restore saved signatures
 
 ## Installation
 
-Latest version of the library can be found on Maven Central.
+The latest published version is listed on [Maven Central](https://central.sonatype.com/artifact/se.warting.signature/signature-pad).
+The library supports Android 6.0 (API 23) and newer.
 
 ### For Gradle users
 
-Open your `build.gradle` and make sure that Maven Central repository is declared into `repositories`
-section:
+Declare Maven Central in your `settings.gradle.kts`:
 
-```gradle
-   repositories {
-       mavenCentral()
-   }
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 ```
 
 Then, include the library as dependency:
 
-```gradle
-implementation 'se.warting.signature:signature-pad:<latest_version>' // jetpack Compose views
+```kotlin
+implementation("se.warting.signature:signature-pad:<latest_version>") // Jetpack Compose
 ```
 or
-```gradle
-implementation 'se.warting.signature:signature-view:<latest_version>' // legacy android views
+```kotlin
+implementation("se.warting.signature:signature-view:<latest_version>") // Android Views
 ```
 
 ## Usage
@@ -48,47 +53,135 @@ implementation 'se.warting.signature:signature-view:<latest_version>' // legacy 
 *Please see the `/app` example app for a more detailed code example of how to use the
 library.*
 
-1. Add the `SignaturePad` view to the layout you want to show.
+### Jetpack Compose
+
+Hoist the signature state and give the drawing area an explicit size:
 
 ```kotlin
-var signaturePadAdapter: SignaturePadAdapter? = null
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import se.warting.signaturepad.SignaturePadView
+import se.warting.signaturepad.rememberSignaturePadState
 
-SignaturePadView(onReady = {
-    signaturePadAdapter = it
-})
+@Composable
+fun SignatureForm(onSave: (String) -> Unit) {
+    val signatureState = rememberSignaturePadState()
 
-Button(onClick = {
-    Log.d("", signaturePadAdapter?.getSignatureSvg() ?: "null")
-}) {
-    Text("Save")
+    Column {
+        SignaturePadView(
+            state = signatureState,
+            modifier = Modifier.fillMaxWidth().height(200.dp),
+        )
+        Row {
+            Button(onClick = { signatureState.undo() }) { Text("Undo") }
+            Button(onClick = { signatureState.clear() }) { Text("Clear") }
+            Button(onClick = { onSave(signatureState.getSignatureSvg()) }) { Text("Save") }
+        }
+    }
 }
 ```
 
-2. Configure attributes.
+`rememberSignaturePadState()` preserves signature events across configuration changes using
+`rememberSaveable`. Use `isEmpty` and `canUndo()` to inspect the current state, and the
+`onStartSigning`, `onSigning`, `onSigned`, and `onClear` callbacks to respond to input.
+
+Existing `onReady` / `SignaturePadAdapter` integrations still work, but the adapter is deprecated.
+For new code, use `SignaturePadState` as shown above.
+
+### Android Views
+
+```xml
+<se.warting.signatureview.views.SignaturePad
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/signature_pad"
+    android:layout_width="match_parent"
+    android:layout_height="200dp" />
+```
+
+Use `clear()`, `undo()`, `canUndo()`, and the export methods on the view. Register a
+`SignedListener` with `setOnSignedListener()` for signing callbacks. See the sample app for
+XML attributes and data binding examples.
+
+### Configuration
 
 * `penMinWidth` - The minimum width of the stroke (default: 3dp).
 * `penMaxWidth` - The maximum width of the stroke (default: 7dp).
 * `penColor` - The color of the stroke (default: Color.BLACK).
-* `shadowColor` - Color of the live finger shadow drawn at the active touch point
-  (default: `Color.BLACK` / black).
-* `shadowIntensity` - Opacity multiplier for the live finger shadow, from `0.0`
-  to `1.0` (default: `0.0`, so the shadow is disabled by default).
-* `shadowAngleDegrees` - Direction of the live finger shadow around the active
-  touch point, from `0.0` to `360.0` degrees (default: `50.710594`, matching the
-  shader's original direction).
-* Shadow options only affect the live pointer/finger overlay while signing; they
-  are not baked into exported bitmaps or SVGs.
-* The live finger shadow requires Android 13 (API 33) or newer, as it is drawn
-  with `RuntimeShader`. On older versions the shadow is not rendered, regardless
-  of the `shadowIntensity` value.
 * `velocityFilterWeight` - Weight used to modify new velocity based on the previous velocity (
   default: 0.9).
 * `clearOnDoubleClick` - Double click to clear pad (default: false)
 
-3. Get signature data
+### Export
+
+Call these methods on `SignaturePadState` or the classic `SignaturePad` view:
 
 * `getSignatureBitmap()` - A signature bitmap with a default white background. You can also customize the image's coloring e.g. `getSignatureBitmap(backgroundColor: Int, penColor: Int)`
 
 * `getTransparentSignatureBitmap(trimBlankSpace: Boolean = false)` - A signature bitmap with a transparent background. Set `trimBlankSpace = true` to crop the bitmap to the signature bounds, removing surrounding blank space. You can also customize the image's coloring, e.g. `getTransparentSignatureBitmap(penColor: Int)`
 
-* `getSignatureSvg()` - A signature Scalable Vector Graphics document.
+* `getSignatureSvg()` - A signature Scalable Vector Graphics document. The default SVG stroke is black; use `getSignatureSvg(penColor, backgroundColor)` to override its colors.
+
+Raw event persistence and standalone rendering are available with `@OptIn(ExperimentalSignatureApi::class)`:
+`getSignature()` / `setSignature(signature)` save and restore events, while `Signature.toBitmap()`,
+`Signature.toTransparentBitmap()`, and `Signature.toSvg()` render without a view. Import the rendering
+extensions from `se.warting.signaturecore`. These APIs are experimental.
+
+## Live finger shadow
+
+On Android 13 (API 33) and newer, an optional shadow follows the active pointer.
+It is disabled by default and never becomes part of bitmap, SVG, or raw event exports.
+Older Android versions and software-rendered canvases keep working without drawing the shadow.
+
+```kotlin
+SignaturePadView(
+    state = signatureState,
+    shadowIntensity = 0.5f, // 0..1; explicitly selects the shadow-enabled overload
+    shadowColor = Color.Black,
+    shadowAngleDegrees = 50.710594f,
+)
+```
+
+For Views, use `setShadowIntensity`, `setShadowColor`, and `setShadowAngleDegrees`,
+or the XML attributes `shadowIntensity`, `shadowColor`, and `shadowAngleDegrees`.
+The Compose and View samples include a switch to try the effect.
+The shader is adapted from [Romain Guy's shadow-pointer sample](https://github.com/romainguy/shadow-pointer).
+
+## Development
+
+Use JDK 21 and Android SDK 37. Set `ANDROID_HOME` or `sdk.dir` in your untracked
+`local.properties` file. Both ordinary Git clones and linked worktrees are supported.
+The published libraries support API 23 and newer; the sample app requires API 24 because of Navigation 3.
+
+```shell
+./gradlew check apiCheck :app:assembleDebug
+```
+
+`check` runs unit tests, Android lint, and Detekt. Bitmap regression tests use Robolectric's
+native graphics renderer; an emulator is not required. `apiCheck` verifies the published API snapshots.
+
+Review dependency updates with the existing Version Catalog Update plugin:
+
+```shell
+./gradlew versionCatalogUpdate --interactive
+# Review gradle/libs.versions.updates.toml before applying updates.
+./gradlew versionCatalogApplyUpdates
+./gradlew versionCatalogUpdate --check check apiCheck :app:assembleDebug
+```
+
+The catalog check prefers stable releases for dependencies already on stable versions.
+Gradle wrapper, settings plugins, and GitHub Actions versions must be checked separately.
+
+The build uses AGP 9's built-in Kotlin support and new DSL. Compose and Parcelize use the same
+Kotlin version as the compiler. The View library and sample app use AGP's `legacy-kapt` plugin
+for data binding. API checks include both Kotlin and generated Java classes and run as part of `check`.
+
+Release versions come from `v*` Git tags. Development versions use `git describe`, including the
+commit and dirty suffix when applicable. To override the publication version, pass
+`-PVERSION_NAME=0.3.0-SNAPSHOT` or set `VERSION_NAME` in `local.properties`.

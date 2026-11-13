@@ -10,7 +10,7 @@ Android Signature Pad is a multi-module Android library for drawing smooth signa
 android-signaturepad/
 ├── app/                    # Demo/sample application
 ├── signature-core/         # Core signature logic (Bezier curves, SVG, bitmap)
-├── signature-pad/          # Jetpack Compose wrapper (depends on core + view)
+├── signature-pad/          # Jetpack Compose canvas and state (depends on core)
 ├── signature-view/         # Legacy Android View implementation (depends on core)
 ├── config/detekt/          # Detekt static analysis configuration
 ├── scripts/                # Build helper scripts (checksum.sh for CI caching)
@@ -22,13 +22,12 @@ android-signaturepad/
 
 ```
 signature-pad (Compose) ──api──> signature-core
-       │
-       └──impl──> signature-view ──api──> signature-core
+signature-view (View)   ──api──> signature-core
 ```
 
 - **signature-core**: Pure logic — `SignatureSDK`, `Event`, `Signature` data classes, Bezier math, SVG builder. No UI framework dependency beyond Android Canvas/Bitmap.
-- **signature-view**: Android `View`-based `SignaturePad` widget. Uses `SignatureSDK` internally. Provides XML attributes via `res/values/attrs.xml`. Uses data binding and kapt.
-- **signature-pad**: Jetpack Compose `SignaturePadView` composable. Wraps `SignaturePad` view via `AndroidView` interop. This is the primary public API for Compose users.
+- **signature-view**: Android `View`-based `SignaturePad` widget. Uses `SignatureSDK` internally. Provides XML attributes via `res/values/attrs.xml`. Uses data binding and AGP's `com.android.legacy-kapt` plugin.
+- **signature-pad**: Native Compose `SignaturePadView` canvas with hoisted `SignaturePadState`, created by `rememberSignaturePadState()`. The older adapter API remains available but is deprecated.
 - **app**: Demo application showcasing both Compose and View-based usage with fragments.
 
 ### Key Packages
@@ -43,16 +42,18 @@ signature-pad (Compose) ──api──> signature-core
 
 - **Gradle** with Kotlin DSL (`.gradle.kts` files)
 - **Version catalog**: `gradle/libs.versions.toml` for all dependency versions
-- **JDK 21** required (configured via `jvmToolchain(21)`, auto-provisioned via the `foojay-resolver-convention` plugin in `settings.gradle.kts`)
-- **compileSdk 36**, **minSdk 23**
-- **Kotlin 2.3.x** with Compose compiler plugin
-- **AGP** (Android Gradle Plugin) 9.2.x (Gradle 9.4.1+)
+- **JDK 21** for both the Gradle daemon (`gradle/gradle-daemon-jvm.properties`) and compilation (`jvmToolchain(21)`), with automatic provisioning via Foojay. CI also installs JDK 21.
+- **compileSdk 37**, library **minSdk 23**, sample app **minSdk 24** (required by Navigation 3)
+- **Kotlin 2.4.x** with Compose compiler plugin
+- **AGP** (Android Gradle Plugin) 9.5.x and Gradle 9.9.x; exact versions live in the version catalog and wrapper properties
+- Uses AGP's built-in Kotlin support and new DSL. The Kotlin compiler version is pinned to match Compose and Parcelize. Data binding uses `com.android.legacy-kapt` because it does not support KSP.
+- Dokka documents the published release variant. Do not suppress the `release` source set: this produces empty documentation JARs with built-in Kotlin. Verify `./gradlew dokkaJavadocJar` when changing this setup.
 
 ### Common Build Commands
 
 ```bash
 # Full check (lint + detekt + tests) — this is what CI runs on PRs
-./gradlew check --stacktrace
+./gradlew check apiCheck :app:assembleDebug --stacktrace
 
 # Build the demo app
 ./gradlew :app:assembleDebug
@@ -66,13 +67,20 @@ signature-pad (Compose) ──api──> signature-core
 # Validate binary API compatibility
 ./gradlew apiCheck
 
-# Update version catalog
-./gradlew versionCatalogUpdate
+# Review and apply version catalog updates
+./gradlew versionCatalogUpdate --interactive
+# Inspect gradle/libs.versions.updates.toml, then apply the selected updates
+./gradlew versionCatalogApplyUpdates
+# Confirm no further updates are available under the configured version policy
+./gradlew versionCatalogUpdate --check
 ```
 
 ### Versioning
 
-Versions are derived from git tags via the `androidGitVersion` plugin using the pattern `^v[0-9]+.*`. The version can be overridden locally by setting `VERSION_NAME` in `local.properties`.
+Versions are derived from `v*` Git tags using native `git describe`, which supports linked worktrees.
+Release tags keep their version without the `v` prefix. Development versions include the commit and
+dirty suffix when applicable. Override the publication version with `-PVERSION_NAME=...` or
+`VERSION_NAME` in `local.properties`. Signature data version codes retain the tag-based `MMMNNNPPP` format.
 
 ## Code Quality & Static Analysis
 
@@ -93,13 +101,14 @@ Versions are derived from git tags via the `androidGitVersion` plugin using the 
 
 - Plugin: `org.jetbrains.kotlinx.binary-compatibility-validator`
 - The `app` module is excluded from API validation
+- BCV 0.18.x does not discover AGP's built-in Kotlin automatically. The root build registers `apiBuild`, `apiCheck`, and `apiDump` for each library using release Kotlin and Java compilation outputs, and adds `apiCheck` to `check`.
 - Run `./gradlew apiCheck` to validate, `./gradlew apiDump` to update API dumps
 
 ## CI/CD Workflows
 
 | Workflow | Trigger | Purpose |
 |---|---|---|
-| `pr.yml` | Pull requests | Runs `./gradlew check` |
+| `pr.yml` | Pull requests | Runs `./gradlew check apiCheck :app:assembleDebug` |
 | `code_quality.yml` | Manual dispatch | Qodana code quality scan |
 | `publish.yml` | GitHub release published | Publishes to Maven Central |
 | `snapshot.yml` | Push to `main` | Publishes SNAPSHOT to Maven Central |
@@ -125,7 +134,7 @@ Versions are derived from git tags via the `androidGitVersion` plugin using the 
 
 ## Testing
 
-- Unit tests: JUnit 4 (`testImplementation`)
+- Unit tests: JUnit 4 (`testImplementation`), plus Robolectric native graphics tests for bitmap export and lifecycle regressions
 - Instrumented tests: AndroidX Test + Espresso (`androidTestImplementation`)
 - Compose UI tests available via `ui-test-junit4`
 - Test files located in `src/test/` and `src/androidTest/` per module

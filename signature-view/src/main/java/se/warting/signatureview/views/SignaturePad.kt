@@ -65,6 +65,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
+        clearPointerShadow()
         var mutableState: Parcelable? = state
         if (state is Bundle) {
             val events: Array<Event> =
@@ -194,6 +195,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     fun clearView() {
+        clearPointerShadow()
         signatureSDK.clear()
         invalidate()
     }
@@ -215,6 +217,19 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      */
     fun canUndo(): Boolean = signatureSDK.canUndo()
 
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        if (!enabled) {
+            clearPointerShadow()
+            invalidate()
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        clearPointerShadow()
+        super.onDetachedFromWindow()
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
@@ -226,7 +241,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                parent.requestDisallowInterceptTouchEvent(true)
+                parent?.requestDisallowInterceptTouchEvent(true)
                 updatePointerShadow(event)
                 val downEvent = Event(System.currentTimeMillis(), event.action, event.x, event.y)
                 signatureSDK.addEvent(downEvent)
@@ -306,6 +321,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
+        clearPointerShadow()
         clear()
         signatureSDK.restoreEvents(signature.events)
     }

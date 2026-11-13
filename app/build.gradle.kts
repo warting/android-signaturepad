@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.com.android.application)
-    alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
+    alias(libs.plugins.com.android.legacy.kapt)
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.compose.compiler)
 }
@@ -12,11 +11,11 @@ detekt {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "se.warting.signaturepad"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -38,12 +37,9 @@ android {
         }
     }
     buildFeatures {
+        dataBinding = true
         compose = true
         buildConfig = true
-    }
-
-    dataBinding {
-        enable = true
     }
 
     lint {

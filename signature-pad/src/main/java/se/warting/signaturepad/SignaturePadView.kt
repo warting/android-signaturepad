@@ -3,8 +3,6 @@ package se.warting.signaturepad
 import android.graphics.Bitmap
 import android.view.MotionEvent
 import android.view.ViewConfiguration
-import androidx.annotation.ColorInt
-import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -53,6 +51,44 @@ fun rememberSignaturePadState(): SignaturePadState {
     return remember(sdk) { SignaturePadState.create(sdk) }
 }
 
+/** Keeps the original source and binary signature for existing callers. */
+@SuppressWarnings("LongParameterList")
+@Composable
+fun SignaturePadView(
+    modifier: Modifier = Modifier,
+    state: SignaturePadState = rememberSignaturePadState(),
+    penMinWidth: Dp = 3.dp,
+    penMaxWidth: Dp = 7.dp,
+    penColor: Color = Color.Black,
+    velocityFilterWeight: Float = 0.9F,
+    clearOnDoubleClick: Boolean = false,
+    onReady: (svg: SignaturePadAdapter) -> Unit = {},
+    onStartSigning: () -> Unit = {},
+    onSigning: () -> Unit = {},
+    onSigned: () -> Unit = {},
+    onClear: () -> Unit = {},
+) {
+    SignaturePadView(
+        modifier = modifier,
+        state = state,
+        penMinWidth = penMinWidth,
+        penMaxWidth = penMaxWidth,
+        penColor = penColor,
+        velocityFilterWeight = velocityFilterWeight,
+        clearOnDoubleClick = clearOnDoubleClick,
+        shadowIntensity = 0f,
+        onReady = onReady,
+        onStartSigning = onStartSigning,
+        onSigning = onSigning,
+        onSigned = onSigned,
+        onClear = onClear,
+    )
+}
+
+/**
+ * Signature pad with an optional live finger shadow on Android 13 and newer.
+ * [shadowIntensity] opts in explicitly; zero disables it. Exports never contain the shadow.
+ */
 @SuppressWarnings("LongParameterList", "LongMethod", "CyclomaticComplexMethod")
 @Composable
 fun SignaturePadView(
@@ -64,7 +100,7 @@ fun SignaturePadView(
     velocityFilterWeight: Float = 0.9F,
     clearOnDoubleClick: Boolean = false,
     shadowColor: Color = Color.Black,
-    shadowIntensity: Float = 0f,
+    shadowIntensity: Float,
     shadowAngleDegrees: Float = SignatureSDK.DEFAULT_ATTR_SHADOW_ANGLE_DEGREES,
     onReady: (svg: SignaturePadAdapter) -> Unit = {},
     onStartSigning: () -> Unit = {},
@@ -161,7 +197,6 @@ fun SignaturePadView(
     val currentClearOnDoubleClick by rememberUpdatedState(clearOnDoubleClick)
 
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-    var shadowPointer by remember { mutableStateOf(ShadowPointerState()) }
 
     Canvas(
         modifier = modifier
@@ -180,92 +215,96 @@ fun SignaturePadView(
                 var lastTapUpTime = 0L
 
                 awaitEachGesture {
-                    val down = awaitFirstDown(requireUnconsumed = false)
-                    val downTime = System.currentTimeMillis()
-                    val isDoubleTap = currentClearOnDoubleClick &&
-                        (downTime - lastTapUpTime) < doubleTapTimeoutMs
+                    try {
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        val downTime = System.currentTimeMillis()
+                        val isDoubleTap = currentClearOnDoubleClick &&
+                            (downTime - lastTapUpTime) < doubleTapTimeoutMs
 
-                    if (isDoubleTap) {
-                        shadowPointer = ShadowPointerState()
-                        sdk.clear()
+                        if (isDoubleTap) {
+                            state.shadowPointer = ShadowPointerState()
+                            sdk.clear()
+                            state.invalidate()
+                            lastTapUpTime = 0L
+                            down.consume()
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull { it.id == down.id }
+                                if (change == null || !change.pressed) {
+                                    change?.consume()
+                                    break
+                                }
+                                change.consume()
+                            }
+                            return@awaitEachGesture
+                        }
+
+                        state.shadowPointer = ShadowPointerState(
+                            x = down.position.x,
+                            y = down.position.y,
+                            pressure = normalizedActivePointerPressure(down.pressure),
+                        )
+                        sdk.addEvent(
+                            Event(
+                                downTime,
+                                MotionEvent.ACTION_DOWN,
+                                down.position.x,
+                                down.position.y,
+                            ),
+                        )
                         state.invalidate()
-                        lastTapUpTime = 0L
                         down.consume()
-                        while (true) {
+
+                        var moved = false
+                        var done = false
+                        while (!done) {
                             val event = awaitPointerEvent()
                             val change = event.changes.firstOrNull { it.id == down.id }
-                            if (change == null || !change.pressed) {
-                                change?.consume()
-                                break
+                            if (change == null) {
+                                state.shadowPointer = ShadowPointerState()
+                                done = true
+                            } else if (!change.pressed) {
+                                state.shadowPointer = ShadowPointerState(
+                                    x = change.position.x,
+                                    y = change.position.y,
+                                    pressure = 0f,
+                                )
+                                sdk.addEvent(
+                                    Event(
+                                        System.currentTimeMillis(),
+                                        MotionEvent.ACTION_UP,
+                                        change.position.x,
+                                        change.position.y,
+                                    ),
+                                )
+                                state.invalidate()
+                                change.consume()
+                                // Track tap time only when the gesture had no
+                                // movement, so a double-stroke (drag-drag) does
+                                // not also trigger clear.
+                                lastTapUpTime = if (moved) 0L else System.currentTimeMillis()
+                                done = true
+                            } else {
+                                if (change.positionChanged()) moved = true
+                                state.shadowPointer = ShadowPointerState(
+                                    x = change.position.x,
+                                    y = change.position.y,
+                                    pressure = normalizedActivePointerPressure(change.pressure),
+                                )
+                                sdk.addEvent(
+                                    Event(
+                                        System.currentTimeMillis(),
+                                        MotionEvent.ACTION_MOVE,
+                                        change.position.x,
+                                        change.position.y,
+                                    ),
+                                )
+                                state.invalidate()
+                                change.consume()
                             }
-                            change.consume()
                         }
-                        return@awaitEachGesture
-                    }
-
-                    shadowPointer = ShadowPointerState(
-                        x = down.position.x,
-                        y = down.position.y,
-                        pressure = normalizedActivePointerPressure(down.pressure),
-                    )
-                    sdk.addEvent(
-                        Event(
-                            downTime,
-                            MotionEvent.ACTION_DOWN,
-                            down.position.x,
-                            down.position.y,
-                        ),
-                    )
-                    state.invalidate()
-                    down.consume()
-
-                    var moved = false
-                    var done = false
-                    while (!done) {
-                        val event = awaitPointerEvent()
-                        val change = event.changes.firstOrNull { it.id == down.id }
-                        if (change == null) {
-                            shadowPointer = ShadowPointerState()
-                            done = true
-                        } else if (!change.pressed) {
-                            shadowPointer = ShadowPointerState(
-                                x = change.position.x,
-                                y = change.position.y,
-                                pressure = 0f,
-                            )
-                            sdk.addEvent(
-                                Event(
-                                    System.currentTimeMillis(),
-                                    MotionEvent.ACTION_UP,
-                                    change.position.x,
-                                    change.position.y,
-                                ),
-                            )
-                            state.invalidate()
-                            change.consume()
-                            // Track tap time only when the gesture had no
-                            // movement, so a double-stroke (drag-drag) does
-                            // not also trigger clear.
-                            lastTapUpTime = if (moved) 0L else System.currentTimeMillis()
-                            done = true
-                        } else {
-                            if (change.positionChanged()) moved = true
-                            shadowPointer = ShadowPointerState(
-                                x = change.position.x,
-                                y = change.position.y,
-                                pressure = normalizedActivePointerPressure(change.pressure),
-                            )
-                            sdk.addEvent(
-                                Event(
-                                    System.currentTimeMillis(),
-                                    MotionEvent.ACTION_MOVE,
-                                    change.position.x,
-                                    change.position.y,
-                                ),
-                            )
-                            state.invalidate()
-                            change.consume()
-                        }
+                    } finally {
+                        state.shadowPointer = ShadowPointerState()
                     }
                 }
             },
@@ -280,15 +319,15 @@ fun SignaturePadView(
             canvas = nativeCanvas,
             width = canvasSize.width,
             height = canvasSize.height,
-            pointerX = shadowPointer.x,
-            pointerY = shadowPointer.y,
-            pressure = shadowPointer.pressure,
+            pointerX = state.shadowPointer.x,
+            pointerY = state.shadowPointer.y,
+            pressure = state.shadowPointer.pressure,
         )
         sdk.drawSignature(nativeCanvas)
     }
 }
 
-private data class ShadowPointerState(
+internal data class ShadowPointerState(
     val x: Float = 0f,
     val y: Float = 0f,
     val pressure: Float = 0f,
@@ -315,6 +354,8 @@ class SignaturePadState private constructor(
         internal fun create(sdk: SignatureSDK): SignaturePadState = SignaturePadState(sdk)
     }
 
+    internal var shadowPointer by mutableStateOf(ShadowPointerState())
+
     internal var size: IntSize = IntSize.Zero
 
     internal var redrawTick: Int by mutableIntStateOf(0)
@@ -330,34 +371,8 @@ class SignaturePadState private constructor(
     }
 
     fun clear() {
+        shadowPointer = ShadowPointerState()
         sdk.clear()
-        ensureBitmap()
-        invalidate()
-    }
-
-    /**
-     * Set the live finger shadow color.
-     */
-    fun setShadowColor(@ColorInt color: Int) {
-        sdk.configureShadow(shadowColor = color)
-        ensureBitmap()
-        invalidate()
-    }
-
-    /**
-     * Set the live finger shadow intensity. A value of 0 disables the shadow.
-     */
-    fun setShadowIntensity(@FloatRange(from = 0.0, to = 1.0) intensity: Float) {
-        sdk.configureShadow(shadowIntensity = intensity)
-        ensureBitmap()
-        invalidate()
-    }
-
-    /**
-     * Set the live finger shadow angle in degrees.
-     */
-    fun setShadowAngleDegrees(@FloatRange(from = 0.0, to = 360.0) angleDegrees: Float) {
-        sdk.configureShadowAngle(angleDegrees)
         ensureBitmap()
         invalidate()
     }
@@ -413,6 +428,7 @@ class SignaturePadState private constructor(
 
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
+        shadowPointer = ShadowPointerState()
         sdk.clear()
         ensureBitmap()
         sdk.restoreEvents(signature.events)
@@ -436,14 +452,6 @@ class SignaturePadAdapter private constructor(
     }
 
     fun clear() = state.clear()
-
-    fun setShadowColor(@ColorInt color: Int) = state.setShadowColor(color)
-
-    fun setShadowIntensity(@FloatRange(from = 0.0, to = 1.0) intensity: Float) =
-        state.setShadowIntensity(intensity)
-
-    fun setShadowAngleDegrees(@FloatRange(from = 0.0, to = 360.0) angleDegrees: Float) =
-        state.setShadowAngleDegrees(angleDegrees)
 
     fun undo() = state.undo()
 

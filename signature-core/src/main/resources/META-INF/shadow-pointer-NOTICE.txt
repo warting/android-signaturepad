@@ -1,0 +1,6 @@
+Pointer shadow shader adapted from Romain Guy's shadow-pointer sample:
+https://github.com/romainguy/shadow-pointer
+Licensed under the Apache License, Version 2.0 (see shadow-pointer-LICENSE.txt).
+
+Modified for android-signaturepad: configurable angle, intensity and color;
+API-level and hardware-canvas guards; separate live overlay with no export effects.

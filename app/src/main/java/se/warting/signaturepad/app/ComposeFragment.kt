@@ -1,80 +1,98 @@
 package se.warting.signaturepad.app
 
 import android.util.Log
-import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import se.warting.signaturecore.SignatureSDK
 import se.warting.signaturepad.SignaturePadState
 import se.warting.signaturepad.SignaturePadView
 import se.warting.signaturepad.rememberSignaturePadState
 
-private const val SIGNATURE_PAD_HEIGHT_DP = 200
+private const val SIGNATURE_PAD_HEIGHT_DP = 120
 private const val PEN_WIDTH_MIN_DP = 1f
 private const val PEN_WIDTH_MAX_DP = 20f
 private const val DEFAULT_PEN_MIN_WIDTH_DP = 3f
 private const val DEFAULT_PEN_MAX_WIDTH_DP = 7f
-private const val DEFAULT_SHADOW_INTENSITY = 0f
-private const val SHADOW_ANGLE_MIN_DEGREES = 0f
-private const val SHADOW_ANGLE_MAX_DEGREES = 360f
-private val sampleShadowBlue = Color(0xFF1565C0)
 
 @Composable
 private fun ColorToggleGroup(
-    @StringRes title: Int,
-    options: List<Pair<Int, Color>>,
+    title: String,
+    options: List<Pair<String, Color>>,
     selected: Color,
     onSelect: (Color) -> Unit
 ) {
     Column(Modifier.fillMaxWidth()) {
-        Text(stringResource(title), style = MaterialTheme.typography.bodyMedium)
-        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-            options.forEachIndexed { idx, (labelRes, color) ->
-                SegmentedButton(
-                    selected = color == selected,
+        Text(title, style = MaterialTheme.typography.bodyMedium)
+        Row {
+            options.forEachIndexed { idx, (label, color) ->
+                val isSel = color == selected
+                val shape = when (idx) {
+                    0 -> RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
+                    options.lastIndex -> RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
+                    else -> RectangleShape
+                }
+                OutlinedButton(
                     onClick = { onSelect(color) },
-                    shape = SegmentedButtonDefaults.itemShape(idx, options.size),
-                    modifier = Modifier.semantics { role = Role.RadioButton },
-                ) {
-                    Text(stringResource(labelRes))
+                    shape = shape,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = if (isSel)
+                            MaterialTheme.colorScheme.primaryContainer
+                        else
+                            MaterialTheme.colorScheme.surface,
+                        contentColor = if (isSel)
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        else
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) { Text(label) }
+
+                if (idx < options.lastIndex) {
+                    Spacer(
+                        Modifier
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(MaterialTheme.colorScheme.outline)
+                    )
                 }
             }
         }
@@ -87,19 +105,10 @@ private fun SaveClearRow(
     onClear: () -> Unit,
     onUndo: () -> Unit
 ) {
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Button(onClick = onSave, modifier = Modifier.weight(1f)) {
-            Text(stringResource(R.string.save))
-        }
-        Button(onClick = onUndo, modifier = Modifier.weight(1f)) {
-            Text(stringResource(R.string.undo))
-        }
-        Button(onClick = onClear, modifier = Modifier.weight(1f)) {
-            Text(stringResource(R.string.clear))
-        }
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Button(modifier = Modifier.weight(1f), onClick = onSave) { Text("Save") }
+        Button(modifier = Modifier.weight(1f), onClick = onUndo) { Text("Undo") }
+        Button(modifier = Modifier.weight(1f), onClick = onClear) { Text("Clear") }
     }
 }
 
@@ -128,67 +137,36 @@ fun ComposeSample() {
     val signatureState = rememberSignaturePadState()
 
     data class Toggle(
-        @param:StringRes val title: Int,
-        val options: List<Pair<Int, Color>>,
+        val title: String,
+        val options: List<Pair<String, Color>>,
         var state: MutableState<Color>
     )
 
-    val penColor = remember { mutableStateOf(Color.Black) }
-    val shadowColor = remember { mutableStateOf(Color.Black) }
-    val imageBackgroundColor = remember { mutableStateOf(Color.White) }
-    val imagePenColor = remember { mutableStateOf(Color.Black) }
     val toggles = listOf(
         Toggle(
-            R.string.pen_color_label,
-            listOf(
-                R.string.color_red to Color.Red,
-                R.string.color_black to Color.Black,
-                R.string.color_white to Color.White,
-            ),
-            penColor
-        ),
+            "Pen color:",
+            listOf("Red" to Color.Red, "Black" to Color.Black, "White" to Color.White),
+            remember { mutableStateOf(Color.Black) }),
         Toggle(
-            R.string.shadow_color_label,
-            listOf(
-                R.string.color_black to Color.Black,
-                R.string.color_blue to sampleShadowBlue,
-                R.string.color_red to Color.Red,
-            ),
-            shadowColor
-        ),
+            "Image background color:",
+            listOf("Red" to Color.Red, "Green" to Color.Green, "Blue" to Color.Blue),
+            remember { mutableStateOf(Color.White) }),
         Toggle(
-            R.string.image_background_color_label,
-            listOf(
-                R.string.color_red to Color.Red,
-                R.string.color_green to Color.Green,
-                R.string.color_blue to Color.Blue,
-            ),
-            imageBackgroundColor
-        ),
-        Toggle(
-            R.string.image_pen_color_label,
-            listOf(
-                R.string.color_red to Color.Red,
-                R.string.color_black to Color.Black,
-                R.string.color_white to Color.White,
-            ),
-            imagePenColor
-        )
+            "Image pen color:",
+            listOf("Red" to Color.Red, "Black" to Color.Black, "White" to Color.White),
+            remember { mutableStateOf(Color.Black) })
     )
 
+    var showShadow by remember { mutableStateOf(false) }
     var useOverride by remember { mutableStateOf(false) }
-    var penMinWidth by remember { mutableFloatStateOf(DEFAULT_PEN_MIN_WIDTH_DP) }
-    var penMaxWidth by remember { mutableFloatStateOf(DEFAULT_PEN_MAX_WIDTH_DP) }
-    var shadowIntensity by remember { mutableFloatStateOf(DEFAULT_SHADOW_INTENSITY) }
-    var shadowAngleDegrees by remember {
-        mutableFloatStateOf(SignatureSDK.DEFAULT_ATTR_SHADOW_ANGLE_DEGREES)
-    }
+    var penMinWidth by remember { mutableStateOf(DEFAULT_PEN_MIN_WIDTH_DP) }
+    var penMaxWidth by remember { mutableStateOf(DEFAULT_PEN_MAX_WIDTH_DP) }
 
     Column(
         Modifier
-            .fillMaxSize()
             .padding(8.dp)
             .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
     ) {
         Box(
             Modifier
@@ -199,12 +177,10 @@ fun ComposeSample() {
             SignaturePadView(
                 modifier = Modifier.fillMaxSize(),
                 state = signatureState,
-                penColor = penColor.value,
+                shadowIntensity = if (showShadow) 0.5f else 0f,
+                penColor = toggles[0].state.value,
                 penMinWidth = penMinWidth.dp,
                 penMaxWidth = penMaxWidth.dp,
-                shadowColor = shadowColor.value,
-                shadowIntensity = shadowIntensity,
-                shadowAngleDegrees = shadowAngleDegrees,
                 onStartSigning = { Log.d("SignedListener", "onStartSigning") },
                 onSigning = { Log.d("SignedListener", "onSigning") },
                 onSigned = { Log.d("SignedListener", "onSigned") },
@@ -214,13 +190,18 @@ fun ComposeSample() {
 
         Spacer(Modifier.height(8.dp))
 
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.pointer_shadow), Modifier.weight(1f))
+            Switch(showShadow, onCheckedChange = { showShadow = it })
+        }
+
         toggles.forEach { tol ->
             ColorToggleGroup(tol.title, tol.options, tol.state.value) { tol.state.value = it }
             Spacer(Modifier.height(8.dp))
         }
 
         Text(
-            stringResource(R.string.pen_min_width_format, penMinWidth),
+            "Pen min width: ${"%.1f".format(penMinWidth)} dp",
             style = MaterialTheme.typography.bodyMedium
         )
         Slider(
@@ -232,10 +213,9 @@ fun ComposeSample() {
             valueRange = PEN_WIDTH_MIN_DP..PEN_WIDTH_MAX_DP,
         )
         Text(
-            stringResource(R.string.pen_max_width_format, penMaxWidth),
+            "Pen max width: ${"%.1f".format(penMaxWidth)} dp",
             style = MaterialTheme.typography.bodyMedium
         )
-
         Slider(
             value = penMaxWidth,
             onValueChange = {
@@ -243,24 +223,6 @@ fun ComposeSample() {
                 if (penMinWidth > it) penMinWidth = it
             },
             valueRange = PEN_WIDTH_MIN_DP..PEN_WIDTH_MAX_DP,
-        )
-        Text(
-            stringResource(R.string.shadow_intensity_format, shadowIntensity),
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Slider(
-            value = shadowIntensity,
-            onValueChange = { shadowIntensity = it },
-            valueRange = 0f..1f,
-        )
-        Text(
-            stringResource(R.string.shadow_angle_format, shadowAngleDegrees),
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Slider(
-            value = shadowAngleDegrees,
-            onValueChange = { shadowAngleDegrees = it },
-            valueRange = SHADOW_ANGLE_MIN_DEGREES..SHADOW_ANGLE_MAX_DEGREES,
         )
         Spacer(Modifier.height(8.dp))
 
@@ -270,7 +232,7 @@ fun ComposeSample() {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(R.string.use_override_colors), Modifier.weight(1f))
+            Text("Use override colors", Modifier.weight(1f))
             Switch(useOverride, onCheckedChange = { useOverride = it })
         }
 
@@ -280,16 +242,16 @@ fun ComposeSample() {
             onSave = {
                 svg = if (useOverride) {
                     signatureState.getSignatureSvg(
-                        penColor = imagePenColor.value.toArgb(),
-                        backgroundColor = imageBackgroundColor.value.toArgb(),
+                        penColor = toggles[2].state.value.toArgb(),
+                        backgroundColor = toggles[1].state.value.toArgb(),
                     )
                 } else {
                     signatureState.getSignatureSvg()
                 }
                 bmpPair = signatureState.extractBitmaps(
                     useOverride = useOverride,
-                    bgColor = imageBackgroundColor.value,
-                    strokeColor = imagePenColor.value
+                    bgColor = toggles[1].state.value,
+                    strokeColor = toggles[2].state.value
                 )
             },
             onClear = {
@@ -302,9 +264,9 @@ fun ComposeSample() {
         )
 
         bmpPair.first?.let {
-            Text(stringResource(R.string.bitmap))
+            Text("Bitmap")
             Image(
-                it, stringResource(R.string.signature), Modifier
+                it, "Signature", Modifier
                     .fillMaxWidth()
                     .height(SIGNATURE_PAD_HEIGHT_DP.dp)
                     .border(1.dp, Color.Gray)
@@ -312,16 +274,16 @@ fun ComposeSample() {
         }
         Spacer(Modifier.height(8.dp))
         bmpPair.second?.let {
-            Text(stringResource(R.string.transparent_bitmap))
+            Text("Transparent Bitmap")
             Image(
-                it, stringResource(R.string.transparent), Modifier
+                it, "Transparent", Modifier
                     .fillMaxWidth()
                     .height(SIGNATURE_PAD_HEIGHT_DP.dp)
             )
         }
 
         Spacer(Modifier.height(8.dp))
-        Text(stringResource(R.string.svg_label), style = MaterialTheme.typography.bodyMedium)
+        Text("SVG:", style = MaterialTheme.typography.bodyMedium)
         Text(svg, style = MaterialTheme.typography.bodySmall)
     }
 }

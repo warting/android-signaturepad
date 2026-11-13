@@ -1,11 +1,9 @@
 plugins {
-    id("com.android.library")
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.com.android.library)
     id("maven-publish")
     id("signing")
     alias(libs.plugins.org.jetbrains.dokka)
-    alias(libs.plugins.com.gladed.androidgitversion)
-    id("kotlin-kapt")
+    alias(libs.plugins.com.android.legacy.kapt)
     alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.com.vanniktech.maven.publish)
 }
@@ -47,16 +45,6 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-androidGitVersion {
-    tagPattern = "^v[0-9]+.*"
-}
-
-dokka {
-    dokkaSourceSets.matching { it.name == "release" }.configureEach {
-        suppress.set(true)
-    }
-}
-
 val PUBLISH_GROUP_ID: String by extra(rootProject.group as String)
 val PUBLISH_VERSION: String by extra(rootProject.version as String)
 
@@ -64,7 +52,7 @@ group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 23
@@ -76,23 +64,25 @@ android {
         release {
             isMinifyEnabled = false
 
-            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
-            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
+            buildConfigField("int", "VERSION_CODE", rootProject.extra["libraryVersionCode"].toString())
+            buildConfigField("String", "VERSION_NAME", "\"${rootProject.extra["libraryVersionName"]}\"")
         }
         debug {
             isMinifyEnabled = false
-            buildConfigField("int", "VERSION_CODE", androidGitVersion.code().toString())
-            buildConfigField("String", "VERSION_NAME", "\"${androidGitVersion.name()}\"")
+            buildConfigField("int", "VERSION_CODE", rootProject.extra["libraryVersionCode"].toString())
+            buildConfigField("String", "VERSION_NAME", "\"${rootProject.extra["libraryVersionName"]}\"")
         }
     }
 
     buildFeatures {
+        dataBinding = true
         viewBinding = false
         compose = false
         buildConfig = true
     }
-    dataBinding {
-        enable = true
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
     }
 
     lint {
@@ -115,5 +105,7 @@ android {
 dependencies {
     api(project(":signature-core"))
     implementation(libs.androidx.core.core.ktx)
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
 }
