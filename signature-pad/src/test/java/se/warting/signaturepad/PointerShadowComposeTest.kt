@@ -18,8 +18,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.SignatureSDK
 
+@OptIn(ExperimentalSignatureApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -86,7 +88,56 @@ class PointerShadowComposeTest {
             state.clear()
             assertEquals(0f, state.shadowPointer.pressure)
         }
+        compose.onNodeWithTag("pad").performTouchInput {
+            moveTo(Offset(150f, 150f))
+            up()
+        }
+        compose.runOnIdle {
+            assertEquals(0f, state.shadowPointer.pressure)
+            assertTrue(state.getSignature().events.isEmpty())
+            assertTrue(state.isEmpty)
+        }
+        compose.onNodeWithTag("pad").performTouchInput { down(center) }
+        compose.runOnIdle { assertTrue(state.shadowPointer.pressure > 0f) }
         compose.onNodeWithTag("pad").performTouchInput { up() }
+    }
+
+    @Test
+    fun restoringMidGesture_ignoresRemainingTouchEvents() {
+        lateinit var state: SignaturePadState
+        compose.setContent {
+            state = rememberSignaturePadState()
+            SignaturePadView(
+                modifier = Modifier.size(200.dp).testTag("pad"),
+                state = state,
+                shadowIntensity = 0.5f,
+            )
+        }
+        compose.onNodeWithTag("pad").performTouchInput {
+            down(Offset(10f, 10f))
+            moveTo(Offset(40f, 40f))
+            up()
+        }
+        val saved = compose.runOnIdle { state.getSignature() }
+        compose.onNodeWithTag("pad").performTouchInput {
+            down(Offset(70f, 70f))
+            moveTo(Offset(100f, 100f))
+        }
+        val expectedBitmap = compose.runOnIdle {
+            state.setSignature(saved)
+            state.getTransparentSignatureBitmap().copy(android.graphics.Bitmap.Config.ARGB_8888, false)
+        }
+        val expectedSvg = compose.runOnIdle { state.getSignatureSvg() }
+        compose.onNodeWithTag("pad").performTouchInput {
+            moveTo(Offset(150f, 150f))
+            up()
+        }
+        compose.runOnIdle {
+            assertEquals(saved.events, state.getSignature().events)
+            assertEquals(expectedSvg, state.getSignatureSvg())
+            assertTrue(expectedBitmap.sameAs(state.getTransparentSignatureBitmap()))
+            assertEquals(0f, state.shadowPointer.pressure)
+        }
     }
 
     @Test

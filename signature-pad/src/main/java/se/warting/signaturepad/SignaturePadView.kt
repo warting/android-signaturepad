@@ -218,6 +218,7 @@ fun SignaturePadView(
                 awaitEachGesture {
                     try {
                         val down = awaitFirstDown(requireUnconsumed = false)
+                        val gestureGeneration = state.gestureGeneration
                         val downTime = System.currentTimeMillis()
                         val isDoubleTap = currentClearOnDoubleClick &&
                             (downTime - lastTapUpTime) < doubleTapTimeoutMs
@@ -260,6 +261,12 @@ fun SignaturePadView(
                         var done = false
                         while (!done) {
                             val event = awaitPointerEvent()
+                            // A clear/restore invalidates this gesture. awaitEachGesture
+                            // waits for all pointers to lift before accepting another down.
+                            if (gestureGeneration != state.gestureGeneration) {
+                                lastTapUpTime = 0L
+                                break
+                            }
                             val change = event.changes.firstOrNull { it.id == down.id }
                             if (change == null) {
                                 state.shadowPointer = ShadowPointerState()
@@ -357,6 +364,9 @@ class SignaturePadState private constructor(
 
     internal var shadowPointer by mutableStateOf(ShadowPointerState())
 
+    internal var gestureGeneration: Int = 0
+        private set
+
     internal var size: IntSize = IntSize.Zero
 
     internal var redrawTick: Int by mutableIntStateOf(0)
@@ -372,6 +382,7 @@ class SignaturePadState private constructor(
     }
 
     fun clear() {
+        gestureGeneration++
         shadowPointer = ShadowPointerState()
         sdk.clear()
         ensureBitmap()
@@ -429,6 +440,7 @@ class SignaturePadState private constructor(
 
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
+        gestureGeneration++
         shadowPointer = ShadowPointerState()
         sdk.clear()
         ensureBitmap()
