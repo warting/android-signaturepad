@@ -350,8 +350,23 @@ class SignatureSDK {
         return svgBuilder.build(width, height, penColor, backgroundColor)
     }
 
+    /**
+     * Match the raster surface to the measured size without scaling existing ink.
+     * Resizing copies the overlapping pixels (cropping on shrink), preserving pen
+     * colors, the active stroke, events and SVG without sending signing callbacks.
+     */
     fun initializeBitmap(width: Int, height: Int) {
-        if (signatureTransparentBitmap == null && width > 0 && height > 0) {
+        if (width <= 0 || height <= 0) return
+        val previousBitmap = signatureTransparentBitmap
+        if (previousBitmap != null) {
+            if (previousBitmap.width != width || previousBitmap.height != height) {
+                val resizedBitmap = createBitmap(width, height)
+                signatureBitmapCanvas = Canvas(resizedBitmap).apply {
+                    drawBitmap(previousBitmap, 0f, 0f, null)
+                }
+                signatureTransparentBitmap = resizedBitmap
+            }
+        } else {
             signatureTransparentBitmap = createBitmap(width, height).also {
                 signatureBitmapCanvas = Canvas(it)
             }

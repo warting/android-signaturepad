@@ -21,6 +21,65 @@ import se.warting.signaturecore.utils.SignedListener
 class SignatureBitmapTest {
 
     @Test
+    fun resizeDuringStroke_preservesInputAndRenderingWithoutExtraCallbacks() {
+        val sdk = SignatureSDK().apply {
+            configure(5, 5, Color.BLACK, 0.9f)
+            initializeBitmap(50, 50)
+        }
+        var callbacks = 0
+        sdk.setOnSignedListener(object : SignedListener {
+            override fun onStartSigning() { callbacks++ }
+            override fun onSigning() { callbacks++ }
+            override fun onSigned() { callbacks++ }
+            override fun onClear() { callbacks++ }
+        })
+        sdk.input.start(7L, 10f, 20f, 0.5f, 0L)
+        sdk.input.move(7L, 30f, 20f, 0.5f, 16L)
+        val events = sdk.getEvents()
+        val svg = sdk.getSignatureSvg(100, 80)
+        sdk.initializeBitmap(100, 80)
+        sdk.initializeBitmap(100, 80)
+        sdk.initializeBitmap(0, 0)
+        assertEquals(2, callbacks)
+        assertEquals(events, sdk.getEvents())
+        assertEquals(svg, sdk.getSignatureSvg(100, 80))
+        assertTrue(sdk.input.isActive(7L))
+        assertEquals(0.5f, sdk.input.pressure)
+        sdk.input.move(7L, 60f, 20f, 0.5f, 32L)
+        sdk.input.move(7L, 80f, 20f, 0.5f, 48L)
+        sdk.input.end(7L, 90f, 20f, 64L)
+        val expected = SignatureSDK().apply {
+            configure(5, 5, Color.BLACK, 0.9f)
+            initializeBitmap(100, 80)
+            restoreEvents(sdk.getEvents())
+        }
+        assertEquals(5, callbacks)
+        assertTrue(expected.getTransparentSignatureBitmap()!!.sameAs(sdk.getTransparentSignatureBitmap()))
+        assertEquals(expected.getSignatureSvg(100, 80), sdk.getSignatureSvg(100, 80))
+    }
+
+    @Test
+    fun resizeAfterPenChange_copiesInkWithoutRecoloringOrScaling() {
+        val sdk = signature(horizontal = true, penWidth = 5)
+        val before = requireNotNull(sdk.getTransparentSignatureBitmap())
+        val events = sdk.getEvents()
+        val svg = sdk.getSignatureSvg(100, 80)
+        sdk.configure(20, 20, Color.RED)
+        sdk.initializeBitmap(100, 80)
+        val enlarged = requireNotNull(sdk.getTransparentSignatureBitmap())
+        assertEquals(100, enlarged.width)
+        assertEquals(80, enlarged.height)
+        assertTrue(before.sameAs(Bitmap.createBitmap(enlarged, 0, 0, 50, 50)))
+        sdk.initializeBitmap(25, 30)
+        val reduced = requireNotNull(sdk.getTransparentSignatureBitmap())
+        assertTrue(Bitmap.createBitmap(before, 0, 0, 25, 30).sameAs(reduced))
+        assertEquals(events, sdk.getEvents())
+        assertEquals(svg, sdk.getSignatureSvg(100, 80))
+        assertTrue(sdk.canUndo())
+        assertFalse(sdk.isEmpty)
+    }
+
+    @Test
     fun restoreSignature_beforeAndAfterMeasurement_hasIdenticalPixelsAndSingleCallbackSequence() {
         val source = signature(horizontal = true, penWidth = 5)
         val events = source.getEvents()
