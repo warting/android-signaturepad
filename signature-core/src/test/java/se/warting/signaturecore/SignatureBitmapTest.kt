@@ -21,6 +21,32 @@ import se.warting.signaturecore.utils.SignedListener
 class SignatureBitmapTest {
 
     @Test
+    fun restoreSignature_beforeAndAfterMeasurement_hasIdenticalPixelsAndSingleCallbackSequence() {
+        val source = signature(horizontal = true, penWidth = 5)
+        val events = source.getEvents()
+        for (measured in listOf(false, true)) {
+            val restored = SignatureSDK().apply { configure(5, 5, Color.BLACK) }
+            val callbacks = mutableListOf<String>()
+            restored.setOnSignedListener(object : SignedListener {
+                override fun onStartSigning() { callbacks.add("down") }
+                override fun onSigning() { callbacks.add("move") }
+                override fun onSigned() { callbacks.add("up") }
+                override fun onClear() { callbacks.add("clear") }
+            })
+            restored.input.start(1L, 1f, 1f, 1f, 0L)
+            callbacks.clear()
+            restored.restoreSignature(events, if (measured) 50 else 0, if (measured) 50 else 0)
+            assertFalse(restored.input.isActive(1L))
+            restored.initializeBitmap(50, 50)
+            restored.initializeBitmap(50, 50)
+            assertEquals(listOf("clear", "down", "move", "move", "up"), callbacks)
+            assertEquals(events, restored.getEvents())
+            assertTrue(source.getTransparentSignatureBitmap()!!.sameAs(restored.getTransparentSignatureBitmap()))
+            assertEquals(source.getSignatureSvg(50, 50), restored.getSignatureSvg(50, 50))
+        }
+    }
+
+    @Test
     fun clear_afterResize_recreatesBitmapAtCurrentSizeAndReplaysNewStroke() {
         val sdk = signature(horizontal = true, penWidth = 5)
 

@@ -26,8 +26,6 @@ import se.warting.signaturepad.view.BuildConfig
 import se.warting.signaturepad.view.R
 import kotlin.math.roundToInt
 
-private const val DEFAULT_ACTIVE_POINTER_PRESSURE = 1f
-
 @SuppressWarnings("TooManyFunctions")
 class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -35,10 +33,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     // Configurable parameters
     private var mClearOnDoubleClick = false
-    private var activePointerId = MotionEvent.INVALID_POINTER_ID
-    private var shadowPointerX = 0f
-    private var shadowPointerY = 0f
-    private var shadowPointerPressure = 0f
+    private val input get() = signatureSDK.input
 
     // Double click detector
     private val doubleClickGestureDetector =
@@ -66,7 +61,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
-        clearPointerShadow()
+        input.cancel()
         var mutableState: Parcelable? = state
         if (state is Bundle) {
             val events: Array<Event> =
@@ -196,7 +191,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     fun clearView() {
-        clearPointerShadow()
         signatureSDK.clear()
         invalidate()
     }
@@ -221,13 +215,13 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
         if (!enabled) {
-            clearPointerShadow()
+            input.cancel()
             invalidate()
         }
     }
 
     override fun onDetachedFromWindow() {
-        clearPointerShadow()
+        input.cancel()
         super.onDetachedFromWindow()
     }
 
@@ -235,7 +229,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val didDoubleClick = doubleClickGestureDetector.onTouchEvent(event)
         if (!isEnabled || didDoubleClick) {
-            clearPointerShadow()
+            input.cancel()
             invalidate()
             return false
         }
@@ -243,41 +237,48 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         return when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 parent?.requestDisallowInterceptTouchEvent(true)
-                activePointerId = event.getPointerId(event.actionIndex)
-                updatePointerShadow(event, event.actionIndex)
-                val downEvent = Event(System.currentTimeMillis(), MotionEvent.ACTION_DOWN, event.x, event.y)
-                signatureSDK.addEvent(downEvent)
+                input.start(
+                    event.getPointerId(0).toLong(),
+                    event.x,
+                    event.y,
+                    event.pressure,
+                    System.currentTimeMillis()
+                )
                 invalidate()
                 true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                val index = event.findPointerIndex(activePointerId)
+                val index = input.activePointerId?.let { event.findPointerIndex(it.toInt()) } ?: -1
                 if (index >= 0) {
-                    updatePointerShadow(event, index)
-                    signatureSDK.addEvent(
-                        Event(System.currentTimeMillis(), MotionEvent.ACTION_MOVE, event.getX(index), event.getY(index))
+                    input.move(
+                        event.getPointerId(index).toLong(),
+                        event.getX(index),
+                        event.getY(index),
+                        event.getPressure(index),
+                        System.currentTimeMillis()
                     )
                     invalidate()
                 }
                 true
             }
 
-            MotionEvent.ACTION_POINTER_UP -> {
-                if (event.getPointerId(event.actionIndex) == activePointerId) {
-                    finishActivePointer(event, event.actionIndex)
+            MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_UP -> {
+                val index = event.actionIndex
+                if (input.end(
+                        event.getPointerId(index).toLong(),
+                        event.getX(index),
+                        event.getY(index),
+                        System.currentTimeMillis()
+                    )
+                ) {
+                    invalidate()
                 }
                 true
             }
 
-            MotionEvent.ACTION_UP -> {
-                val index = event.findPointerIndex(activePointerId)
-                if (index >= 0) finishActivePointer(event, index)
-                true
-            }
-
             MotionEvent.ACTION_CANCEL -> {
-                clearPointerShadow()
+                input.cancel()
                 invalidate()
                 true
             }
@@ -287,25 +288,15 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         }
     }
 
-    private fun finishActivePointer(event: MotionEvent, index: Int) {
-        clearPointerShadow()
-        // End the signing pointer's stroke, then ignore remaining fingers until a new gesture.
-        // The core only receives its supported DOWN/MOVE/UP event types.
-        signatureSDK.addEvent(
-            Event(System.currentTimeMillis(), MotionEvent.ACTION_UP, event.getX(index), event.getY(index))
-        )
-        invalidate()
-    }
-
     override fun onDraw(canvas: Canvas) {
         ensureSignatureBitmapInDraw()
         signatureSDK.drawPointerShadow(
             canvas = canvas,
             width = width,
             height = height,
-            pointerX = shadowPointerX,
-            pointerY = shadowPointerY,
-            pressure = shadowPointerPressure,
+            pointerX = input.x,
+            pointerY = input.y,
+            pressure = input.pressure,
         )
         signatureSDK.drawSignature(canvas)
     }
@@ -341,9 +332,8 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
-        clearPointerShadow()
-        clear()
-        signatureSDK.restoreEvents(signature.events)
+        signatureSDK.restoreSignature(signature.events, width, height)
+        invalidate()
     }
 
     fun getSignatureBitmap(): Bitmap {
@@ -374,25 +364,6 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     private fun convertDpToPx(dp: Float): Int {
         return (context.resources.displayMetrics.density * dp).roundToInt()
-    }
-
-    private fun updatePointerShadow(event: MotionEvent, index: Int) {
-        shadowPointerX = event.getX(index)
-        shadowPointerY = event.getY(index)
-        shadowPointerPressure = normalizedActivePointerPressure(event.getPressure(index))
-    }
-
-    private fun clearPointerShadow() {
-        activePointerId = MotionEvent.INVALID_POINTER_ID
-        shadowPointerPressure = 0f
-    }
-
-    private fun normalizedActivePointerPressure(pressure: Float): Float {
-        return if (pressure.isFinite() && pressure > 0f) {
-            pressure
-        } else {
-            DEFAULT_ACTIVE_POINTER_PRESSURE
-        }
     }
 
     init {

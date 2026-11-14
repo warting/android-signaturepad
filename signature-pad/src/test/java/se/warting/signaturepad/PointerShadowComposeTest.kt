@@ -30,6 +30,42 @@ class PointerShadowComposeTest {
     val compose = createComposeRule()
 
     @Test
+    fun restoredBeforeMeasurement_rendersOnceWithConfiguredPenAndNoRepeatedCallbacks() {
+        val events = listOf(
+            se.warting.signaturecore.Event(0L, android.view.MotionEvent.ACTION_DOWN, 10f, 10f),
+            se.warting.signaturecore.Event(16L, android.view.MotionEvent.ACTION_MOVE, 40f, 40f),
+            se.warting.signaturecore.Event(32L, android.view.MotionEvent.ACTION_UP, 70f, 70f),
+        )
+        val state = SignaturePadState.create(SignatureSDK().apply { restoreEvents(events) })
+        var callbacks = 0
+        var width = 0
+        compose.setContent {
+            width = with(LocalDensity.current) { 5.dp.roundToPx() }
+            SignaturePadView(
+                modifier = Modifier.size(200.dp).testTag("pad"),
+                state = state,
+                penMinWidth = 5.dp,
+                penMaxWidth = 5.dp,
+                onStartSigning = { callbacks++ },
+                onSigning = { callbacks++ },
+                onSigned = { callbacks++ },
+                onClear = { callbacks++ },
+            )
+        }
+        compose.runOnIdle {
+            val expected = SignatureSDK().apply {
+                configure(width, width, android.graphics.Color.BLACK, 0.9f)
+                initializeBitmap(state.size.width, state.size.height)
+                restoreEvents(events)
+            }
+            assertTrue(expected.getTransparentSignatureBitmap()!!.sameAs(state.getTransparentSignatureBitmap()))
+            assertEquals(expected.getSignatureSvg(state.size.width, state.size.height), state.getSignatureSvg())
+            assertEquals(events, state.getSignature().events)
+            assertEquals(0, callbacks)
+        }
+    }
+
+    @Test
     fun changingShadowMidStroke_preservesBitmapAndSvg() {
         lateinit var state: SignaturePadState
         var minWidth = 0
@@ -138,6 +174,33 @@ class PointerShadowComposeTest {
             assertTrue(expectedBitmap.sameAs(state.getTransparentSignatureBitmap()))
             assertEquals(0f, state.shadowPointer.pressure)
         }
+    }
+
+    @Test
+    fun liftingSigningFinger_doesNotTransferStrokeToRemainingFinger() {
+        lateinit var state: SignaturePadState
+        compose.setContent {
+            state = rememberSignaturePadState()
+            SignaturePadView(
+                modifier = Modifier.size(200.dp).testTag("pad"),
+                state = state,
+                shadowIntensity = 0.5f,
+            )
+        }
+        compose.onNodeWithTag("pad").performTouchInput {
+            down(0, Offset(10f, 10f))
+            down(1, Offset(100f, 100f))
+            up(0)
+        }
+        val saved = compose.runOnIdle {
+            assertEquals(0f, state.shadowPointer.pressure)
+            state.getSignature()
+        }
+        compose.onNodeWithTag("pad").performTouchInput {
+            moveTo(1, Offset(150f, 150f))
+            up(1)
+        }
+        compose.runOnIdle { assertEquals(saved.events, state.getSignature().events) }
     }
 
     @Test
