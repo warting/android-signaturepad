@@ -288,6 +288,11 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
         }
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        signatureSDK.initializeBitmap(w, h)
+    }
+
     override fun onDraw(canvas: Canvas) {
         ensureSignatureBitmapInDraw()
         signatureSDK.drawPointerShadow(
@@ -357,9 +362,7 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
     }
 
     private fun ensureSignatureBitmapInDraw() {
-        if (!signatureSDK.hasBitmap() && width > 0 && height > 0) {
-            signatureSDK.initializeBitmap(width, height)
-        }
+        signatureSDK.initializeBitmap(width, height)
     }
 
     private fun convertDpToPx(dp: Float): Int {

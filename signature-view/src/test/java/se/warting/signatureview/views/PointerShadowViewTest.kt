@@ -22,6 +22,22 @@ import se.warting.signaturecore.ExperimentalSignatureApi
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class PointerShadowViewTest {
     @Test
+    fun resize_updatesBitmapBeforeNextDrawAndAcceptsInputInNewArea() {
+        val pad = createPad()
+        render(pad)
+        pad.layout(0, 0, 400, 200)
+        // Touch and export may happen before the first draw at the new size.
+        touch(pad, MotionEvent.ACTION_DOWN, 250f)
+        touch(pad, MotionEvent.ACTION_MOVE, 280f)
+        touch(pad, MotionEvent.ACTION_MOVE, 310f)
+        touch(pad, MotionEvent.ACTION_UP, 340f)
+        val bitmap = pad.getTransparentSignatureBitmap()
+        assertEquals(400, bitmap.width)
+        assertEquals(200, bitmap.height)
+        assertTrue(android.graphics.Color.alpha(bitmap.getPixel(280, 100)) > 0)
+    }
+
+    @Test
     fun liftingActiveFinger_endsStrokeAndKeepsShadowOffUntilNewGesture() {
         val pad = createPad()
         touch(pad, MotionEvent.ACTION_DOWN)
@@ -109,8 +125,8 @@ class PointerShadowViewTest {
         return pad
     }
 
-    private fun touch(pad: SignaturePad, action: Int) {
-        val event = MotionEvent.obtain(0L, 10L, action, 100f, 100f, 0)
+    private fun touch(pad: SignaturePad, action: Int, x: Float = 100f) {
+        val event = MotionEvent.obtain(0L, 10L, action, x, 100f, 0)
         try {
             pad.onTouchEvent(event)
         } finally {

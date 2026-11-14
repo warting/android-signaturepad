@@ -154,6 +154,7 @@ fun SignaturePadView(
     DisposableEffect(sdk) {
         sdk.setOnSignedListener(object : SignedListener {
             override fun onStartSigning() {
+                state.updateStatus()
                 currentOnStartSigning()
             }
 
@@ -162,10 +163,12 @@ fun SignaturePadView(
             }
 
             override fun onSigned() {
+                state.updateStatus()
                 currentOnSigned()
             }
 
             override fun onClear() {
+                state.updateStatus()
                 currentOnClear()
             }
         })
@@ -312,8 +315,18 @@ class SignaturePadState private constructor(
 
     internal var redrawTick: Int by mutableIntStateOf(0)
 
+    private var empty by mutableStateOf(sdk.isEmpty)
+    private var undoAvailable by mutableStateOf(sdk.canUndo())
+
     internal fun invalidate() {
         redrawTick++
+    }
+
+    // Status changes at stroke boundaries and explicit edits. Keep the undo
+    // history scan out of pointer-move redraws, which only update the canvas.
+    internal fun updateStatus() {
+        empty = sdk.isEmpty
+        undoAvailable = sdk.canUndo()
     }
 
     private fun ensureBitmap() {
@@ -325,6 +338,7 @@ class SignaturePadState private constructor(
     fun clear() {
         sdk.clear()
         ensureBitmap()
+        updateStatus()
         invalidate()
     }
 
@@ -334,16 +348,17 @@ class SignaturePadState private constructor(
     fun undo() {
         sdk.undo()
         ensureBitmap()
+        updateStatus()
         invalidate()
     }
 
     /**
      * @return true if a stroke is available to undo.
      */
-    fun canUndo(): Boolean = sdk.canUndo()
+    fun canUndo(): Boolean = undoAvailable
 
     val isEmpty: Boolean
-        get() = sdk.isEmpty
+        get() = empty
 
     @Suppress("unused")
     fun getSignatureBitmap(): Bitmap = sdk.getSignatureBitmap() ?: createBitmap(1, 1)
@@ -380,6 +395,7 @@ class SignaturePadState private constructor(
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
         sdk.restoreSignature(signature.events, size.width, size.height)
+        updateStatus()
         invalidate()
     }
 }
