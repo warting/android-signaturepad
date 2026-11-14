@@ -102,7 +102,10 @@ dirty suffix when applicable. Override the publication version with `-PVERSION_N
 - Plugin: `org.jetbrains.kotlinx.binary-compatibility-validator`
 - The `app` module is excluded from API validation
 - BCV 0.18.x does not discover AGP's built-in Kotlin automatically. The root build registers `apiBuild`, `apiCheck`, and `apiDump` for each library using release Kotlin and Java compilation outputs, and adds `apiCheck` to `check`.
-- Run `./gradlew apiCheck` to validate, `./gradlew apiDump` to update API dumps
+- Run `./gradlew apiCheck` to validate, `./gradlew apiDump` to update API dumps.
+- `check` also runs `apiCheckPublished` against the actual 0.3.0 AARs from Maven Central. It permits additions but fails on removed/changed public JVM declarations independently of editable snapshots. Keep this baseline pinned unless intentionally dropping compatibility.
+- `SignatureSDK.input` owns the active signing pointer and transient shadow state. Clear/restore cancel live input; undo preserves it. UI adapters retain native event recognition, lifecycle and redraw handling.
+- Bitmap initialization replays restored events silently in core. Do not add another replay effect in Compose; configure the pen before first allocation.
 
 ## CI/CD Workflows
 

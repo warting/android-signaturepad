@@ -24,6 +24,9 @@ import kotlin.math.sqrt
 
 class SignatureSDK {
 
+    /** Shared live-input lifecycle for Compose, Views and other input adapters. */
+    val input: SignatureInput = SignatureInput(this)
+
     // Event storage
     private val originalEvents = mutableListOf<Event>()
 
@@ -226,6 +229,7 @@ class SignatureSDK {
     }
 
     fun clear() {
+        input.cancel()
         resetStrokeState()
         originalEvents.clear()
         // The view may have resized since allocation. Recreate at its current size.
@@ -235,6 +239,23 @@ class SignatureSDK {
     }
 
     fun restoreEvents(events: List<Event>) {
+        input.cancel()
+        replayEvents(events)
+    }
+
+    /**
+     * Replace a signature and prepare its bitmap when the surface has been measured.
+     * If dimensions are unavailable, [initializeBitmap] replays the events on the first draw.
+     * Explicit restoration retains the existing clear and signing notifications; bitmap
+     * initialization never repeats them.
+     */
+    fun restoreSignature(events: List<Event>, width: Int, height: Int) {
+        clear()
+        initializeBitmap(width, height)
+        restoreEvents(events)
+    }
+
+    private fun replayEvents(events: List<Event>) {
         originalEvents.clear()
         @Suppress("MemberExtensionConflict") // False positive? Try remove later
         originalEvents.addAll(events)
@@ -273,7 +294,8 @@ class SignatureSDK {
         if (lastCompletedStrokeStart < 0) return
         val lastUp = originalEvents.indexOfLast { it.action == MotionEvent.ACTION_UP }
         val remaining = originalEvents.take(lastCompletedStrokeStart) + originalEvents.drop(lastUp + 1)
-        restoreEvents(remaining)
+        // Undo must preserve a live stroke and its active input pointer.
+        replayEvents(remaining)
         if (remaining.isEmpty()) {
             signedListener?.onClear()
         } else {

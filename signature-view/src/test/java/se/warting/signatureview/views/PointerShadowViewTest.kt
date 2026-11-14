@@ -80,6 +80,26 @@ class PointerShadowViewTest {
         assertShadowHidden(pad)
     }
 
+    @Test
+    fun restoreDuringTouch_preservesExportAndStopsRemainingInput() {
+        val pad = createPad()
+        touch(pad, MotionEvent.ACTION_DOWN)
+        touch(pad, MotionEvent.ACTION_UP)
+        val saved = pad.getSignature()
+        touch(pad, MotionEvent.ACTION_DOWN)
+        touch(pad, MotionEvent.ACTION_MOVE)
+        pad.setSignature(saved)
+        val bitmap = pad.getTransparentSignatureBitmap()
+        val svg = pad.getSignatureSvg()
+        assertEquals(200, bitmap.width)
+        touch(pad, MotionEvent.ACTION_MOVE)
+        touch(pad, MotionEvent.ACTION_UP)
+        assertEquals(saved.events, pad.getSignature().events)
+        assertEquals(svg, pad.getSignatureSvg())
+        assertTrue(bitmap.sameAs(pad.getTransparentSignatureBitmap()))
+        assertShadowHidden(pad)
+    }
+
     private fun createPad(): SignaturePad {
         val context = RuntimeEnvironment.getApplication()
         val pad = SignaturePad(context, null)

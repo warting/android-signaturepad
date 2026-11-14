@@ -126,6 +126,54 @@ subprojects {
             from(apiBuild.flatMap { it.outputApiFile })
             into(layout.projectDirectory.dir("api"))
         }
-        tasks.named("check") { dependsOn(apiCheck) }
+        // Compare against the actual published AAR, independently of editable API snapshots.
+        val publishedApiVersion = "0.3.0"
+        val publishedApi = configurations.create("publishedApi") {
+            isCanBeConsumed = false
+            isTransitive = false
+        }
+        dependencies.add(publishedApi.name, "${rootProject.group}:${project.name}:$publishedApiVersion@aar")
+        val publishedClasses = tasks.register<Sync>("extractPublishedApi") {
+            from({ zipTree(zipTree(publishedApi.singleFile).matching { include("classes.jar") }.singleFile) })
+            into(layout.buildDirectory.dir("published-api/$publishedApiVersion/classes"))
+        }
+        val apiBuildPublished = tasks.register<kotlinx.validation.KotlinApiBuildTask>("apiBuildPublished") {
+            inputClassesDirs.from(publishedClasses)
+            runtimeClasspath.from(configurations.named("bcv-rt-jvm-cp-resolver"))
+            outputApiFile.set(layout.buildDirectory.file("published-api/$publishedApiVersion/${project.name}.api"))
+        }
+        val apiCheckPublished = tasks.register("apiCheckPublished") {
+            group = "verification"
+            description = "Checks that the public JVM API from Maven Central $publishedApiVersion is retained."
+            dependsOn(apiBuildPublished, apiBuild)
+            doLast {
+                fun declarations(file: File): Map<String, Set<String>> {
+                    val result = linkedMapOf<String, MutableSet<String>>()
+                    var declaration: String? = null
+                    file.forEachLine { line ->
+                        when {
+                            line.endsWith(" {") -> {
+                                declaration = line
+                                result[line] = linkedSetOf()
+                            }
+                            line == "}" -> declaration = null
+                            line.isNotBlank() -> declaration?.let { result.getValue(it).add(line.trim()) }
+                        }
+                    }
+                    check(result.isNotEmpty()) { "Empty API dump: $file" }
+                    return result
+                }
+                val baseline = declarations(apiBuildPublished.get().outputApiFile.get().asFile)
+                val current = declarations(apiBuild.get().outputApiFile.get().asFile)
+                val missing = baseline.flatMap { (type, members) ->
+                    if (type !in current) listOf(type) else (members - current.getValue(type)).map { "$type $it" }
+                }
+                check(missing.isEmpty()) {
+                    "Public API removed or changed since Maven Central $publishedApiVersion:\n${missing.joinToString("\n") }"
+                }
+                logger.lifecycle("${project.path}: public JVM API is compatible with Maven Central $publishedApiVersion")
+            }
+        }
+        tasks.named("check") { dependsOn(apiCheck, apiCheckPublished) }
     }
 }

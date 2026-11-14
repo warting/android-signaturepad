@@ -39,6 +39,19 @@ public final class se/warting/signaturecore/Signature : android/os/Parcelable {
 	public final fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
+public final class se/warting/signaturecore/SignatureInput {
+	public static final field $stable I
+	public final fun cancel ()V
+	public final fun end (JFFJ)Z
+	public final fun getActivePointerId ()Ljava/lang/Long;
+	public final fun getPressure ()F
+	public final fun getX ()F
+	public final fun getY ()F
+	public final fun isActive (J)Z
+	public final fun move (JFFFJ)Z
+	public final fun start (JFFFJ)V
+}
+
 public final class se/warting/signaturecore/SignatureRenderingKt {
 	public static final fun toBitmap (Lse/warting/signaturecore/Signature;IIIIIIF)Landroid/graphics/Bitmap;
 	public static synthetic fun toBitmap$default (Lse/warting/signaturecore/Signature;IIIIIIFILjava/lang/Object;)Landroid/graphics/Bitmap;
@@ -71,6 +84,7 @@ public final class se/warting/signaturecore/SignatureSDK {
 	public final fun drawPointerShadow (Landroid/graphics/Canvas;IIFFF)V
 	public final fun drawSignature (Landroid/graphics/Canvas;)V
 	public final fun getEvents ()Ljava/util/List;
+	public final fun getInput ()Lse/warting/signaturecore/SignatureInput;
 	public final fun getSignatureBitmap (ILjava/lang/Integer;)Landroid/graphics/Bitmap;
 	public static synthetic fun getSignatureBitmap$default (Lse/warting/signaturecore/SignatureSDK;ILjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun getSignatureSvg (II)Ljava/lang/String;
@@ -82,6 +96,7 @@ public final class se/warting/signaturecore/SignatureSDK {
 	public final fun initializeBitmap (II)V
 	public final fun isEmpty ()Z
 	public final fun restoreEvents (Ljava/util/List;)V
+	public final fun restoreSignature (Ljava/util/List;II)V
 	public final fun setOnSignedListener (Lse/warting/signaturecore/utils/SignedListener;)V
 	public final fun undo ()V
 }

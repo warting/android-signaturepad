@@ -173,7 +173,14 @@ The published libraries support API 23 and newer; the sample app requires API 24
 ```
 
 `check` runs unit tests, Android lint, and Detekt. Bitmap regression tests use Robolectric's
-native graphics renderer; an emulator is not required. `apiCheck` verifies the published API snapshots.
+native graphics renderer; an emulator is not required. `apiCheck` verifies the committed API snapshots. `check` also runs `apiCheckPublished`, which
+downloads the three **0.3.0 AARs from Maven Central**, extracts their public JVM API, and rejects
+removed or changed declarations even if the local snapshots were updated. Additive APIs are allowed.
+
+Core owns live signing input (`SignatureSDK.input`) and signature restoration. View and Compose
+adapt platform touch events, double-tap recognition, sizing and lifecycle notifications; core handles
+the active pointer, cancel/clear/restore invalidation and replay on bitmap initialization. Explicit
+restoration preserves signing callbacks; allocating a bitmap does not replay those callbacks.
 
 Review dependency updates with the existing Version Catalog Update plugin:
 

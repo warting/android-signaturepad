@@ -1,7 +1,6 @@
 package se.warting.signaturepad
 
 import android.graphics.Bitmap
-import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -34,12 +33,11 @@ import androidx.core.graphics.createBitmap
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.Signature
+import se.warting.signaturecore.SignatureInput
 import se.warting.signaturecore.SignatureSDK
 import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturepad.compose.BuildConfig
 import kotlin.math.roundToInt
-
-private const val DEFAULT_ACTIVE_POINTER_PRESSURE = 1f
 
 /**
  * Creates and remembers a [SignaturePadState]. The underlying signature events are preserved
@@ -110,7 +108,8 @@ fun SignaturePadView(
 ) {
     val density = LocalDensity.current
     val sdk = state.sdk
-    var bitmapInitialized by remember(sdk) { mutableStateOf(sdk.hasBitmap()) }
+    val input = sdk.input
+    var penConfigured by remember(sdk) { mutableStateOf(false) }
 
     val minWidthPx = with(density) { penMinWidth.toPx() }.roundToInt()
     val maxWidthPx = with(density) { penMaxWidth.toPx() }.roundToInt()
@@ -130,6 +129,9 @@ fun SignaturePadView(
             penColor = penColorArgb,
             velocityFilterWeight = velocityFilterWeight,
         )
+        penConfigured = true
+        sdk.initializeBitmap(state.size.width, state.size.height)
+        state.invalidate()
     }
 
     // Shadow controls must not reset the pen's in-progress stroke width.
@@ -141,19 +143,6 @@ fun SignaturePadView(
         sdk.configureShadowAngle(shadowAngleDegrees)
         if (sdk.hasBitmap()) {
             state.invalidate()
-        }
-    }
-
-    // After bitmap initialization, replay any restored events so they render
-    // onto the new bitmap. Without this, a saved signature survives a config
-    // change in originalEvents but never gets drawn.
-    LaunchedEffect(sdk, bitmapInitialized) {
-        if (bitmapInitialized) {
-            val restored = sdk.getEvents()
-            if (restored.isNotEmpty()) {
-                sdk.restoreEvents(restored)
-                state.invalidate()
-            }
         }
     }
 
@@ -205,10 +194,7 @@ fun SignaturePadView(
                 if (newSize.width > 0 && newSize.height > 0) {
                     state.size = newSize
                     canvasSize = newSize
-                    if (!sdk.hasBitmap()) {
-                        sdk.initializeBitmap(newSize.width, newSize.height)
-                        bitmapInitialized = true
-                    }
+                    if (penConfigured) sdk.initializeBitmap(newSize.width, newSize.height)
                 }
             }
             .pointerInput(sdk) {
@@ -218,15 +204,12 @@ fun SignaturePadView(
                 awaitEachGesture {
                     try {
                         val down = awaitFirstDown(requireUnconsumed = false)
-                        val gestureGeneration = state.gestureGeneration
                         val downTime = System.currentTimeMillis()
                         val isDoubleTap = currentClearOnDoubleClick &&
                             (downTime - lastTapUpTime) < doubleTapTimeoutMs
 
                         if (isDoubleTap) {
-                            state.shadowPointer = ShadowPointerState()
-                            sdk.clear()
-                            state.invalidate()
+                            state.clear()
                             lastTapUpTime = 0L
                             down.consume()
                             while (true) {
@@ -241,19 +224,7 @@ fun SignaturePadView(
                             return@awaitEachGesture
                         }
 
-                        state.shadowPointer = ShadowPointerState(
-                            x = down.position.x,
-                            y = down.position.y,
-                            pressure = normalizedActivePointerPressure(down.pressure),
-                        )
-                        sdk.addEvent(
-                            Event(
-                                downTime,
-                                MotionEvent.ACTION_DOWN,
-                                down.position.x,
-                                down.position.y,
-                            ),
-                        )
+                        input.start(down.id.value, down.position.x, down.position.y, down.pressure, downTime)
                         state.invalidate()
                         down.consume()
 
@@ -263,27 +234,20 @@ fun SignaturePadView(
                             val event = awaitPointerEvent()
                             // A clear/restore invalidates this gesture. awaitEachGesture
                             // waits for all pointers to lift before accepting another down.
-                            if (gestureGeneration != state.gestureGeneration) {
+                            if (!input.isActive(down.id.value)) {
                                 lastTapUpTime = 0L
                                 break
                             }
                             val change = event.changes.firstOrNull { it.id == down.id }
                             if (change == null) {
-                                state.shadowPointer = ShadowPointerState()
+                                input.cancel()
                                 done = true
                             } else if (!change.pressed) {
-                                state.shadowPointer = ShadowPointerState(
-                                    x = change.position.x,
-                                    y = change.position.y,
-                                    pressure = 0f,
-                                )
-                                sdk.addEvent(
-                                    Event(
-                                        System.currentTimeMillis(),
-                                        MotionEvent.ACTION_UP,
-                                        change.position.x,
-                                        change.position.y,
-                                    ),
+                                input.end(
+                                    down.id.value,
+                                    change.position.x,
+                                    change.position.y,
+                                    System.currentTimeMillis()
                                 )
                                 state.invalidate()
                                 change.consume()
@@ -294,58 +258,38 @@ fun SignaturePadView(
                                 done = true
                             } else {
                                 if (change.positionChanged()) moved = true
-                                state.shadowPointer = ShadowPointerState(
-                                    x = change.position.x,
-                                    y = change.position.y,
-                                    pressure = normalizedActivePointerPressure(change.pressure),
-                                )
-                                sdk.addEvent(
-                                    Event(
-                                        System.currentTimeMillis(),
-                                        MotionEvent.ACTION_MOVE,
-                                        change.position.x,
-                                        change.position.y,
-                                    ),
+                                input.move(
+                                    down.id.value,
+                                    change.position.x,
+                                    change.position.y,
+                                    change.pressure,
+                                    System.currentTimeMillis()
                                 )
                                 state.invalidate()
                                 change.consume()
                             }
                         }
                     } finally {
-                        state.shadowPointer = ShadowPointerState()
+                        input.cancel()
+                        state.invalidate()
                     }
                 }
             },
     ) {
         @Suppress("UNUSED_EXPRESSION")
         state.redrawTick
-        if (!sdk.hasBitmap() && canvasSize.width > 0 && canvasSize.height > 0) {
-            sdk.initializeBitmap(canvasSize.width, canvasSize.height)
-        }
+        // Core replays restored events once, after the pen is configured and size is known.
+        if (penConfigured) sdk.initializeBitmap(canvasSize.width, canvasSize.height)
         val nativeCanvas = drawContext.canvas.nativeCanvas
         sdk.drawPointerShadow(
             canvas = nativeCanvas,
             width = canvasSize.width,
             height = canvasSize.height,
-            pointerX = state.shadowPointer.x,
-            pointerY = state.shadowPointer.y,
-            pressure = state.shadowPointer.pressure,
+            pointerX = input.x,
+            pointerY = input.y,
+            pressure = input.pressure,
         )
         sdk.drawSignature(nativeCanvas)
-    }
-}
-
-internal data class ShadowPointerState(
-    val x: Float = 0f,
-    val y: Float = 0f,
-    val pressure: Float = 0f,
-)
-
-private fun normalizedActivePointerPressure(pressure: Float): Float {
-    return if (pressure.isFinite() && pressure > 0f) {
-        pressure
-    } else {
-        DEFAULT_ACTIVE_POINTER_PRESSURE
     }
 }
 
@@ -362,10 +306,7 @@ class SignaturePadState private constructor(
         internal fun create(sdk: SignatureSDK): SignaturePadState = SignaturePadState(sdk)
     }
 
-    internal var shadowPointer by mutableStateOf(ShadowPointerState())
-
-    internal var gestureGeneration: Int = 0
-        private set
+    internal val shadowPointer: SignatureInput get() = sdk.input
 
     internal var size: IntSize = IntSize.Zero
 
@@ -382,8 +323,6 @@ class SignaturePadState private constructor(
     }
 
     fun clear() {
-        gestureGeneration++
-        shadowPointer = ShadowPointerState()
         sdk.clear()
         ensureBitmap()
         invalidate()
@@ -440,11 +379,7 @@ class SignaturePadState private constructor(
 
     @ExperimentalSignatureApi
     fun setSignature(signature: Signature) {
-        gestureGeneration++
-        shadowPointer = ShadowPointerState()
-        sdk.clear()
-        ensureBitmap()
-        sdk.restoreEvents(signature.events)
+        sdk.restoreSignature(signature.events, size.width, size.height)
         invalidate()
     }
 }
