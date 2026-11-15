@@ -87,6 +87,14 @@ class SignaturePadStateTest {
             up()
         }
         val before = compose.runOnIdle { state.getTransparentSignatureBitmap() }
+        compose.runOnIdle {
+            val options = se.warting.signaturecore.SignatureExportOptions(paddingPixels = 4)
+            val bytes = requireNotNull(state.toPngByteArray(options))
+            val png = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            assertEquals(before.width + 8, png.width)
+            assertEquals(before.height + 8, png.height)
+            assertTrue(bytes.contentEquals(android.util.Base64.decode(state.toBase64(options), 0)))
+        }
         compose.runOnIdle { width.value = 300.dp }
         compose.runOnIdle {
             val after = state.getTransparentSignatureBitmap()

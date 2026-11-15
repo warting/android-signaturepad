@@ -20,7 +20,11 @@ import androidx.core.graphics.createBitmap
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.Signature
+import se.warting.signaturecore.SignatureExportOptions
 import se.warting.signaturecore.SignatureSDK
+import se.warting.signaturecore.exportBitmap
+import se.warting.signaturecore.toBase64
+import se.warting.signaturecore.toPngByteArray
 import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturepad.view.BuildConfig
 import se.warting.signaturepad.view.R
@@ -320,6 +324,18 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
 
     val isEmpty: Boolean
         get() = signatureSDK.isEmpty
+
+    /** Export with cropping, padding and colors; null before the raster is initialized. */
+    fun exportBitmap(options: SignatureExportOptions = SignatureExportOptions()): Bitmap? =
+        signatureSDK.exportBitmap(options)
+
+    /** Encode PNG bytes; null before the raster is initialized. */
+    fun toPngByteArray(options: SignatureExportOptions = SignatureExportOptions()): ByteArray? =
+        signatureSDK.toPngByteArray(options)
+
+    /** Standard Base64 PNG, without line breaks or a data-URL prefix. */
+    fun toBase64(options: SignatureExportOptions = SignatureExportOptions()): String? =
+        signatureSDK.toBase64(options)
 
     fun getSignatureSvg(): String {
         return signatureSDK.getSignatureSvg(width, height)
