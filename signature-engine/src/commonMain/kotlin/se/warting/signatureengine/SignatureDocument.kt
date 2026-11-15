@@ -31,7 +31,8 @@ class SignatureDocument(
     fun segmentsFrom(index: Int): List<SignatureSegment> = curves.subList(index, curves.size).toList()
 
     val isEmpty: Boolean get() = builder.isEmpty
-    val canUndo: Boolean get() = completedStroke() != null
+    private var undoAvailable = false
+    val canUndo: Boolean get() = undoAvailable
     val canRedo: Boolean get() = undone.isNotEmpty()
 
     fun add(event: SignatureEvent) {
@@ -39,12 +40,15 @@ class SignatureDocument(
         undone.clear()
         samples.add(valid)
         process(valid)
+        if (valid.action == SignatureEvent.UP) undoAvailable = completedStroke() != null
         onChange()
     }
 
     fun clear() = restore(emptyList())
 
     fun restore(events: List<SignatureEvent>) {
+        // Reject malformed snapshots atomically, before cancelling live input or history.
+        events.forEach { require(it.action in SignatureEvent.DOWN..SignatureEvent.MOVE) { "Unknown action ${it.action}" } }
         input.cancel()
         undone.clear()
         samples.clear()
@@ -90,6 +94,7 @@ class SignatureDocument(
         curves.clear()
         svg.clear()
         samples.forEach(::process)
+        undoAvailable = completedStroke() != null
         onChange()
     }
 

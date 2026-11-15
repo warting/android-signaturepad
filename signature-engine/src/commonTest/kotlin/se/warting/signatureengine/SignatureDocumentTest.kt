@@ -3,6 +3,7 @@ package se.warting.signatureengine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class SignatureDocumentTest {
@@ -27,6 +28,49 @@ class SignatureDocumentTest {
             total += calls
         }
         assertTrue(total > 0)
+    }
+
+    @Test
+    fun rejectedRestorePreservesEventsGeometryHistoryAndInput() {
+        val document = SignatureDocument()
+        document.restore(stroke(10f) + stroke(60f))
+        document.undo()
+        document.input.start(7, 90f, 20f, 1f, 100)
+        val events = document.events
+        val segments = document.segments
+        val svg = document.toSvg(320, 160)
+        val undo = document.canUndo
+        val redo = document.canRedo
+        assertFailsWith<IllegalArgumentException> {
+            document.restore(stroke(30f) + SignatureEvent(100, 99, 10f, 10f))
+        }
+        assertEquals(events, document.events)
+        assertEquals(segments, document.segments)
+        assertEquals(svg, document.toSvg(320, 160))
+        assertEquals(undo, document.canUndo)
+        assertEquals(redo, document.canRedo)
+        assertTrue(document.input.move(7, 100f, 20f, 1f, 116))
+    }
+
+    @Test
+    fun undoAvailabilityTracksStrokeBoundariesAndHistory() {
+        val document = SignatureDocument()
+        val events = stroke(10f)
+        events.dropLast(1).forEach { document.add(it); assertFalse(document.canUndo) }
+        document.add(events.last())
+        assertTrue(document.canUndo)
+        document.undo()
+        assertFalse(document.canUndo)
+        document.redo()
+        assertTrue(document.canUndo)
+        document.clear()
+        assertFalse(document.canUndo)
+    }
+
+    @Test
+    fun svgRelativeCoordinatesDoNotOverflowIntRange() {
+        assertEquals("4000000000,-4000000000",
+            SvgPoint(2_000_000_000, -2_000_000_000).toRelativeCoordinates(SvgPoint(-2_000_000_000, 2_000_000_000)))
     }
 
     private fun stroke(x: Float) = listOf(

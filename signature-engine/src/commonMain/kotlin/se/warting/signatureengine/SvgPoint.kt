@@ -30,7 +30,7 @@ internal class SvgPoint {
     }
 
     fun toRelativeCoordinates(referencePoint: SvgPoint): String {
-        return SvgPoint(x - referencePoint.x, y - referencePoint.y).toString()
+        return "${x.toLong() - referencePoint.x},${y.toLong() - referencePoint.y}"
     }
 
     override fun toString(): String {
