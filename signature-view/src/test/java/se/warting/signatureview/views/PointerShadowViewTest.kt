@@ -22,6 +22,26 @@ import se.warting.signaturecore.ExperimentalSignatureApi
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class PointerShadowViewTest {
     @Test
+    fun redo_restoresPixelsSvgAndEvents() {
+        val pad = createPad()
+        touch(pad, MotionEvent.ACTION_DOWN, 20f)
+        touch(pad, MotionEvent.ACTION_MOVE, 50f)
+        touch(pad, MotionEvent.ACTION_MOVE, 80f)
+        touch(pad, MotionEvent.ACTION_UP, 110f)
+        val bitmap = pad.getTransparentSignatureBitmap()
+        val svg = pad.getSignatureSvg()
+        val events = pad.getSignature().events
+        pad.undo()
+        assertTrue(pad.canRedo())
+        assertTrue(pad.isEmpty)
+        pad.redo()
+        assertTrue(!pad.canRedo())
+        assertEquals(events, pad.getSignature().events)
+        assertEquals(svg, pad.getSignatureSvg())
+        assertTrue(bitmap.sameAs(pad.getTransparentSignatureBitmap()))
+    }
+
+    @Test
     fun resize_updatesBitmapBeforeNextDrawAndAcceptsInputInNewArea() {
         val pad = createPad()
         render(pad)

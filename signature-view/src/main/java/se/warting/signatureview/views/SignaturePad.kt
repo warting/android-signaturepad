@@ -212,6 +212,14 @@ class SignaturePad(context: Context, attrs: AttributeSet?) : View(context, attrs
      */
     fun canUndo(): Boolean = signatureSDK.canUndo()
 
+    /** Restore the most recently undone stroke, if available. */
+    fun redo() {
+        signatureSDK.redo()
+        invalidate()
+    }
+
+    fun canRedo(): Boolean = signatureSDK.canRedo()
+
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
         if (!enabled) {

@@ -159,6 +159,7 @@ fun SignaturePadView(
             }
 
             override fun onSigning() {
+                state.updateRedoStatus()
                 currentOnSigning()
             }
 
@@ -317,6 +318,7 @@ class SignaturePadState private constructor(
 
     private var empty by mutableStateOf(sdk.isEmpty)
     private var undoAvailable by mutableStateOf(sdk.canUndo())
+    private var redoAvailable by mutableStateOf(sdk.canRedo())
 
     internal fun invalidate() {
         redrawTick++
@@ -327,6 +329,11 @@ class SignaturePadState private constructor(
     internal fun updateStatus() {
         empty = sdk.isEmpty
         undoAvailable = sdk.canUndo()
+        updateRedoStatus()
+    }
+
+    internal fun updateRedoStatus() {
+        redoAvailable = sdk.canRedo()
     }
 
     private fun ensureBitmap() {
@@ -356,6 +363,17 @@ class SignaturePadState private constructor(
      * @return true if a stroke is available to undo.
      */
     fun canUndo(): Boolean = undoAvailable
+
+    /** Restore the most recently undone stroke, if available. */
+    fun redo() {
+        sdk.redo()
+        ensureBitmap()
+        updateStatus()
+        invalidate()
+    }
+
+    /** Observable availability of an undone stroke. */
+    fun canRedo(): Boolean = redoAvailable
 
     val isEmpty: Boolean
         get() = empty
@@ -420,6 +438,10 @@ class SignaturePadAdapter private constructor(
     fun undo() = state.undo()
 
     fun canUndo(): Boolean = state.canUndo()
+
+    fun redo() = state.redo()
+
+    fun canRedo(): Boolean = state.canRedo()
 
     val isEmpty: Boolean get() = state.isEmpty
 
