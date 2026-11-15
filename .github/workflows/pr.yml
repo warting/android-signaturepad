@@ -40,7 +40,7 @@ jobs:
           key: gradle-${{ hashFiles('checksum.txt') }}
 
       - name: Run Android checks
-        run: ./gradlew check apiCheck :app:assembleDebug :sample-android:assembleDebug --stacktrace
+        run: ./gradlew check apiCheck :app:assembleDebug :sample-android:assembleDebug :app:testDebugScreenshotTestDefaultTestSuite --stacktrace
 
       - name: Upload reports
         uses: actions/upload-artifact@v7
@@ -50,4 +50,5 @@ jobs:
           path: |
             **/build/reports/*
             signature-compose/build/screenshots/
+            app/build/intermediates/debug/testDebugScreenshotTestDefaultTestSuite/results/
           retention-days: 2

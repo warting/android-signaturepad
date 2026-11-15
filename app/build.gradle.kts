@@ -42,6 +42,20 @@ android {
         buildConfig = true
     }
 
+    testOptions {
+        screenshotTests.create("screenshotTest") {
+            engineVersion = libs.versions.screenshot.get()
+            // macOS/Linux Layoutlib differs on 0.07% of pixels along antialiased ink edges.
+            imageDifferenceThreshold = 0.001f
+            targetVariants.add("debug")
+            dependencies {
+                implementation(libs.androidx.compose.ui.ui.tooling)
+                implementation(libs.screenshot.validation.api)
+            }
+        }
+        unitTests.isIncludeAndroidResources = true
+    }
+
     lint {
         baseline = file("lint-baseline.xml")
         checkReleaseBuilds = true
@@ -81,6 +95,9 @@ dependencies {
     implementation(libs.androidx.activity.activity.compose)
     implementation(libs.androidx.fragment.fragment.compose)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.compose.ui.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.ui.test.manifest)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.ui.test.junit4)

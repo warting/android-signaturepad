@@ -26,6 +26,9 @@ class SignatureSDK {
 
     // Event storage
     private val originalEvents = mutableListOf<Event>()
+    private val undoneStrokes = mutableListOf<UndoneStroke>()
+
+    private data class UndoneStroke(val index: Int, val events: List<Event>)
 
     private val stroke = se.warting.signatureengine.StrokeBuilder { curve, startWidth, endWidth ->
         fun se.warting.signatureengine.CurvePoint.toTimedPoint() = TimedPoint().set(x, y, 0L)
@@ -141,6 +144,7 @@ class SignatureSDK {
         // those values produces NaN curve control points and crashes
         // downstream in roundToInt(). Filter at the input boundary.
         val sanitized = sanitizeEvent(event) ?: return
+        undoneStrokes.clear()
         originalEvents.add(sanitized)
         processCurrentEvent(sanitized)
     }
@@ -196,6 +200,7 @@ class SignatureSDK {
     }
 
     fun clear() {
+        undoneStrokes.clear()
         input.cancel()
         resetStrokeState()
         originalEvents.clear()
@@ -206,6 +211,7 @@ class SignatureSDK {
     }
 
     fun restoreEvents(events: List<Event>) {
+        undoneStrokes.clear()
         input.cancel()
         replayEvents(events)
     }
@@ -258,6 +264,12 @@ class SignatureSDK {
         val lastCompletedStrokeStart = findLastCompletedStrokeStartIndex()
         if (lastCompletedStrokeStart < 0) return
         val lastUp = originalEvents.indexOfLast { it.action == MotionEvent.ACTION_UP }
+        undoneStrokes.add(
+            UndoneStroke(
+                lastCompletedStrokeStart,
+                originalEvents.subList(lastCompletedStrokeStart, lastUp + 1).toList()
+            )
+        )
         val remaining = originalEvents.take(lastCompletedStrokeStart) + originalEvents.drop(lastUp + 1)
         // Undo must preserve a live stroke and its active input pointer.
         replayEvents(remaining)
@@ -266,6 +278,24 @@ class SignatureSDK {
         } else {
             signedListener?.onSigned()
         }
+    }
+
+    /** Whether a stroke removed by [undo] can be restored by [redo]. */
+    fun canRedo(): Boolean = undoneStrokes.isNotEmpty()
+
+    /**
+     * Restore the most recently undone stroke at its original position, preserving
+     * any active input. New accepted input, [clear] and explicit restoration discard
+     * redo history. Does nothing when there is no undone stroke.
+     * Like legacy undo/restore, replay uses the current global pen settings; history
+     * stores geometry and timing, not individual stroke styles.
+     */
+    fun redo() {
+        if (undoneStrokes.isEmpty()) return
+        val stroke = undoneStrokes.removeAt(undoneStrokes.lastIndex)
+        val restored = originalEvents.take(stroke.index) + stroke.events + originalEvents.drop(stroke.index)
+        replayEvents(restored)
+        signedListener?.onSigned()
     }
 
     private fun findLastCompletedStrokeStartIndex(): Int {
