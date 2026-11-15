@@ -120,6 +120,7 @@ fun SignaturePadView(
     val penColorArgb = penColor.toArgb()
     val shadowColorArgb = shadowColor.toArgb()
 
+    // Configure synchronously when composition is applied, including in Layoutlib previews.
     DisposableEffect(
         sdk,
         minWidthPx,

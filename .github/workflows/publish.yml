@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: '0'
+          lfs: true
           ref: ${{ github.event.release.tag_name }}
 
       - name: Release tag

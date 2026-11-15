@@ -1,8 +1,8 @@
 [versions]
-screenshot = "0.0.1-alpha16"
 agp = "9.5.1"
 androidx-activity = "1.13.0"
 composeBom = "2026.09.00"
+screenshot = "0.0.1-alpha16"
 core = "1.19.1"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.4.21"

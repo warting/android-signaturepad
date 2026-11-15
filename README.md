@@ -104,6 +104,33 @@ Direct construction of `SignaturePadAdapter(view)` is no longer supported: use
 `rememberSignaturePadState()`, or obtain the deprecated adapter through `onReady`.
 The classic View API remains available in `signature-view`.
 
+### Optional signature field
+
+`SignatureField` adds a decorative guideline and a placeholder slot around the
+native Compose canvas. Provide localized text and your app's colors:
+
+```kotlin
+val state = rememberSignaturePadState()
+SignatureField(
+    state = state,
+    modifier = Modifier.fillMaxWidth().height(200.dp),
+    guidelineColor = MaterialTheme.colorScheme.outline,
+    penColor = MaterialTheme.colorScheme.onSurface,
+) {
+    Text("Sign here")
+}
+```
+
+Import `se.warting.signaturepad.SignatureField`. The placeholder is visible only
+while the signature is empty. The guideline and placeholder never appear in bitmap,
+SVG or raw-event exports. Set `showGuideline = false` to hide the line. Use
+`SignaturePadView` directly for signing callbacks and advanced configuration.
+
+The Compose sample includes working `AlertDialog` and `ModalBottomSheet` capture
+flows in `SignatureCaptureExamples.kt`: Save is enabled after input, Clear resets
+the field, and Cancel leaves the previously saved preview untouched. Material 3 is
+used by the sample; the library component itself only requires Compose Foundation.
+
 ### Android Views
 
 ```xml
@@ -214,6 +241,19 @@ The published libraries support API 23 and newer; the sample app requires API 24
 native graphics renderer; an emulator is not required. `apiCheck` verifies the committed API snapshots. `check` also runs `apiCheckPublished`, which
 downloads the three **0.3.0 AARs from Maven Central**, extracts their public JVM API, and rejects
 removed or changed declarations even if the local snapshots were updated. Additive APIs are allowed.
+
+Screenshot baselines use AGP's experimental Compose screenshot test suites. Install Git LFS
+and run `git lfs pull` before validating them (CI checks out LFS assets automatically):
+
+```shell
+./gradlew :app:testDebugScreenshotTestDefaultTestSuite
+# After an intentional visual change, regenerate and inspect the PNGs before committing:
+./gradlew :app:updateDebugScreenshotTestDefaultTestSuite
+```
+
+Baselines live in `app/src/screenshotTestDefaultDebug/reference/` and are stored in Git LFS.
+Reports are under `app/build/reports/tests/`. Include rendered baseline images in visual PRs
+using GitHub's LFS media URLs; do not embed the Git LFS pointer files.
 
 Core owns live signing input (`SignatureSDK.input`) and signature restoration. View and Compose
 adapt platform touch events, double-tap recognition, sizing and lifecycle notifications; core handles

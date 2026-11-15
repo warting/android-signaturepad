@@ -173,6 +173,7 @@ fun ComposeSample() {
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
     ) {
+        SignatureCaptureExamples()
         Box(
             Modifier
                 .height(SIGNATURE_PAD_HEIGHT_DP.dp)
