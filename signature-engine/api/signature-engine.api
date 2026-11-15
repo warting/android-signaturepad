@@ -48,10 +48,12 @@ public final class se/warting/signatureengine/SignatureDocument {
 	public final fun getCanUndo ()Z
 	public final fun getEvents ()Ljava/util/List;
 	public final fun getInput ()Lse/warting/signatureengine/SignatureInput;
+	public final fun getSegmentCount ()I
 	public final fun getSegments ()Ljava/util/List;
 	public final fun isEmpty ()Z
 	public final fun redo ()V
 	public final fun restore (Ljava/util/List;)V
+	public final fun segmentsFrom (I)Ljava/util/List;
 	public final fun toSvg (IILjava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/String;
 	public static synthetic fun toSvg$default (Lse/warting/signatureengine/SignatureDocument;IILjava/lang/Integer;Ljava/lang/Integer;ILjava/lang/Object;)Ljava/lang/String;
 	public final fun undo ()V

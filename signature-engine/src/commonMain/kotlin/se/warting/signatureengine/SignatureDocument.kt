@@ -25,6 +25,11 @@ class SignatureDocument(
     val input = SignatureInput(::add)
     val events: List<SignatureEvent> get() = samples.toList()
     val segments: List<SignatureSegment> get() = curves.toList()
+    val segmentCount: Int get() = curves.size
+
+    /** Copies only new segments for incremental rendering. Undo/restore consumers must reset their cursor. */
+    fun segmentsFrom(index: Int): List<SignatureSegment> = curves.subList(index, curves.size).toList()
+
     val isEmpty: Boolean get() = builder.isEmpty
     val canUndo: Boolean get() = completedStroke() != null
     val canRedo: Boolean get() = undone.isNotEmpty()

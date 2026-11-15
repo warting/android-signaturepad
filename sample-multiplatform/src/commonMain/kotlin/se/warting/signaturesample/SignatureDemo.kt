@@ -18,6 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntSize
+import kotlin.math.ceil
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -32,11 +36,13 @@ fun SignatureDemo() {
             val state = rememberSignaturePadState()
             var saved by remember { mutableStateOf<List<SignatureEvent>>(emptyList()) }
             var svg by remember { mutableStateOf("") }
+            var padSize by remember { mutableStateOf(IntSize.Zero) }
+            val density = LocalDensity.current.density
             Column(Modifier.padding(20.dp).verticalScroll(rememberScrollState())) {
                 Text("Signature Pad", style = MaterialTheme.typography.headlineMedium)
                 Text("One signature engine · Android · iOS · Desktop · Web")
                 SignaturePad(
-                    Modifier.fillMaxWidth().height(220.dp).background(Color.White).testTag("signature"),
+                    Modifier.fillMaxWidth().height(220.dp).background(Color.White).testTag("signature").onSizeChanged { padSize = it },
                     state = state,
                 )
                 Row {
@@ -47,7 +53,7 @@ fun SignatureDemo() {
                 Row {
                     Button(onClick = { saved = state.events }, enabled = !state.isEmpty) { Text("Save") }
                     Button(onClick = { state.restore(saved) }, enabled = saved.isNotEmpty()) { Text("Restore") }
-                    Button(onClick = { svg = state.toSvg(640, 220) }, enabled = !state.isEmpty) { Text("SVG") }
+                    Button(onClick = { svg = state.toSvg(ceil(padSize.width / density).toInt(), ceil(padSize.height / density).toInt()) }, enabled = !state.isEmpty) { Text("SVG") }
                 }
                 Text(if (state.isEmpty) "Draw your signature above" else "${state.events.size} input samples")
                 if (svg.isNotEmpty()) Text(svg, modifier = Modifier.testTag("svg-output"))

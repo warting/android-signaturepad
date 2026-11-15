@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -19,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import se.warting.signatureengine.SignatureDocument
 import se.warting.signatureengine.SignatureEvent
 import se.warting.signatureengine.SignatureSegment
-import se.warting.signatureengine.forEachDab
 
 /** Observable portable signature state. Coordinates and pen widths use density-independent units. */
 class SignaturePadState(minWidth: Int = 3, maxWidth: Int = 7, velocityFilterWeight: Float = 0.9f) {
@@ -30,12 +28,17 @@ class SignaturePadState(minWidth: Int = 3, maxWidth: Int = 7, velocityFilterWeig
     val canRedo: Boolean get() { revision; return document.canRedo }
     val events: List<SignatureEvent> get() { revision; return document.events }
     internal val segments: List<SignatureSegment> get() { revision; return document.segments }
-    fun clear() = document.clear()
-    fun undo() = document.undo()
-    fun redo() = document.redo()
-    fun restore(events: List<SignatureEvent>) = document.restore(events)
-    fun toSvg(width: Int, height: Int, penColor: Int? = null, backgroundColor: Int? = null): String =
-        document.toSvg(width, height, penColor, backgroundColor)
+    internal var rasterGeneration = 0
+        private set
+    internal fun observeDrawing(): SignatureDocument { revision; return document }
+    fun clear() { rasterGeneration++; document.clear() }
+    fun undo() { rasterGeneration++; document.undo() }
+    fun redo() { rasterGeneration++; document.redo() }
+    fun restore(events: List<SignatureEvent>) { rasterGeneration++; document.restore(events) }
+    fun toSvg(width: Int, height: Int, penColor: Int? = null, backgroundColor: Int? = null): String {
+        revision
+        return document.toSvg(width, height, penColor, backgroundColor)
+    }
 }
 
 @Composable
@@ -49,6 +52,7 @@ fun SignaturePad(
     penColor: Color = Color.Black,
 ) {
     val density = LocalDensity.current.density
+    val raster = remember(state) { SignatureRasterCache() }
     Canvas(modifier.size(320.dp, 160.dp).clipToBounds().pointerInput(state, density) {
         val input = state.document.input
         awaitEachGesture {
@@ -75,10 +79,8 @@ fun SignaturePad(
             }
         }
     }) {
-        state.segments.forEach { segment ->
-            segment.forEachDab { x, y, width ->
-                drawCircle(penColor, width * density / 2, Offset(x * density, y * density))
-            }
-        }
+        val document = state.observeDrawing()
+        raster.render(document, state.rasterGeneration, size.width.toInt(), size.height.toInt(), density, penColor)
+            ?.let { drawImage(it) }
     }
 }

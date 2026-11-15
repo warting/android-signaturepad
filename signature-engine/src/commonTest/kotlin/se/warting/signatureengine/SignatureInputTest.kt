@@ -39,4 +39,22 @@ class SignatureInputTest {
         assertEquals(1f, input.pressure)
         assertEquals(2, events.size)
     }
+    @Test
+    fun nonFiniteDownCannotClaimPointerOrCreateUntrackedInk() {
+        val document = SignatureDocument()
+        document.input.start(1, Float.NaN, 20f, 1f, 0)
+        assertNull(document.input.activePointerId)
+        assertFalse(document.input.move(1, 30f, 30f, 1f, 10))
+        assertFalse(document.input.end(1, 40f, 40f, 20))
+        assertTrue(document.events.isEmpty())
+        document.input.start(2, 10f, 10f, 1f, 30)
+        assertFalse(document.input.move(2, Float.POSITIVE_INFINITY, 30f, 1f, 40))
+        assertTrue(document.input.move(2, 30f, 30f, 1f, 50))
+        assertTrue(document.input.end(2, Float.NaN, 40f, 60))
+        assertEquals(30f, document.events.last().x)
+        assertEquals(30f, document.events.last().y)
+        assertTrue(document.canUndo)
+        document.undo()
+        assertTrue(document.isEmpty)
+    }
 }

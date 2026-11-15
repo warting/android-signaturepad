@@ -23,14 +23,14 @@ class SignatureInput(private val emit: (SignatureEvent) -> Unit) {
     fun isActive(pointerId: Long): Boolean = activePointerId == pointerId
 
     fun start(pointerId: Long, x: Float, y: Float, pressure: Float, timestamp: Long) {
-        if (activePointerId != null) return
+        if (activePointerId != null || !x.isFinite() || !y.isFinite()) return
         activePointerId = pointerId
         updatePointer(x, y, pressure)
         emit(SignatureEvent(timestamp, SignatureEvent.DOWN, x, y))
     }
 
     fun move(pointerId: Long, x: Float, y: Float, pressure: Float, timestamp: Long): Boolean {
-        if (!isActive(pointerId)) return false
+        if (!isActive(pointerId) || !x.isFinite() || !y.isFinite()) return false
         updatePointer(x, y, pressure)
         emit(SignatureEvent(timestamp, SignatureEvent.MOVE, x, y))
         return true
@@ -39,7 +39,9 @@ class SignatureInput(private val emit: (SignatureEvent) -> Unit) {
     fun end(pointerId: Long, x: Float, y: Float, timestamp: Long): Boolean {
         if (!isActive(pointerId)) return false
         cancel()
-        emit(SignatureEvent(timestamp, SignatureEvent.UP, x, y))
+        val finite = x.isFinite() && y.isFinite()
+        emit(SignatureEvent(timestamp, SignatureEvent.UP,
+            if (finite) x else this.x, if (finite) y else this.y))
         return true
     }
 
