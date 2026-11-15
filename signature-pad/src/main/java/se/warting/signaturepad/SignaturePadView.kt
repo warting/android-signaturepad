@@ -33,8 +33,12 @@ import androidx.core.graphics.createBitmap
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.Signature
+import se.warting.signaturecore.SignatureExportOptions
 import se.warting.signaturecore.SignatureInput
 import se.warting.signaturecore.SignatureSDK
+import se.warting.signaturecore.exportBitmap
+import se.warting.signaturecore.toBase64
+import se.warting.signaturecore.toPngByteArray
 import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturepad.compose.BuildConfig
 import kotlin.math.roundToInt
@@ -359,6 +363,18 @@ class SignaturePadState private constructor(
 
     val isEmpty: Boolean
         get() = empty
+
+    /** Export with cropping, padding and colors; null before the raster is initialized. */
+    fun exportBitmap(options: SignatureExportOptions = SignatureExportOptions()): Bitmap? =
+        sdk.exportBitmap(options)
+
+    /** Encode PNG bytes; null before the raster is initialized. */
+    fun toPngByteArray(options: SignatureExportOptions = SignatureExportOptions()): ByteArray? =
+        sdk.toPngByteArray(options)
+
+    /** Standard Base64 PNG, without line breaks or a data-URL prefix. */
+    fun toBase64(options: SignatureExportOptions = SignatureExportOptions()): String? =
+        sdk.toBase64(options)
 
     @Suppress("unused")
     fun getSignatureBitmap(): Bitmap = sdk.getSignatureBitmap() ?: createBitmap(1, 1)

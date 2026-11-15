@@ -142,6 +142,31 @@ Raw event persistence and standalone rendering are available with `@OptIn(Experi
 `Signature.toTransparentBitmap()`, and `Signature.toSvg()` render without a view. Import the rendering
 extensions from `se.warting.signaturecore`. These APIs are experimental.
 
+### PNG, Base64 and export margins
+
+Both Compose `SignaturePadState` and the classic `SignaturePad` view expose:
+
+```kotlin
+val options = SignatureExportOptions(
+    trimBlankSpace = true,
+    paddingPixels = 16,
+    backgroundColor = android.graphics.Color.WHITE,
+    penColor = android.graphics.Color.BLACK,
+)
+val png: ByteArray? = signatureState.toPngByteArray(options)
+val base64: String? = signatureState.toBase64(options)
+val bitmap: Bitmap? = signatureState.exportBitmap(options)
+```
+
+Import `se.warting.signaturecore.SignatureExportOptions`. The same methods are
+extensions on `SignatureSDK`, imported from `se.warting.signaturecore`.
+The methods return null before a raster surface has been initialized. Empty
+signatures retain the canvas size, plus padding. Cropping happens before background
+fill; padding adds pixels on every edge and does not remove ink at canvas edges.
+Defaults preserve the full canvas with a transparent background and no padding.
+Base64 uses standard encoding without line breaks or a `data:image/png;base64,`
+prefix. Exported bitmaps are independent copies owned by the caller.
+
 ## Live finger shadow
 
 On Android 13 (API 33) and newer, an optional shadow follows the active pointer.
