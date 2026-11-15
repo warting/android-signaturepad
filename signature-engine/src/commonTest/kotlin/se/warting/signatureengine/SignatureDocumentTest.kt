@@ -6,6 +6,29 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class SignatureDocumentTest {
+    @Test
+    fun hugeRestoredCoordinatesHaveBoundedRasterWork() {
+        val document = SignatureDocument()
+        document.restore(listOf(
+            SignatureEvent(0, 0, 0f, 0f),
+            SignatureEvent(16, 2, 100_000_000f, 0f),
+            SignatureEvent(32, 2, 200_000_000f, 0f),
+            SignatureEvent(48, 1, 300_000_000f, 0f),
+        ))
+        assertTrue(document.segments.isNotEmpty())
+        var total = 0
+        document.segments.forEach { segment ->
+            var calls = 0
+            segment.forEachDab { x, y, _ ->
+                calls++
+                assertTrue(x.isFinite() && y.isFinite())
+            }
+            assertTrue(calls in 0..16_384)
+            total += calls
+        }
+        assertTrue(total > 0)
+    }
+
     private fun stroke(x: Float) = listOf(
         SignatureEvent(0, 0, x, 10f),
         SignatureEvent(16, 2, x + 10, 20f),
