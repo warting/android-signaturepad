@@ -1,7 +1,6 @@
 [![Maven Central](https://img.shields.io/maven-central/v/se.warting.signature/signature-pad?strategy=releaseProperty)](https://central.sonatype.com/artifact/se.warting.signature/signature-pad)
 
 Android Signature Pad
-====================
 
 Android Signature Pad is an Android library for drawing smooth signatures. It uses variable width
 Bézier curve interpolation based
@@ -285,6 +284,11 @@ It runs `check`, signs all three library artifacts, publishes them through the C
 and waits for publication to complete. The `OSSRH_USERNAME` / `OSSRH_PASSWORD` repository
 secret names are retained, but their values must be Central Portal user-token credentials.
 
+## Optional Jetpack Ink renderer
+
+For Android stylus pressure and low-latency drawing, opt into the separate `signature-ink`
+module. See [Ink usage, exports and device tests](docs/ink.md). Existing rendering remains
+available through `signature-pad` and `signature-view`; their APIs are unchanged.
 ## Kotlin Multiplatform
 
 The new `signature-engine` and `signature-compose` modules support Android, iOS, desktop and

@@ -57,6 +57,7 @@ include(":app")
 include(":signature-pad")
 include(":signature-view")
 include(":signature-core")
+include(":signature-ink")
 
 include(":signature-engine")
 include(":signature-compose")

@@ -1,6 +1,8 @@
 package se.warting.signaturepad.app
 
 import android.util.Log
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -137,6 +139,7 @@ private fun SignaturePadState.extractBitmaps(
 @Suppress("LongMethod")
 @Composable
 fun ComposeSample() {
+    val context = LocalContext.current
     var svg by remember { mutableStateOf("") }
     var bmpPair by remember { mutableStateOf<Pair<ImageBitmap?, ImageBitmap?>>(null to null) }
     val signatureState = rememberSignaturePadState()
@@ -173,6 +176,10 @@ fun ComposeSample() {
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
     ) {
+        Button(onClick = { context.startActivity(Intent(context, InkSampleActivity::class.java)) }) {
+            Text("Try Jetpack Ink")
+        }
+
         SignatureCaptureExamples()
         Box(
             Modifier
