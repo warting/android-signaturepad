@@ -69,7 +69,10 @@ class InkSignatureView @JvmOverloads constructor(
 
     /** Pressure-sensitive pen by default. Changes apply to the next stroke. */
     internal val defaultBrush: Brush = Brush.createWithColorIntArgb(
-        StockBrushes.pressurePen(), Color.BLACK, 5f * resources.displayMetrics.density, 0.1f
+        StockBrushes.pressurePen(),
+        Color.BLACK,
+        5f * resources.displayMetrics.density,
+        0.1f
     )
     var brush: Brush = defaultBrush
 
@@ -173,33 +176,42 @@ class InkSignatureView @JvmOverloads constructor(
                 issued[id] = state.generation
                 state.begin(id)
             }
-            MotionEvent.ACTION_MOVE -> {
-                val id = activeId ?: return true
-                if (event.findPointerIndex(pointerId) < 0) { cancelInput(); return true }
-                samples[id]?.add(event)
-                val predicted = predictor.predict()
-                try { wet.addToStroke(event, pointerId, id, predicted) }
-                finally { predicted?.recycle() }
-            }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-                if (event.getPointerId(event.actionIndex) != pointerId) return true
-                val id = activeId ?: return true
-                if (Build.VERSION.SDK_INT >= 33 && event.flags and MotionEvent.FLAG_CANCELED != 0) {
-                    cancelInput()
-                } else {
-                    samples[id]?.apply { add(event); ended = true }
-                    wet.finishStroke(event, pointerId, id)
-                    activeId = null
-                    pointerId = -1
-                }
-                parent?.requestDisallowInterceptTouchEvent(false)
-            }
+            MotionEvent.ACTION_MOVE -> moveInput(event)
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> finishInput(event)
             MotionEvent.ACTION_CANCEL -> {
                 cancelInput()
                 parent?.requestDisallowInterceptTouchEvent(false)
             }
         }
         return true
+    }
+
+    private fun moveInput(event: MotionEvent) {
+        val id = activeId ?: return
+        if (event.findPointerIndex(pointerId) < 0) {
+            cancelInput()
+            return
+        }
+        samples[id]?.add(event)
+        val predicted = predictor.predict()
+        try { wet.addToStroke(event, pointerId, id, predicted) } finally { predicted?.recycle() }
+    }
+
+    private fun finishInput(event: MotionEvent) {
+        val id = activeId ?: return
+        if (event.getPointerId(event.actionIndex) != pointerId) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && event.flags and MotionEvent.FLAG_CANCELED != 0) {
+            cancelInput()
+        } else {
+            samples[id]?.apply {
+                add(event)
+                ended = true
+            }
+            wet.finishStroke(event, pointerId, id)
+            activeId = null
+            pointerId = -1
+        }
+        parent?.requestDisallowInterceptTouchEvent(false)
     }
 
     private fun cancelInput() {

@@ -1,7 +1,13 @@
 plugins {
     alias(libs.plugins.com.android.library)
+    alias(libs.plugins.io.gitlab.arturbosch.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.com.vanniktech.maven.publish)
+}
+
+detekt {
+    autoCorrect = true
+    buildUponDefaultConfig = true
 }
 
 group = rootProject.group
@@ -16,14 +22,15 @@ android {
 }
 
 dependencies {
+    detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting)
     api(libs.androidx.ink.brush)
     api(libs.androidx.ink.strokes)
     implementation(libs.androidx.ink.authoring)
     implementation(libs.androidx.ink.rendering)
     implementation(libs.androidx.input.motionprediction)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.runtime)
+    api(platform(libs.androidx.compose.bom))
+    api(libs.androidx.compose.ui)
+    api(libs.androidx.compose.runtime)
 }
 
 mavenPublishing {

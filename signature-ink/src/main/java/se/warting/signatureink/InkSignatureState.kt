@@ -72,7 +72,7 @@ class InkSignatureState {
         val bitmap = toBitmap(width, height, backgroundColor)
         return try {
             ByteArrayOutputStream().use { output ->
-                check(bitmap.compress(Bitmap.CompressFormat.PNG, 100, output))
+                check(bitmap.compress(Bitmap.CompressFormat.PNG, PNG_QUALITY, output))
                 output.toByteArray()
             }
         } finally {
@@ -105,3 +105,6 @@ class InkSignatureState {
 
     private fun notifyChanged() { observers.toList().forEach { it() } }
 }
+
+// PNG is lossless; Android ignores this quality parameter.
+private const val PNG_QUALITY = 100

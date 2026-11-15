@@ -70,7 +70,10 @@ class InkSignatureTest {
     @Test
     fun reversedStylusPreservesAxesAcrossDetach() = verifyStylusDetach(MotionEvent.TOOL_TYPE_ERASER)
 
-    private fun verifyStylusDetach(tool: Int) {
+    @Test
+    fun normalStylusHandoffPreservesPressureAndAxes() = verifyStylusDetach(MotionEvent.TOOL_TYPE_STYLUS, detach = false)
+
+    private fun verifyStylusDetach(tool: Int, detach: Boolean = true) {
         val state = compose.activity.inkState
         compose.runOnIdle {
             val view = checkNotNull(findInk(compose.activity.window.decorView))
@@ -94,7 +97,7 @@ class InkSignatureTest {
                     InputDevice.SOURCE_STYLUS, 0)
                 try { assertTrue(view.dispatchTouchEvent(event)) } finally { event.recycle() }
             }
-            (view.parent as ViewGroup).removeView(view)
+            if (detach) (view.parent as ViewGroup).removeView(view)
         }
         compose.waitUntil(10_000) { !state.isDrawing && state.strokes.isNotEmpty() }
         compose.runOnIdle {
