@@ -21,7 +21,7 @@ internal class PendingInkStroke(private val brush: Brush, private val pointerId:
             val pointer = event.findPointerIndex(pointerId)
             if (pointer < 0) return@forEach
             val tool = event.getToolType(pointer)
-            val stylus = tool == MotionEvent.TOOL_TYPE_STYLUS
+            val stylus = tool == MotionEvent.TOOL_TYPE_STYLUS || tool == MotionEvent.TOOL_TYPE_ERASER
             val first = if (event.actionMasked == MotionEvent.ACTION_MOVE) 0 else event.historySize
             for (history in first..event.historySize) {
                 val current = history == event.historySize

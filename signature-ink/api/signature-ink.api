@@ -33,6 +33,7 @@ public final class se/warting/signatureink/InkSignatureView : android/widget/Fra
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun performClick ()Z
 	public final fun setBrush (Landroidx/ink/brush/Brush;)V
+	public fun setEnabled (Z)V
 	public final fun setState (Lse/warting/signatureink/InkSignatureState;)V
 }
 

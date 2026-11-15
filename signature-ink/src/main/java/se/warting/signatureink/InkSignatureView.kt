@@ -92,6 +92,25 @@ class InkSignatureView @JvmOverloads constructor(
         })
     }
 
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        if (!enabled && activeId != null) cancelInput()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        // Touch and export coordinates are wrapper-local, even when XML applies padding.
+        val width = MeasureSpec.makeMeasureSpec(measuredWidth, MeasureSpec.EXACTLY)
+        val height = MeasureSpec.makeMeasureSpec(measuredHeight, MeasureSpec.EXACTLY)
+        dry.measure(width, height)
+        wet.measure(width, height)
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        dry.layout(0, 0, right - left, bottom - top)
+        wet.layout(0, 0, right - left, bottom - top)
+    }
+
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean = true
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

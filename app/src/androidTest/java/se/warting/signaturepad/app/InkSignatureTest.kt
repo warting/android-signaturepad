@@ -64,14 +64,19 @@ class InkSignatureTest {
     }
 
     @Test
-    fun rawStylusEventsPreservePressureAcrossDetach() {
+    fun rawStylusEventsPreservePressureAcrossDetach() = verifyStylusDetach(MotionEvent.TOOL_TYPE_STYLUS)
+
+    @Test
+    fun reversedStylusPreservesAxesAcrossDetach() = verifyStylusDetach(MotionEvent.TOOL_TYPE_ERASER)
+
+    private fun verifyStylusDetach(tool: Int) {
         val state = compose.activity.inkState
         compose.runOnIdle {
             val view = checkNotNull(findInk(compose.activity.window.decorView))
             val start = SystemClock.uptimeMillis() - 100
             val properties = MotionEvent.PointerProperties().apply {
                 id = 7
-                toolType = MotionEvent.TOOL_TYPE_STYLUS
+                toolType = tool
             }
             listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_MOVE,
                 MotionEvent.ACTION_UP).forEachIndexed { index, action ->
@@ -80,6 +85,8 @@ class InkSignatureTest {
                     y = 50f + index * 10f
                     pressure = 0.2f + index * 0.2f
                     size = 0.1f
+                    setAxisValue(MotionEvent.AXIS_TILT, 0.4f)
+                    orientation = 0.5f
                 }
                 val event = MotionEvent.obtain(start, start + index * 20, action, 1,
                     arrayOf(properties), arrayOf(coords), 0, 0, 1f, 1f, 0, 0,
@@ -93,6 +100,9 @@ class InkSignatureTest {
             val inputs = state.strokes.single().inputs
             assertEquals(InputToolType.STYLUS, inputs[0].toolType)
             assertTrue(inputs.hasPressure())
+            assertEquals(0.4f, inputs[0].tiltRadians, 0.001f)
+            assertEquals((0.5f + 2.5f * Math.PI.toFloat()).mod(2 * Math.PI.toFloat()),
+                inputs[0].orientationRadians, 0.001f)
             assertEquals(0.2f, inputs[0].pressure, 0.001f)
             assertEquals(0.8f, inputs[inputs.size - 1].pressure, 0.001f)
         }
@@ -165,6 +175,47 @@ class InkSignatureTest {
             (view.parent as ViewGroup).removeView(view)
         }
         compose.waitUntil(10_000) { !state.isDrawing && state.strokes.size == 1 }
+    }
+
+    @Test
+    fun disablingImmediatelyCancelsInputWithoutAnotherEvent() {
+        val state = compose.activity.inkState
+        compose.runOnIdle { state.restore(listOf(stroke(0.9f))); state.undo() }
+        compose.onNodeWithTag("ink").performTouchInput { down(Offset(30f, 60f)) }
+        compose.runOnIdle {
+            assertTrue(state.isDrawing)
+            checkNotNull(findInk(compose.activity.window.decorView)).isEnabled = false
+            assertFalse(state.isDrawing)
+            assertTrue(state.canRedo)
+            state.toBitmap(320, 180).recycle()
+        }
+    }
+
+    @Test
+    fun paddingKeepsBothDrawingLayersInWrapperCoordinates() {
+        val view = checkNotNull(findInk(compose.activity.window.decorView))
+        compose.runOnIdle { view.setPadding(25, 40, 30, 15) }
+        compose.waitForIdle()
+        compose.runOnIdle {
+            for (index in 0 until view.childCount) {
+                val layer = view.getChildAt(index)
+                assertEquals(0, layer.left)
+                assertEquals(0, layer.top)
+                assertEquals(view.width, layer.width)
+                assertEquals(view.height, layer.height)
+            }
+        }
+        compose.onNodeWithTag("ink").performTouchInput {
+            down(Offset(60f, 70f))
+            moveTo(Offset(160f, 100f), 32)
+            up()
+        }
+        val state = compose.activity.inkState
+        compose.waitUntil(10_000) { !state.isDrawing && state.strokes.isNotEmpty() }
+        compose.runOnIdle {
+            assertEquals(60f, state.strokes.single().inputs[0].x, 0.01f)
+            assertEquals(70f, state.strokes.single().inputs[0].y, 0.01f)
+        }
     }
 
     private fun findInk(view: View): InkSignatureView? {
