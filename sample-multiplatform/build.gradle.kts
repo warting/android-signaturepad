@@ -1,6 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
-    id("org.jetbrains.compose") version "1.12.2"
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     id("com.android.kotlin.multiplatform.library")
 }

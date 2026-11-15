@@ -54,3 +54,20 @@ Common UI tests draw through pointer input, then undo, redo, clear and restore t
 Common model tests cover replay, geometry, SVG stability, secondary pointers, cancellation,
 invalid coordinates and history invalidation. Android regression tests continue checking the
 legacy APIs against published 0.3.0 artifacts.
+
+## Screenshot regression
+
+The desktop Compose test renders a restored signature and compares every pixel with
+`signature-compose/src/desktopTest/reference/signature.png`. Baselines and example screenshots
+are stored in Git LFS. CI uploads the actual image with its test reports.
+
+```shell
+# Run comparison (also included in check):
+./gradlew :signature-compose:desktopTest
+# Only for an intentional visual change; inspect the PNG before committing:
+UPDATE_SIGNATURE_SCREENSHOTS=true ./gradlew :signature-compose:desktopTest
+```
+
+Maven publication includes the engine's JVM/iOS/Wasm artifacts and the Compose library's
+Android/desktop/iOS/Wasm artifacts. Release workflows run on macOS so native artifacts are
+built on a supported host. No existing Android coordinate or public declaration is removed.

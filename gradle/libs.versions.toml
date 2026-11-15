@@ -2,12 +2,14 @@
 agp = "9.5.1"
 androidx-activity = "1.13.0"
 composeBom = "2026.09.00"
+composeMultiplatform = "1.12.2"
 core = "1.19.1"
 io-gitlab-arturbosch-detekt = "1.23.8"
 kotlin = "2.4.21"
 navigation3UiAndroid = "1.2.1"
 
 [libraries]
+compose-multiplatform-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeMultiplatform" }
 androidx-activity-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-appcompat = "androidx.appcompat:appcompat:1.8.0"
@@ -36,6 +38,7 @@ org-jetbrains-kotlin-kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotl
 robolectric = "org.robolectric:robolectric:4.17"
 
 [plugins]
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 com-android-legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "agp" }
 com-android-library = { id = "com.android.library", version.ref = "agp" }

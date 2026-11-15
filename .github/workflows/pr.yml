@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: '0'
+          lfs: true
 
       - name: Setup java
         uses: actions/setup-java@v6
@@ -39,12 +40,14 @@ jobs:
           key: gradle-${{ hashFiles('checksum.txt') }}
 
       - name: Run Android checks
-        run: ./gradlew check apiCheck :app:assembleDebug --stacktrace
+        run: ./gradlew check apiCheck :app:assembleDebug :sample-android:assembleDebug --stacktrace
 
       - name: Upload reports
         uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: Reports
-          path: '**/build/reports/*'
+          path: |
+            **/build/reports/*
+            signature-compose/build/screenshots/
           retention-days: 2
