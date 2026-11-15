@@ -28,9 +28,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":signature-engine"))
-            implementation(compose.runtime)
+            api(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.ui)
+            api(compose.ui)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
