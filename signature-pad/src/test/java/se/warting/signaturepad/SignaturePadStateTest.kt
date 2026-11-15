@@ -45,7 +45,10 @@ class SignaturePadStateTest {
                     onSigned = { assertTrue(state.canUndo()) },
                     onClear = { assertTrue(state.isEmpty) },
                 )
-                BasicText("empty=${state.isEmpty};undo=${state.canUndo()}", Modifier.testTag("status"))
+                BasicText(
+                    "empty=${state.isEmpty};undo=${state.canUndo()};redo=${state.canRedo()}",
+                    Modifier.testTag("status")
+                )
             }
         }
         assertStatus(empty = true, undo = false)
@@ -59,7 +62,10 @@ class SignaturePadStateTest {
         assertStatus(empty = false, undo = true)
         val saved = compose.runOnIdle { state.getSignature() }
         compose.runOnIdle { state.undo() }
-        assertStatus(empty = true, undo = false)
+        assertStatus(empty = true, undo = false, redo = true)
+        compose.runOnIdle { state.redo() }
+        assertStatus(empty = false, undo = true)
+        compose.runOnIdle { state.undo() }
         compose.runOnIdle { state.setSignature(saved) }
         assertStatus(empty = false, undo = true)
         compose.runOnIdle { state.clear() }
@@ -101,7 +107,7 @@ class SignaturePadStateTest {
         }
     }
 
-    private fun assertStatus(empty: Boolean, undo: Boolean) {
-        compose.onNodeWithTag("status").assertTextEquals("empty=$empty;undo=$undo")
+    private fun assertStatus(empty: Boolean, undo: Boolean, redo: Boolean = false) {
+        compose.onNodeWithTag("status").assertTextEquals("empty=$empty;undo=$undo;redo=$redo")
     }
 }

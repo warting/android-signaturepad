@@ -18,7 +18,7 @@ by [Square](https://squareup.com).
 * Optional live finger shadow on Android 13+
 * Bitmap, SVG and raw signature data export
 * Jetpack Compose state API and classic Android Views
-* Undo the last stroke and restore saved signatures
+* Undo/redo completed strokes and restore saved signatures
 
 ## Installation
 
@@ -114,9 +114,22 @@ The classic View API remains available in `signature-view`.
     android:layout_height="200dp" />
 ```
 
-Use `clear()`, `undo()`, `canUndo()`, and the export methods on the view. Register a
+Use `clear()`, `undo()`, `redo()`, `canUndo()`, `canRedo()`, and the export methods on the view. Register a
 `SignedListener` with `setOnSignedListener()` for signing callbacks. See the sample app for
 XML attributes and data binding examples.
+
+### Undo and redo
+
+`undo()` removes the most recent completed stroke; `redo()` restores it. Both preserve an
+in-progress stroke. `canUndo()` and `canRedo()` are observable in Compose. New accepted
+input, `clear()` and explicit signature restoration discard redo history. Redo history
+is transient and is not included in saved signatures or configuration-state restoration.
+
+History stores input coordinates and timing, not per-stroke pen styles. As with undo and
+signature restoration in 0.3.0, replay uses the current pen color, width and velocity settings
+for the entire signature. Changing those settings between capture and undo/redo can therefore
+restyle existing ink. Keep pen settings fixed during a capture when its appearance must remain
+unchanged.
 
 ### Configuration
 
