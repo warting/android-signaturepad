@@ -116,7 +116,7 @@ fun SignaturePadView(
     val penColorArgb = penColor.toArgb()
     val shadowColorArgb = shadowColor.toArgb()
 
-    LaunchedEffect(
+    DisposableEffect(
         sdk,
         minWidthPx,
         maxWidthPx,
@@ -132,6 +132,7 @@ fun SignaturePadView(
         penConfigured = true
         sdk.initializeBitmap(state.size.width, state.size.height)
         state.invalidate()
+        onDispose { }
     }
 
     // Shadow controls must not reset the pen's in-progress stroke width.
