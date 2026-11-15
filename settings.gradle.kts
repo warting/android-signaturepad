@@ -59,3 +59,6 @@ include(":signature-view")
 include(":signature-core")
 
 include(":signature-engine")
+include(":signature-compose")
+include(":sample-multiplatform")
+include(":sample-android")
