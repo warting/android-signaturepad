@@ -14,13 +14,10 @@ import androidx.annotation.FloatRange
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
 import se.warting.signaturecore.utils.Bezier
-import se.warting.signaturecore.utils.ControlTimedPoints
 import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturecore.utils.SvgBuilder
 import se.warting.signaturecore.utils.TimedPoint
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.sqrt
 
 class SignatureSDK {
 
@@ -33,9 +30,19 @@ class SignatureSDK {
 
     private data class UndoneStroke(val index: Int, val events: List<Event>)
 
-    // Point tracking
-    private val points = mutableListOf<TimedPoint>()
-    private val pointsCache: MutableList<TimedPoint?> = ArrayList()
+    private val stroke = se.warting.signatureengine.StrokeBuilder { curve, startWidth, endWidth ->
+        fun se.warting.signatureengine.CurvePoint.toTimedPoint() = TimedPoint().set(x, y, 0L)
+        addBezier(
+            Bezier(
+                curve.start.toTimedPoint(),
+                curve.control1.toTimedPoint(),
+                curve.control2.toTimedPoint(),
+                curve.end.toTimedPoint()
+            ),
+            startWidth,
+            endWidth
+        )
+    }
 
     companion object {
         const val DEFAULT_ATTR_PEN_MIN_WIDTH_PX = 3
@@ -50,12 +57,6 @@ class SignatureSDK {
         private const val FULL_CIRCLE_DEGREES = 360f
     }
 
-    // Touch tracking
-    private var lastTouchX = 0f
-    private var lastTouchY = 0f
-    private var lastVelocity = 0f
-    private var lastWidth = 0f
-
     // Most recent finite touch coordinate. Used to substitute on a glitched
     // ACTION_UP so the stroke still terminates cleanly.
     private var lastValidX = 0f
@@ -65,9 +66,6 @@ class SignatureSDK {
     private val svgBuilder = SvgBuilder()
 
     // Configuration
-    private var minWidth = 0
-    private var maxWidth = 0
-    private var velocityFilterWeight = 0f
     private var shadowColor = DEFAULT_ATTR_SHADOW_COLOR
     private var shadowIntensity = DEFAULT_ATTR_SHADOW_INTENSITY
     private var shadowAngleDegrees = DEFAULT_ATTR_SHADOW_ANGLE_DEGREES
@@ -94,25 +92,8 @@ class SignatureSDK {
         penColor: Int? = null,
         velocityFilterWeight: Float? = null
     ) {
-        minWidth?.let {
-            this.minWidth = it
-        }
-        maxWidth?.let {
-            this.maxWidth = it
-        }
-        penColor?.let {
-            this.paint.color = it
-        }
-
-        velocityFilterWeight?.let {
-            this.velocityFilterWeight = it
-        }
-
-        maxWidth?.let { maxW ->
-            minWidth?.let { minW ->
-                this.lastWidth = (minW + maxW) / 2f
-            }
-        }
+        stroke.configure(minWidth, maxWidth, velocityFilterWeight)
+        penColor?.let { paint.color = it }
     }
 
     /**
@@ -192,36 +173,22 @@ class SignatureSDK {
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                points.clear()
-                lastTouchX = eventX
-                lastTouchY = eventY
+                stroke.beginStroke()
 
-                addTimedPoint(
-                    getNewTimedPoint(eventX, eventY, timestamp),
-                    timestamp
-                )
+                stroke.add(eventX, eventY, timestamp)
 
                 signedListener?.onStartSigning()
-                addTimedPoint(
-                    getNewTimedPoint(eventX, eventY, timestamp),
-                    timestamp
-                )
+                stroke.add(eventX, eventY, timestamp)
             }
 
             MotionEvent.ACTION_MOVE -> {
-                addTimedPoint(
-                    getNewTimedPoint(eventX, eventY, timestamp),
-                    timestamp
-                )
+                stroke.add(eventX, eventY, timestamp)
 
                 signedListener?.onSigning()
             }
 
             MotionEvent.ACTION_UP -> {
-                addTimedPoint(
-                    getNewTimedPoint(eventX, eventY, timestamp),
-                    timestamp
-                )
+                stroke.add(eventX, eventY, timestamp)
 
                 signedListener?.onSigned()
             }
@@ -276,9 +243,7 @@ class SignatureSDK {
 
     private fun resetStrokeState() {
         svgBuilder.clear()
-        points.clear()
-        lastVelocity = 0f
-        lastWidth = (minWidth + maxWidth) / 2f
+        stroke.reset()
     }
 
     /**
@@ -348,7 +313,7 @@ class SignatureSDK {
     }
 
     private fun notifyListeners() {
-        if (points.isEmpty()) {
+        if (stroke.isEmpty) {
             signedListener?.onClear()
         } else {
             signedListener?.onSigned()
@@ -356,7 +321,7 @@ class SignatureSDK {
     }
 
     val isEmpty: Boolean
-        get() = points.isEmpty()
+        get() = stroke.isEmpty
 
     fun getSignatureSvg(width: Int, height: Int): String {
         return svgBuilder.build(width, height)
@@ -572,68 +537,6 @@ class SignatureSDK {
         }
     }
 
-    private fun getNewTimedPoint(x: Float, y: Float, timestamp: Long): TimedPoint {
-        val cacheSize = pointsCache.size
-        val timedPoint: TimedPoint? = if (cacheSize == 0) {
-            // Cache is empty, create a new point
-            TimedPoint()
-        } else {
-            // Get point from cache
-            pointsCache.removeAt(cacheSize - 1)
-        }
-        return timedPoint!!.set(x, y, timestamp)
-    }
-
-    private fun recyclePoint(point: TimedPoint?) {
-        pointsCache.add(point)
-    }
-
-    private fun addTimedPoint(timedPoint: TimedPoint, timestamp: Long) {
-        points.add(timedPoint)
-        val pointsCount = points.size
-        if (pointsCount > 3) {
-            var tmp: ControlTimedPoints =
-                calculateCurveControlPoints(points[0], points[1], points[2], timestamp)
-            val c2 = tmp.c2
-            recyclePoint(tmp.c1)
-            tmp = calculateCurveControlPoints(points[1], points[2], points[3], timestamp)
-            val c3 = tmp.c1
-            recyclePoint(tmp.c2)
-            val curve = Bezier(points[1], c2, c3, points[2])
-            val startPoint = curve.startPoint
-            val endPoint = curve.endPoint
-            var velocity = endPoint.velocityFrom(startPoint)
-
-            velocity = (
-                velocityFilterWeight * velocity +
-                    (1 - velocityFilterWeight) * lastVelocity
-                )
-
-            // The new width is a function of the velocity. Higher velocities
-            // correspond to thinner strokes.
-            val newWidth = strokeWidth(velocity)
-
-            // The Bezier's width starts out as last curve's final width, and
-            // gradually changes to the stroke width just calculated. The new
-            // width calculation is based on the velocity between the Bezier's
-            // start and end mPoints.
-            addBezier(curve, lastWidth, newWidth)
-            lastVelocity = velocity
-            lastWidth = newWidth
-
-            // Remove the first element from the list,
-            // so that we always have no more than 4 mPoints in mPoints array.
-            recyclePoint(points.removeAt(0))
-            recyclePoint(c2)
-            recyclePoint(c3)
-        } else if (pointsCount == 1) {
-            // To reduce the initial lag make it work with 3 mPoints
-            // by duplicating the first point
-            val firstPoint = points[0]
-            points.add(getNewTimedPoint(firstPoint.x, firstPoint.y, timestamp))
-        }
-    }
-
     private fun addBezier(curve: Bezier, startWidth: Float, endWidth: Float) {
         svgBuilder.append(curve, (startWidth + endWidth) / 2)
         val originalWidth = paint.strokeWidth
@@ -662,40 +565,6 @@ class SignatureSDK {
             signatureBitmapCanvas?.drawPoint(x, y, paint)
         }
         paint.strokeWidth = originalWidth
-    }
-
-    private fun calculateCurveControlPoints(
-        s1: TimedPoint,
-        s2: TimedPoint,
-        s3: TimedPoint,
-        timestamp: Long
-    ): ControlTimedPoints {
-        val dx1 = s1.x - s2.x
-        val dy1 = s1.y - s2.y
-        val dx2 = s2.x - s3.x
-        val dy2 = s2.y - s3.y
-        val m1X = (s1.x + s2.x) / 2.0f
-        val m1Y = (s1.y + s2.y) / 2.0f
-        val m2X = (s2.x + s3.x) / 2.0f
-        val m2Y = (s2.y + s3.y) / 2.0f
-        val l1 = sqrt((dx1 * dx1 + dy1 * dy1).toDouble()).toFloat()
-        val l2 = sqrt((dx2 * dx2 + dy2 * dy2).toDouble()).toFloat()
-        val dxm = m1X - m2X
-        val dym = m1Y - m2Y
-        var k = l2 / (l1 + l2)
-        if (k.isNaN()) k = 0.0f
-        val cmX = m2X + dxm * k
-        val cmY = m2Y + dym * k
-        val tx = s2.x - cmX
-        val ty = s2.y - cmY
-        return ControlTimedPoints(
-            getNewTimedPoint(m1X + tx, m1Y + ty, timestamp),
-            getNewTimedPoint(m2X + tx, m2Y + ty, timestamp)
-        )
-    }
-
-    private fun strokeWidth(velocity: Float): Float {
-        return max(maxWidth / (velocity + 1), minWidth.toFloat())
     }
 
     private fun Int.adjustPaint(): Paint = Paint().apply {

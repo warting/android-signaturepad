@@ -1,0 +1,131 @@
+public final class se/warting/signatureengine/CubicCurve {
+	public static final field Companion Lse/warting/signatureengine/CubicCurve$Companion;
+	public fun <init> (Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;)V
+	public final fun component1 ()Lse/warting/signatureengine/CurvePoint;
+	public final fun component2 ()Lse/warting/signatureengine/CurvePoint;
+	public final fun component3 ()Lse/warting/signatureengine/CurvePoint;
+	public final fun component4 ()Lse/warting/signatureengine/CurvePoint;
+	public final fun copy (Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;)Lse/warting/signatureengine/CubicCurve;
+	public static synthetic fun copy$default (Lse/warting/signatureengine/CubicCurve;Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;Lse/warting/signatureengine/CurvePoint;ILjava/lang/Object;)Lse/warting/signatureengine/CubicCurve;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getControl1 ()Lse/warting/signatureengine/CurvePoint;
+	public final fun getControl2 ()Lse/warting/signatureengine/CurvePoint;
+	public final fun getEnd ()Lse/warting/signatureengine/CurvePoint;
+	public final fun getStart ()Lse/warting/signatureengine/CurvePoint;
+	public fun hashCode ()I
+	public final fun length ()F
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class se/warting/signatureengine/CubicCurve$Companion {
+	public final fun coordinate (FFFFF)D
+}
+
+public final class se/warting/signatureengine/CurvePoint {
+	public fun <init> (FF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun copy (FF)Lse/warting/signatureengine/CurvePoint;
+	public static synthetic fun copy$default (Lse/warting/signatureengine/CurvePoint;FFILjava/lang/Object;)Lse/warting/signatureengine/CurvePoint;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class se/warting/signatureengine/SignatureDabsKt {
+	public static final fun forEachDab (Lse/warting/signatureengine/SignatureSegment;Lkotlin/jvm/functions/Function3;)V
+}
+
+public final class se/warting/signatureengine/SignatureDocument {
+	public fun <init> ()V
+	public fun <init> (IIFLkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (IIFLkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun add (Lse/warting/signatureengine/SignatureEvent;)V
+	public final fun clear ()V
+	public final fun getCanRedo ()Z
+	public final fun getCanUndo ()Z
+	public final fun getEvents ()Ljava/util/List;
+	public final fun getInput ()Lse/warting/signatureengine/SignatureInput;
+	public final fun getSegmentCount ()I
+	public final fun getSegments ()Ljava/util/List;
+	public final fun isEmpty ()Z
+	public final fun redo ()V
+	public final fun restore (Ljava/util/List;)V
+	public final fun segmentsFrom (I)Ljava/util/List;
+	public final fun toSvg (IILjava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/String;
+	public static synthetic fun toSvg$default (Lse/warting/signatureengine/SignatureDocument;IILjava/lang/Integer;Ljava/lang/Integer;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun undo ()V
+}
+
+public final class se/warting/signatureengine/SignatureEvent {
+	public static final field Companion Lse/warting/signatureengine/SignatureEvent$Companion;
+	public static final field DOWN I
+	public static final field MOVE I
+	public static final field UP I
+	public fun <init> (JIFF)V
+	public final fun component1 ()J
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (JIFF)Lse/warting/signatureengine/SignatureEvent;
+	public static synthetic fun copy$default (Lse/warting/signatureengine/SignatureEvent;JIFFILjava/lang/Object;)Lse/warting/signatureengine/SignatureEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAction ()I
+	public final fun getTimestamp ()J
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class se/warting/signatureengine/SignatureEvent$Companion {
+}
+
+public final class se/warting/signatureengine/SignatureInput {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final fun cancel ()V
+	public final fun end (JFFJ)Z
+	public final fun getActivePointerId ()Ljava/lang/Long;
+	public final fun getPressure ()F
+	public final fun getX ()F
+	public final fun getY ()F
+	public final fun isActive (J)Z
+	public final fun move (JFFFJ)Z
+	public final fun start (JFFFJ)V
+}
+
+public final class se/warting/signatureengine/SignatureSegment {
+	public fun <init> (Lse/warting/signatureengine/CubicCurve;FF)V
+	public final fun component1 ()Lse/warting/signatureengine/CubicCurve;
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (Lse/warting/signatureengine/CubicCurve;FF)Lse/warting/signatureengine/SignatureSegment;
+	public static synthetic fun copy$default (Lse/warting/signatureengine/SignatureSegment;Lse/warting/signatureengine/CubicCurve;FFILjava/lang/Object;)Lse/warting/signatureengine/SignatureSegment;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCurve ()Lse/warting/signatureengine/CubicCurve;
+	public final fun getEndWidth ()F
+	public final fun getStartWidth ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class se/warting/signatureengine/StrokeBuilder {
+	public fun <init> (Lkotlin/jvm/functions/Function3;)V
+	public final fun add (FFJ)V
+	public final fun beginStroke ()V
+	public final fun configure (Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Float;)V
+	public static synthetic fun configure$default (Lse/warting/signatureengine/StrokeBuilder;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Float;ILjava/lang/Object;)V
+	public final fun isEmpty ()Z
+	public final fun reset ()V
+}
+
+public final class se/warting/signatureengine/SvgBuilder {
+	public fun <init> ()V
+	public final fun append (Lse/warting/signatureengine/CubicCurve;F)Lse/warting/signatureengine/SvgBuilder;
+	public final fun build (II)Ljava/lang/String;
+	public final fun build (IILjava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/String;
+	public final fun clear ()V
+}
+

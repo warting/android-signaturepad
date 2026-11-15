@@ -1,0 +1,22 @@
+public final class se/warting/signaturecompose/SignaturePadKt {
+	public static final fun SignaturePad-FNF3uiM (Landroidx/compose/ui/Modifier;Lse/warting/signaturecompose/SignaturePadState;JLandroidx/compose/runtime/Composer;II)V
+	public static final fun rememberSignaturePadState (Landroidx/compose/runtime/Composer;I)Lse/warting/signaturecompose/SignaturePadState;
+}
+
+public final class se/warting/signaturecompose/SignaturePadState {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (IIF)V
+	public synthetic fun <init> (IIFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun clear ()V
+	public final fun getCanRedo ()Z
+	public final fun getCanUndo ()Z
+	public final fun getEvents ()Ljava/util/List;
+	public final fun isEmpty ()Z
+	public final fun redo ()V
+	public final fun restore (Ljava/util/List;)V
+	public final fun toSvg (IILjava/lang/Integer;Ljava/lang/Integer;)Ljava/lang/String;
+	public static synthetic fun toSvg$default (Lse/warting/signaturecompose/SignaturePadState;IILjava/lang/Integer;Ljava/lang/Integer;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun undo ()V
+}
+

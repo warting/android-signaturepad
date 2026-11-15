@@ -95,6 +95,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":signature-engine"))
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)

@@ -284,3 +284,9 @@ Publishing a GitHub release with a `vMAJOR.MINOR.PATCH` tag triggers the release
 It runs `check`, signs all three library artifacts, publishes them through the Central Portal,
 and waits for publication to complete. The `OSSRH_USERNAME` / `OSSRH_PASSWORD` repository
 secret names are retained, but their values must be Central Portal user-token credentials.
+
+## Kotlin Multiplatform
+
+The new `signature-engine` and `signature-compose` modules support Android, iOS, desktop and
+WebAssembly. See [multiplatform usage, examples and verification](docs/multiplatform.md).
+Existing Android consumers can keep using `signature-core`, `signature-pad` and `signature-view`.
