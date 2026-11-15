@@ -43,6 +43,14 @@ android {
     }
 
     testOptions {
+        screenshotTests.create("screenshotTest") {
+            engineVersion = libs.versions.screenshot.get()
+            targetVariants.add("debug")
+            dependencies {
+                implementation(libs.androidx.compose.ui.ui.tooling)
+                implementation(libs.screenshot.validation.api)
+            }
+        }
         unitTests.isIncludeAndroidResources = true
     }
 

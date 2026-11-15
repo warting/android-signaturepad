@@ -1,5 +1,6 @@
 package se.warting.signaturepad
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -8,6 +9,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.unit.dp
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +32,7 @@ class SignatureFieldTest {
         compose.setContent {
             state = rememberSignaturePadState()
             SignatureField(Modifier.testTag("field"), state = state) {
-                BasicText("Sign here")
+                BasicText("Sign here", Modifier.height(300.dp))
             }
         }
         compose.onNodeWithText("Sign here").assertExists()
@@ -40,6 +43,7 @@ class SignatureFieldTest {
             bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
             assertTrue(pixels.all { it == android.graphics.Color.TRANSPARENT })
         }
+        val originalBounds = compose.onNodeWithTag("field").fetchSemanticsNode().boundsInRoot
         compose.onNodeWithTag("field").performTouchInput {
             down(Offset(20f, 20f))
             moveTo(Offset(60f, 40f))
@@ -47,6 +51,7 @@ class SignatureFieldTest {
             up()
         }
         compose.onNodeWithText("Sign here").assertDoesNotExist()
+        assertEquals(originalBounds, compose.onNodeWithTag("field").fetchSemanticsNode().boundsInRoot)
         compose.runOnIdle { state.clear() }
         compose.onNodeWithText("Sign here").assertExists()
     }

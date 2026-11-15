@@ -116,7 +116,8 @@ fun SignaturePadView(
     val penColorArgb = penColor.toArgb()
     val shadowColorArgb = shadowColor.toArgb()
 
-    LaunchedEffect(
+    // Configure synchronously when composition is applied, including in Layoutlib previews.
+    DisposableEffect(
         sdk,
         minWidthPx,
         maxWidthPx,
@@ -132,6 +133,7 @@ fun SignaturePadView(
         penConfigured = true
         sdk.initializeBitmap(state.size.width, state.size.height)
         state.invalidate()
+        onDispose { }
     }
 
     // Shadow controls must not reset the pen's in-progress stroke width.

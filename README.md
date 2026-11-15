@@ -204,6 +204,19 @@ native graphics renderer; an emulator is not required. `apiCheck` verifies the c
 downloads the three **0.3.0 AARs from Maven Central**, extracts their public JVM API, and rejects
 removed or changed declarations even if the local snapshots were updated. Additive APIs are allowed.
 
+Screenshot baselines use AGP's experimental Compose screenshot test suites. Install Git LFS
+and run `git lfs pull` before validating them (CI checks out LFS assets automatically):
+
+```shell
+./gradlew :app:testDebugScreenshotTestDefaultTestSuite
+# After an intentional visual change, regenerate and inspect the PNGs before committing:
+./gradlew :app:updateDebugScreenshotTestDefaultTestSuite
+```
+
+Baselines live in `app/src/screenshotTestDefaultDebug/reference/` and are stored in Git LFS.
+Reports are under `app/build/reports/tests/`. Include rendered baseline images in visual PRs
+using GitHub's LFS media URLs; do not embed the Git LFS pointer files.
+
 Core owns live signing input (`SignatureSDK.input`) and signature restoration. View and Compose
 adapt platform touch events, double-tap recognition, sizing and lifecycle notifications; core handles
 the active pointer, cancel/clear/restore invalidation and replay on bitmap initialization. Explicit

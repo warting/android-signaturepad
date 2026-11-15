@@ -1,0 +1,6 @@
+# Screenshot baselines and visual PR evidence are binary LFS assets.
+**/reference/**/*.png filter=lfs diff=lfs merge=lfs -text
+docs/screenshots/** filter=lfs diff=lfs merge=lfs -text
+# Store committed binary diagnostic dumps in Git LFS.
+*.hprof filter=lfs diff=lfs merge=lfs -text
+*.dump filter=lfs diff=lfs merge=lfs -text

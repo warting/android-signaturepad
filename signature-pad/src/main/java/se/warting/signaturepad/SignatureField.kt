@@ -2,7 +2,7 @@ package se.warting.signaturepad
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 /**
  * Optional signature field with a decorative guideline and caller-provided placeholder.
  * The placeholder is visible only while empty. Decorations are excluded from all exports.
+ * The default height is 160 dp; set a height in [modifier] to override it. Placeholder size
+ * does not determine the canvas size, so hiding it cannot crop an existing signature.
  * Use [SignaturePadView] directly for lower-level configuration and signing callbacks.
  */
 @Suppress("LongParameterList")
@@ -29,7 +31,7 @@ fun SignatureField(
     penMaxWidth: Dp = 7.dp,
     content: @Composable () -> Unit = {},
 ) {
-    Box(modifier.fillMaxWidth().heightIn(min = 160.dp)) {
+    Box(modifier.fillMaxWidth().height(160.dp)) {
         SignaturePadView(
             modifier = Modifier.matchParentSize().drawBehind {
                 if (showGuideline) {

@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import se.warting.signaturepad.SignatureField
@@ -76,8 +78,10 @@ fun SignatureCaptureExamples() {
 @Composable
 private fun CaptureField(state: SignaturePadState) {
     Column {
-        SignatureField(modifier = Modifier.testTag("capture-field"), state = state) {
-            Text("Sign here")
+        Surface(color = Color.White, contentColor = Color.Black) {
+            SignatureField(modifier = Modifier.testTag("capture-field"), state = state) {
+                Text("Sign here")
+            }
         }
         TextButton(onClick = { state.clear() }, enabled = !state.isEmpty) { Text("Clear") }
     }
