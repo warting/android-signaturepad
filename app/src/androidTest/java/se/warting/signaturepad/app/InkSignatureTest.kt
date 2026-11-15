@@ -237,6 +237,40 @@ class InkSignatureTest {
         }
     }
 
+    @Test
+    fun clearRejectsLateEndedStrokeHandoff() = verifyLateHandoff(restore = false)
+
+    @Test
+    fun restoreRejectsLateEndedStrokeHandoff() = verifyLateHandoff(restore = true)
+
+    private fun verifyLateHandoff(restore: Boolean) {
+        val state = compose.activity.inkState
+        val restored = stroke(0.9f)
+        compose.runOnIdle {
+            val view = checkNotNull(findInk(compose.activity.window.decorView))
+            fun draw(startX: Float) {
+                val start = SystemClock.uptimeMillis() - 60
+                listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP)
+                    .forEachIndexed { index, action ->
+                        val event = MotionEvent.obtain(start, start + index * 20, action,
+                            startX + index * 20, 50f + index * 10, 0)
+                        try { view.dispatchTouchEvent(event) } finally { event.recycle() }
+                    }
+            }
+            draw(10f)
+            assertTrue("First ended stroke is still awaiting handoff", state.isDrawing)
+            if (restore) state.restore(listOf(restored)) else state.clear()
+            // The next handoff drains the same renderer queue, including any stale first stroke.
+            draw(150f)
+        }
+        compose.waitUntil(10_000) { !state.isDrawing }
+        compose.runOnIdle {
+            assertEquals(if (restore) 2 else 1, state.strokes.size)
+            if (restore) assertTrue(state.strokes.first() === restored)
+            assertEquals(150f, state.strokes.last().inputs[0].x, 0.01f)
+        }
+    }
+
     private fun findInk(view: View): InkSignatureView? {
         if (view is InkSignatureView) return view
         if (view is ViewGroup) for (index in 0 until view.childCount) {
