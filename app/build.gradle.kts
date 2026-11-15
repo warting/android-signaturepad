@@ -45,6 +45,8 @@ android {
     testOptions {
         screenshotTests.create("screenshotTest") {
             engineVersion = libs.versions.screenshot.get()
+            // macOS/Linux Layoutlib differs on 0.07% of pixels along antialiased ink edges.
+            imageDifferenceThreshold = 0.001f
             targetVariants.add("debug")
             dependencies {
                 implementation(libs.androidx.compose.ui.ui.tooling)

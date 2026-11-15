@@ -21,27 +21,50 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalDensity
+import se.warting.signaturecore.ExperimentalSignatureApi
+import se.warting.signaturecore.Signature
+import se.warting.signaturecore.toBitmap
+import kotlin.math.roundToInt
 import se.warting.signaturepad.SignatureField
 import se.warting.signaturepad.SignaturePadState
 import se.warting.signaturepad.rememberSignaturePadState
 
 /** Each capture session owns its state; cancel leaves the saved preview untouched. */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSignatureApi::class)
 @Composable
 fun SignatureCaptureExamples() {
     var dialog by rememberSaveable { mutableStateOf(false) }
     var sheet by rememberSaveable { mutableStateOf(false) }
-    var saved by remember { mutableStateOf<ImageBitmap?>(null) }
+    var saved by rememberSaveable { mutableStateOf<Signature?>(null) }
+    var savedWidth by rememberSaveable { mutableStateOf(1) }
+    var savedHeight by rememberSaveable { mutableStateOf(1) }
+    var savedDensity by rememberSaveable { mutableStateOf(1f) }
+    val density = LocalDensity.current.density
+    val preview = remember(saved, savedWidth, savedHeight, savedDensity) {
+        saved?.toBitmap(
+            savedWidth, savedHeight,
+            penMinWidth = (3 * savedDensity).roundToInt(),
+            penMaxWidth = (7 * savedDensity).roundToInt(),
+        )?.asImageBitmap()
+    }
+    fun save(state: SignaturePadState) {
+        val bitmap = state.getSignatureBitmap()
+        savedWidth = bitmap.width
+        savedHeight = bitmap.height
+        bitmap.recycle()
+        savedDensity = density
+        saved = state.getSignature()
+    }
     Column {
         Row {
             Button(onClick = { dialog = true }) { Text("Sign in dialog") }
             Button(onClick = { sheet = true }) { Text("Sign in sheet") }
         }
-        saved?.let { Image(it, "Saved signature", Modifier.fillMaxWidth().height(80.dp)) }
+        preview?.let { Image(it, "Saved signature", Modifier.fillMaxWidth().height(80.dp)) }
     }
     if (dialog) {
         val state = rememberSignaturePadState()
@@ -51,7 +74,7 @@ fun SignatureCaptureExamples() {
             text = { CaptureField(state) },
             confirmButton = {
                 TextButton(enabled = !state.isEmpty, onClick = {
-                    saved = state.getSignatureBitmap().asImageBitmap()
+                    save(state)
                     dialog = false
                 }) { Text("Save") }
             },
@@ -67,7 +90,7 @@ fun SignatureCaptureExamples() {
                 Row {
                     TextButton(onClick = { sheet = false }) { Text("Cancel") }
                     Button(enabled = !state.isEmpty, onClick = {
-                        saved = state.getSignatureBitmap().asImageBitmap()
+                        save(state)
                         sheet = false
                     }) { Text("Save") }
                 }
