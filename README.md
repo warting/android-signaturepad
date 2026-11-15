@@ -1,7 +1,6 @@
 [![Maven Central](https://img.shields.io/maven-central/v/se.warting.signature/signature-pad?strategy=releaseProperty)](https://central.sonatype.com/artifact/se.warting.signature/signature-pad)
 
 Android Signature Pad
-====================
 
 Android Signature Pad is an Android library for drawing smooth signatures. It uses variable width
 Bézier curve interpolation based
@@ -18,7 +17,7 @@ by [Square](https://squareup.com).
 * Optional live finger shadow on Android 13+
 * Bitmap, SVG and raw signature data export
 * Jetpack Compose state API and classic Android Views
-* Undo the last stroke and restore saved signatures
+* Undo/redo completed strokes and restore saved signatures
 
 ## Installation
 
@@ -104,6 +103,33 @@ Direct construction of `SignaturePadAdapter(view)` is no longer supported: use
 `rememberSignaturePadState()`, or obtain the deprecated adapter through `onReady`.
 The classic View API remains available in `signature-view`.
 
+### Optional signature field
+
+`SignatureField` adds a decorative guideline and a placeholder slot around the
+native Compose canvas. Provide localized text and your app's colors:
+
+```kotlin
+val state = rememberSignaturePadState()
+SignatureField(
+    state = state,
+    modifier = Modifier.fillMaxWidth().height(200.dp),
+    guidelineColor = MaterialTheme.colorScheme.outline,
+    penColor = MaterialTheme.colorScheme.onSurface,
+) {
+    Text("Sign here")
+}
+```
+
+Import `se.warting.signaturepad.SignatureField`. The placeholder is visible only
+while the signature is empty. The guideline and placeholder never appear in bitmap,
+SVG or raw-event exports. Set `showGuideline = false` to hide the line. Use
+`SignaturePadView` directly for signing callbacks and advanced configuration.
+
+The Compose sample includes working `AlertDialog` and `ModalBottomSheet` capture
+flows in `SignatureCaptureExamples.kt`: Save is enabled after input, Clear resets
+the field, and Cancel leaves the previously saved preview untouched. Material 3 is
+used by the sample; the library component itself only requires Compose Foundation.
+
 ### Android Views
 
 ```xml
@@ -114,9 +140,22 @@ The classic View API remains available in `signature-view`.
     android:layout_height="200dp" />
 ```
 
-Use `clear()`, `undo()`, `canUndo()`, and the export methods on the view. Register a
+Use `clear()`, `undo()`, `redo()`, `canUndo()`, `canRedo()`, and the export methods on the view. Register a
 `SignedListener` with `setOnSignedListener()` for signing callbacks. See the sample app for
 XML attributes and data binding examples.
+
+### Undo and redo
+
+`undo()` removes the most recent completed stroke; `redo()` restores it. Both preserve an
+in-progress stroke. `canUndo()` and `canRedo()` are observable in Compose. New accepted
+input, `clear()` and explicit signature restoration discard redo history. Redo history
+is transient and is not included in saved signatures or configuration-state restoration.
+
+History stores input coordinates and timing, not per-stroke pen styles. As with undo and
+signature restoration in 0.3.0, replay uses the current pen color, width and velocity settings
+for the entire signature. Changing those settings between capture and undo/redo can therefore
+restyle existing ink. Keep pen settings fixed during a capture when its appearance must remain
+unchanged.
 
 ### Configuration
 
@@ -141,6 +180,31 @@ Raw event persistence and standalone rendering are available with `@OptIn(Experi
 `getSignature()` / `setSignature(signature)` save and restore events, while `Signature.toBitmap()`,
 `Signature.toTransparentBitmap()`, and `Signature.toSvg()` render without a view. Import the rendering
 extensions from `se.warting.signaturecore`. These APIs are experimental.
+
+### PNG, Base64 and export margins
+
+Both Compose `SignaturePadState` and the classic `SignaturePad` view expose:
+
+```kotlin
+val options = SignatureExportOptions(
+    trimBlankSpace = true,
+    paddingPixels = 16,
+    backgroundColor = android.graphics.Color.WHITE,
+    penColor = android.graphics.Color.BLACK,
+)
+val png: ByteArray? = signatureState.toPngByteArray(options)
+val base64: String? = signatureState.toBase64(options)
+val bitmap: Bitmap? = signatureState.exportBitmap(options)
+```
+
+Import `se.warting.signaturecore.SignatureExportOptions`. The same methods are
+extensions on `SignatureSDK`, imported from `se.warting.signaturecore`.
+The methods return null before a raster surface has been initialized. Empty
+signatures retain the canvas size, plus padding. Cropping happens before background
+fill; padding adds pixels on every edge and does not remove ink at canvas edges.
+Defaults preserve the full canvas with a transparent background and no padding.
+Base64 uses standard encoding without line breaks or a `data:image/png;base64,`
+prefix. Exported bitmaps are independent copies owned by the caller.
 
 ## Live finger shadow
 
@@ -177,6 +241,19 @@ native graphics renderer; an emulator is not required. `apiCheck` verifies the c
 downloads the three **0.3.0 AARs from Maven Central**, extracts their public JVM API, and rejects
 removed or changed declarations even if the local snapshots were updated. Additive APIs are allowed.
 
+Screenshot baselines use AGP's experimental Compose screenshot test suites. Install Git LFS
+and run `git lfs pull` before validating them (CI checks out LFS assets automatically):
+
+```shell
+./gradlew :app:testDebugScreenshotTestDefaultTestSuite
+# After an intentional visual change, regenerate and inspect the PNGs before committing:
+./gradlew :app:updateDebugScreenshotTestDefaultTestSuite
+```
+
+Baselines live in `app/src/screenshotTestDefaultDebug/reference/` and are stored in Git LFS.
+Reports are under `app/build/reports/tests/`. Include rendered baseline images in visual PRs
+using GitHub's LFS media URLs; do not embed the Git LFS pointer files.
+
 Core owns live signing input (`SignatureSDK.input`) and signature restoration. View and Compose
 adapt platform touch events, double-tap recognition, sizing and lifecycle notifications; core handles
 the active pointer, cancel/clear/restore invalidation and replay on bitmap initialization. Explicit
@@ -212,3 +289,8 @@ secret names are retained, but their values must be Central Portal user-token cr
 For Android stylus pressure and low-latency drawing, opt into the separate `signature-ink`
 module. See [Ink usage, exports and device tests](docs/ink.md). Existing rendering remains
 available through `signature-pad` and `signature-view`; their APIs are unchanged.
+## Kotlin Multiplatform
+
+The new `signature-engine` and `signature-compose` modules support Android, iOS, desktop and
+WebAssembly. See [multiplatform usage, examples and verification](docs/multiplatform.md).
+Existing Android consumers can keep using `signature-core`, `signature-pad` and `signature-view`.

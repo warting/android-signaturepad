@@ -2,7 +2,8 @@
 
 package se.warting.signaturecore.utils
 
-import kotlin.math.sqrt
+import se.warting.signatureengine.CubicCurve
+import se.warting.signatureengine.CurvePoint
 
 data class Bezier(
     var startPoint: TimedPoint,
@@ -24,38 +25,13 @@ data class Bezier(
         return this
     }
 
-    fun length(): Float {
-        val steps = 10
-        var length = 0f
-        var cx: Double
-        var cy: Double
-        var px = 0.0
-        var py = 0.0
-        var xDiff: Double
-        var yDiff: Double
-        for (i in 0..steps) {
-            val t = i.toFloat() / steps
-            cx = point(
-                t, startPoint.x, control1.x,
-                control2.x, endPoint.x
-            )
-            cy = point(
-                t, startPoint.y, control1.y,
-                control2.y, endPoint.y
-            )
-            if (i > 0) {
-                xDiff = cx - px
-                yDiff = cy - py
-                length += sqrt(xDiff * xDiff + yDiff * yDiff).toFloat()
-            }
-            px = cx
-            py = cy
-        }
-        return length
-    }
+    fun length(): Float = CubicCurve(
+        CurvePoint(startPoint.x, startPoint.y),
+        CurvePoint(control1.x, control1.y),
+        CurvePoint(control2.x, control2.y),
+        CurvePoint(endPoint.x, endPoint.y),
+    ).length()
 
-    fun point(t: Float, start: Float, c1: Float, c2: Float, end: Float): Double {
-        return start * (1.0 - t) * (1.0 - t) * (1.0 - t) + 3.0 * c1 * (1.0 - t) * (1.0 - t) * t +
-            3.0 * c2 * (1.0 - t) * t * t + end * t * t * t
-    }
+    fun point(t: Float, start: Float, c1: Float, c2: Float, end: Float): Double =
+        CubicCurve.coordinate(t, start, c1, c2, end)
 }

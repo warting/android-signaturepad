@@ -68,7 +68,7 @@ versionCatalogUpdate {
 }
 
 apiValidation {
-    ignoredProjects.add("app")
+    ignoredProjects.addAll(listOf("app", "sample-android", "sample-multiplatform"))
 }
 
 detekt {

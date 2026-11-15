@@ -21,6 +21,27 @@ import se.warting.signaturecore.utils.SignedListener
 class SignatureBitmapTest {
 
     @Test
+    fun redoMatchesLegacyRestoreUsingCurrentGlobalPenSettings() {
+        val sdk = signature(horizontal = true, penWidth = 5)
+        val events = sdk.getEvents()
+        sdk.undo()
+        sdk.configure(12, 12, Color.RED, 0.9f)
+        sdk.redo()
+        val legacyRestored = SignatureSDK().apply {
+            configure(12, 12, Color.RED, 0.9f)
+            initializeBitmap(50, 50)
+            restoreEvents(events)
+        }
+        val actual = requireNotNull(sdk.getTransparentSignatureBitmap())
+        val expected = requireNotNull(legacyRestored.getTransparentSignatureBitmap())
+        try { assertTrue(expected.sameAs(actual)) } finally {
+            expected.recycle()
+            actual.recycle()
+        }
+        assertEquals(events, sdk.getEvents())
+    }
+
+    @Test
     fun resizeDuringStroke_preservesInputAndRenderingWithoutExtraCallbacks() {
         val sdk = SignatureSDK().apply {
             configure(5, 5, Color.BLACK, 0.9f)

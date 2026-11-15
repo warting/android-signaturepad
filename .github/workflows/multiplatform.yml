@@ -1,0 +1,41 @@
+name: Multiplatform verification
+
+on:
+  pull_request:
+
+jobs:
+  apple-and-desktop:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Verify portable engine and Compose UI
+        run: >-
+          ./gradlew
+          :signature-engine:jvmTest :signature-engine:iosSimulatorArm64Test
+          :signature-engine:wasmJsNodeTest
+          :signature-compose:desktopTest :signature-compose:iosSimulatorArm64Test
+          :sample-multiplatform:desktopJar
+          :sample-multiplatform:wasmJsBrowserDevelopmentExecutableDistribution
+          --stacktrace
+      - name: Build iOS host application
+        run: >-
+          xcodebuild -project sample-ios/SignatureSample.xcodeproj -scheme SignatureSample
+          -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build/ios CODE_SIGNING_ALLOWED=NO build
+      - name: Upload screenshots and test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Multiplatform reports
+          path: |
+            **/build/reports/tests/
+            signature-compose/build/screenshots/
+          retention-days: 7

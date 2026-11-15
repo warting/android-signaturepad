@@ -1,0 +1,31 @@
+name: SignatureSample
+options:
+  bundleIdPrefix: se.warting
+  deploymentTarget:
+    iOS: '14.0'
+targets:
+  SignatureSample:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    info:
+      path: Info.plist
+      properties:
+        CADisableMinimumFrameDurationOnPhone: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: se.warting.signaturesample.ios
+        PRODUCT_MODULE_NAME: SignatureSampleHost
+        ARCHS: arm64
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        FRAMEWORK_SEARCH_PATHS: $(inherited) $(SRCROOT)/../sample-multiplatform/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+        OTHER_LDFLAGS: $(inherited) -framework SignatureSample
+    preBuildScripts:
+      - name: Build shared Kotlin framework
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :sample-multiplatform:embedAndSignAppleFrameworkForXcode
+        basedOnDependencyAnalysis: false

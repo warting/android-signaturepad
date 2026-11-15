@@ -22,6 +22,7 @@ class ViewFragment : Fragment() {
     private lateinit var mSaveButton: Button
     private lateinit var mClearButton: Button
     private lateinit var mUndoButton: Button
+    private lateinit var mRedoButton: Button
     private lateinit var mSignaturePad: SignaturePad
 
     override fun onCreateView(
@@ -53,6 +54,7 @@ class ViewFragment : Fragment() {
         mSaveButton = view.findViewById<View>(R.id.save_button) as Button
         mClearButton = view.findViewById<View>(R.id.clear_button) as Button
         mUndoButton = view.findViewById<View>(R.id.undo_button) as Button
+        mRedoButton = view.findViewById<View>(R.id.redo_button) as Button
         mSignaturePad = view.findViewById<View>(R.id.signature_pad) as SignaturePad
         view.findViewById<SwitchMaterial>(R.id.shadow_toggle).setOnCheckedChangeListener { _, checked ->
             mSignaturePad.setShadowIntensity(if (checked) SAMPLE_SHADOW_INTENSITY else 0f)
@@ -62,10 +64,12 @@ class ViewFragment : Fragment() {
 
             override fun onStartSigning() {
                 Log.d("SignedListener", "OnStartSigning")
+                mRedoButton.isEnabled = mSignaturePad.canRedo()
             }
 
             override fun onSigning() {
                 Log.d("SignedListener", "OnSigning")
+                mRedoButton.isEnabled = mSignaturePad.canRedo()
             }
 
             override fun onSigned() {
@@ -73,6 +77,7 @@ class ViewFragment : Fragment() {
                 mSaveButton.isEnabled = !mSignaturePad.isEmpty
                 mClearButton.isEnabled = !mSignaturePad.isEmpty
                 mUndoButton.isEnabled = mSignaturePad.canUndo()
+                mRedoButton.isEnabled = mSignaturePad.canRedo()
             }
 
             override fun onClear() {
@@ -83,11 +88,13 @@ class ViewFragment : Fragment() {
                 mSaveButton.isEnabled = !mSignaturePad.isEmpty
                 mClearButton.isEnabled = !mSignaturePad.isEmpty
                 mUndoButton.isEnabled = mSignaturePad.canUndo()
+                mRedoButton.isEnabled = mSignaturePad.canRedo()
             }
         })
 
         mClearButton.setOnClickListener { mSignaturePad.clear() }
         mUndoButton.setOnClickListener { mSignaturePad.undo() }
+        mRedoButton.setOnClickListener { mSignaturePad.redo() }
         mSaveButton.setOnClickListener {
             val signatureBitmap = mSignaturePad.getSignatureBitmap()
             val signatureSvg = mSignaturePad.getSignatureSvg()

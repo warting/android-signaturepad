@@ -107,11 +107,14 @@ private fun ColorToggleGroup(
 private fun SaveClearRow(
     onSave: () -> Unit,
     onClear: () -> Unit,
-    onUndo: () -> Unit
+    onUndo: () -> Unit,
+    onRedo: () -> Unit,
+    canRedo: Boolean,
 ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(modifier = Modifier.weight(1f), onClick = onSave) { Text("Save") }
         Button(modifier = Modifier.weight(1f), onClick = onUndo) { Text("Undo") }
+        Button(modifier = Modifier.weight(1f), onClick = onRedo, enabled = canRedo) { Text("Redo") }
         Button(modifier = Modifier.weight(1f), onClick = onClear) { Text("Clear") }
     }
 }
@@ -177,6 +180,7 @@ fun ComposeSample() {
             Text("Try Jetpack Ink")
         }
 
+        SignatureCaptureExamples()
         Box(
             Modifier
                 .height(SIGNATURE_PAD_HEIGHT_DP.dp)
@@ -276,7 +280,9 @@ fun ComposeSample() {
             },
             onUndo = {
                 signatureState.undo()
-            }
+            },
+            onRedo = { signatureState.redo() },
+            canRedo = signatureState.canRedo(),
         )
 
         bmpPair.first?.let {
