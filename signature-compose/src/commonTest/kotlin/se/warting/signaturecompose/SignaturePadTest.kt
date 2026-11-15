@@ -51,6 +51,32 @@ class SignaturePadTest {
         }
     }
     @Test
+    fun secondaryPointerDoesNotAddSamplesForStationarySigningPointer() = runComposeUiTest {
+        val state = SignaturePadState()
+        setContent { SignaturePad(Modifier.testTag("pad"), state) }
+        onNodeWithTag("pad").performTouchInput {
+            down(0, Offset(20f, 30f))
+            down(1, Offset(100f, 100f))
+            moveTo(1, Offset(140f, 110f))
+            up(1)
+        }
+        runOnIdle {
+            assertEquals(1, state.events.size)
+            assertEquals(SignatureEvent.DOWN, state.events.single().action)
+        }
+        onNodeWithTag("pad").performTouchInput {
+            moveTo(0, Offset(60f, 70f))
+            moveTo(0, Offset(100f, 30f))
+            up(0)
+        }
+        runOnIdle {
+            assertEquals(listOf(SignatureEvent.DOWN, SignatureEvent.MOVE, SignatureEvent.MOVE, SignatureEvent.UP),
+                state.events.map { it.action })
+            assertTrue(state.canUndo)
+        }
+    }
+
+    @Test
     fun svgOnlyObserversRecomposeWhenEventsChange() = runComposeUiTest {
         val state = SignaturePadState()
         var observed = ""

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import se.warting.signatureengine.SignatureDocument
@@ -70,9 +71,11 @@ fun SignaturePad(
                         change.consume()
                         break
                     }
-                    input.move(down.id.value, change.position.x / density, change.position.y / density,
-                        change.pressure, change.uptimeMillis)
-                    change.consume()
+                    if (change.positionChanged()) {
+                        input.move(down.id.value, change.position.x / density, change.position.y / density,
+                            change.pressure, change.uptimeMillis)
+                        change.consume()
+                    }
                 }
             } finally {
                 input.cancel()
