@@ -1,0 +1,38 @@
+public final class se/warting/signatureink/InkSignaturePadKt {
+	public static final fun InkSignaturePad (Landroidx/compose/ui/Modifier;Lse/warting/signatureink/InkSignatureState;Landroidx/ink/brush/Brush;Landroidx/compose/runtime/Composer;II)V
+	public static final fun rememberInkSignatureState (Landroidx/compose/runtime/Composer;I)Lse/warting/signatureink/InkSignatureState;
+}
+
+public final class se/warting/signatureink/InkSignatureState {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun clear ()V
+	public final fun getCanRedo ()Z
+	public final fun getCanUndo ()Z
+	public final fun getStrokes ()Ljava/util/List;
+	public final fun isDrawing ()Z
+	public final fun isEmpty ()Z
+	public final fun redo ()V
+	public final fun restore (Ljava/util/List;)V
+	public final fun toBitmap (III)Landroid/graphics/Bitmap;
+	public static synthetic fun toBitmap$default (Lse/warting/signatureink/InkSignatureState;IIIILjava/lang/Object;)Landroid/graphics/Bitmap;
+	public final fun toPngByteArray (III)[B
+	public static synthetic fun toPngByteArray$default (Lse/warting/signatureink/InkSignatureState;IIIILjava/lang/Object;)[B
+	public final fun undo ()V
+}
+
+public final class se/warting/signatureink/InkSignatureView : android/widget/FrameLayout {
+	public static final field $stable I
+	public fun <init> (Landroid/content/Context;)V
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;I)V
+	public synthetic fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getBrush ()Landroidx/ink/brush/Brush;
+	public final fun getState ()Lse/warting/signatureink/InkSignatureState;
+	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
+	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
+	public fun performClick ()Z
+	public final fun setBrush (Landroidx/ink/brush/Brush;)V
+	public final fun setState (Lse/warting/signatureink/InkSignatureState;)V
+}
+

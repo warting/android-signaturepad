@@ -1,4 +1,5 @@
 [versions]
+ink = "1.0.0"
 agp = "9.5.1"
 androidx-activity = "1.13.0"
 composeBom = "2026.09.00"
@@ -8,6 +9,11 @@ kotlin = "2.4.21"
 navigation3UiAndroid = "1.2.1"
 
 [libraries]
+androidx-ink-brush = { module = "androidx.ink:ink-brush", version.ref = "ink" }
+androidx-ink-strokes = { module = "androidx.ink:ink-strokes", version.ref = "ink" }
+androidx-ink-authoring = { module = "androidx.ink:ink-authoring", version.ref = "ink" }
+androidx-ink-rendering = { module = "androidx.ink:ink-rendering", version.ref = "ink" }
+androidx-input-motionprediction = "androidx.input:input-motionprediction:1.0.0"
 androidx-activity-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-appcompat = "androidx.appcompat:appcompat:1.8.0"

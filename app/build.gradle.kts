@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.activity.activity.ktx)
     implementation(project(":signature-pad"))
     implementation(project(":signature-view"))
+    implementation(project(":signature-ink"))
     implementation(libs.androidx.core)
     implementation(libs.androidx.compose.ui.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.lifecycle.runtime.ktx)
