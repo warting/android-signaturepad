@@ -1,3 +1,13 @@
+public final class se/warting/signaturepad/ComposableSingletons$SignatureFieldKt {
+	public static final field INSTANCE Lse/warting/signaturepad/ComposableSingletons$SignatureFieldKt;
+	public fun <init> ()V
+	public final fun getLambda$-88888202$signature_pad ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class se/warting/signaturepad/SignatureFieldKt {
+	public static final fun SignatureField-T0bfq7A (Landroidx/compose/ui/Modifier;Lse/warting/signaturepad/SignaturePadState;ZJJFFLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class se/warting/signaturepad/SignaturePadAdapter {
 	public static final field $stable I
 	public synthetic fun <init> (Lse/warting/signaturepad/SignaturePadState;Lkotlin/jvm/internal/DefaultConstructorMarker;)V

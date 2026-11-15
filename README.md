@@ -104,6 +104,33 @@ Direct construction of `SignaturePadAdapter(view)` is no longer supported: use
 `rememberSignaturePadState()`, or obtain the deprecated adapter through `onReady`.
 The classic View API remains available in `signature-view`.
 
+### Optional signature field
+
+`SignatureField` adds a decorative guideline and a placeholder slot around the
+native Compose canvas. Provide localized text and your app's colors:
+
+```kotlin
+val state = rememberSignaturePadState()
+SignatureField(
+    state = state,
+    modifier = Modifier.fillMaxWidth().height(200.dp),
+    guidelineColor = MaterialTheme.colorScheme.outline,
+    penColor = MaterialTheme.colorScheme.onSurface,
+) {
+    Text("Sign here")
+}
+```
+
+Import `se.warting.signaturepad.SignatureField`. The placeholder is visible only
+while the signature is empty. The guideline and placeholder never appear in bitmap,
+SVG or raw-event exports. Set `showGuideline = false` to hide the line. Use
+`SignaturePadView` directly for signing callbacks and advanced configuration.
+
+The Compose sample includes working `AlertDialog` and `ModalBottomSheet` capture
+flows in `SignatureCaptureExamples.kt`: Save is enabled after input, Clear resets
+the field, and Cancel leaves the previously saved preview untouched. Material 3 is
+used by the sample; the library component itself only requires Compose Foundation.
+
 ### Android Views
 
 ```xml
