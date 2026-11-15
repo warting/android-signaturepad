@@ -125,6 +125,12 @@ in-progress stroke. `canUndo()` and `canRedo()` are observable in Compose. New a
 input, `clear()` and explicit signature restoration discard redo history. Redo history
 is transient and is not included in saved signatures or configuration-state restoration.
 
+History stores input coordinates and timing, not per-stroke pen styles. As with undo and
+signature restoration in 0.3.0, replay uses the current pen color, width and velocity settings
+for the entire signature. Changing those settings between capture and undo/redo can therefore
+restyle existing ink. Keep pen settings fixed during a capture when its appearance must remain
+unchanged.
+
 ### Configuration
 
 * `penMinWidth` - The minimum width of the stroke (default: 3dp).

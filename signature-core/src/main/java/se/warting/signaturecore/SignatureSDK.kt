@@ -322,6 +322,8 @@ class SignatureSDK {
      * Restore the most recently undone stroke at its original position, preserving
      * any active input. New accepted input, [clear] and explicit restoration discard
      * redo history. Does nothing when there is no undone stroke.
+     * Like legacy undo/restore, replay uses the current global pen settings; history
+     * stores geometry and timing, not individual stroke styles.
      */
     fun redo() {
         if (undoneStrokes.isEmpty()) return
