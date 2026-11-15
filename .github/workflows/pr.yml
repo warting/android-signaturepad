@@ -47,5 +47,7 @@ jobs:
         if: failure()
         with:
           name: Reports
-          path: '**/build/reports/*'
+          path: |
+            **/build/reports/*
+            app/build/intermediates/debug/testDebugScreenshotTestDefaultTestSuite/results/
           retention-days: 2

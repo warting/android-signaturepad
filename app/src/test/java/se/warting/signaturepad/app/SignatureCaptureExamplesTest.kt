@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -31,10 +32,13 @@ class SignatureCaptureExamplesTest {
     fun sheet_supportsClearSaveAndCancel() = verifyCapture("Sign in sheet")
 
     private fun verifyCapture(openLabel: String) {
-        compose.setContent { MaterialTheme { SignatureCaptureExamples() } }
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent { MaterialTheme { SignatureCaptureExamples() } }
         compose.onNodeWithText(openLabel).performClick()
         compose.onNodeWithText("Save").assertIsNotEnabled()
         sign()
+        compose.onNodeWithText("Save").assertIsEnabled()
+        restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithText("Save").assertIsEnabled()
         compose.onNodeWithText("Clear").performClick()
         compose.onNodeWithText("Save").assertIsNotEnabled()

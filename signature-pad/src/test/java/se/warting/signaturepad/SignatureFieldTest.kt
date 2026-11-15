@@ -1,6 +1,9 @@
 package se.warting.signaturepad
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -31,8 +34,10 @@ class SignatureFieldTest {
         lateinit var state: SignaturePadState
         compose.setContent {
             state = rememberSignaturePadState()
-            SignatureField(Modifier.testTag("field"), state = state) {
-                BasicText("Sign here", Modifier.height(300.dp))
+            Box(Modifier.horizontalScroll(rememberScrollState())) {
+                SignatureField(Modifier.testTag("field"), state = state) {
+                    BasicText("Sign here", Modifier.height(300.dp))
+                }
             }
         }
         compose.onNodeWithText("Sign here").assertExists()
