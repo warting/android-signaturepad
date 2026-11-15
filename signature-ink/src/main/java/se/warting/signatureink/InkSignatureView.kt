@@ -74,6 +74,7 @@ class InkSignatureView @JvmOverloads constructor(
     var brush: Brush = defaultBrush
 
     init {
+        clipToPadding = false
         addView(dry, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         addView(wet, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         wet.addFinishedStrokesListener(object : InProgressStrokesFinishedListener {

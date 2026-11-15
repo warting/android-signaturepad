@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,7 +34,7 @@ class InkSampleActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(Modifier.fillMaxSize()) {
-                    Column(Modifier.padding(20.dp)) {
+                    Column(Modifier.safeDrawingPadding().padding(20.dp)) {
                         Text("Jetpack Ink", style = MaterialTheme.typography.headlineMedium)
                         Text("Sign with your finger or a pressure-sensitive pen")
                         InkSignaturePad(

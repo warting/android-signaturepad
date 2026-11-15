@@ -2,6 +2,7 @@ package se.warting.signaturepad.app
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.SystemClock
 import android.view.InputDevice
@@ -193,7 +194,7 @@ class InkSignatureTest {
 
     @Test
     fun paddingKeepsBothDrawingLayersInWrapperCoordinates() {
-        val view = checkNotNull(findInk(compose.activity.window.decorView))
+        val view = compose.runOnIdle { checkNotNull(findInk(compose.activity.window.decorView)) }
         compose.runOnIdle { view.setPadding(25, 40, 30, 15) }
         compose.waitForIdle()
         compose.runOnIdle {
@@ -206,15 +207,30 @@ class InkSignatureTest {
             }
         }
         compose.onNodeWithTag("ink").performTouchInput {
-            down(Offset(60f, 70f))
-            moveTo(Offset(160f, 100f), 32)
+            down(Offset(10f, 20f))
+            moveTo(Offset(10f, 60f), 32)
+            moveTo(Offset(10f, 100f), 32)
             up()
         }
         val state = compose.activity.inkState
         compose.waitUntil(10_000) { !state.isDrawing && state.strokes.isNotEmpty() }
         compose.runOnIdle {
-            assertEquals(60f, state.strokes.single().inputs[0].x, 0.01f)
-            assertEquals(70f, state.strokes.single().inputs[0].y, 0.01f)
+            assertEquals(10f, state.strokes.single().inputs[0].x, 0.01f)
+            assertEquals(20f, state.strokes.single().inputs[0].y, 0.01f)
+            assertFalse(view.clipToPadding)
+            val rendered = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+            try {
+                rendered.eraseColor(Color.WHITE)
+                view.draw(Canvas(rendered))
+                var black = 0
+                var white = 0
+                for (y in 0 until 100) for (x in 0 until 25) {
+                    if (rendered.getPixel(x, y) == Color.BLACK) black++
+                    if (rendered.getPixel(x, y) == Color.WHITE) white++
+                }
+                assertTrue("Stroke inside left padding must remain visible", black > 0)
+                assertTrue("Padding must not be a solid rendering layer", white > 0)
+            } finally { rendered.recycle() }
         }
     }
 
