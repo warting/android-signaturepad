@@ -83,7 +83,6 @@ class InkSignatureState {
     internal fun begin(id: InProgressStrokeId) {
         pending.add(id)
         pendingCount = pending.size
-        undone.clear()
         notifyChanged()
     }
 
@@ -94,7 +93,12 @@ class InkSignatureState {
     }
 
     internal fun finish(strokes: Map<InProgressStrokeId, Stroke>) {
-        strokes.forEach { (id, stroke) -> if (pending.remove(id)) completed.add(stroke) }
+        strokes.forEach { (id, stroke) ->
+            if (pending.remove(id)) {
+                undone.clear()
+                completed.add(stroke)
+            }
+        }
         pendingCount = pending.size
         notifyChanged()
     }

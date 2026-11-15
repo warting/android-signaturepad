@@ -64,16 +64,9 @@ class InkSignatureTest {
     }
 
     @Test
-    fun rawStylusEventsPreservePressure() {
+    fun rawStylusEventsPreservePressureAcrossDetach() {
         val state = compose.activity.inkState
         compose.runOnIdle {
-            fun findInk(view: View): InkSignatureView? {
-                if (view is InkSignatureView) return view
-                if (view is ViewGroup) for (index in 0 until view.childCount) {
-                    findInk(view.getChildAt(index))?.let { return it }
-                }
-                return null
-            }
             val view = checkNotNull(findInk(compose.activity.window.decorView))
             val start = SystemClock.uptimeMillis() - 100
             val properties = MotionEvent.PointerProperties().apply {
@@ -93,6 +86,7 @@ class InkSignatureTest {
                     InputDevice.SOURCE_STYLUS, 0)
                 try { assertTrue(view.dispatchTouchEvent(event)) } finally { event.recycle() }
             }
+            (view.parent as ViewGroup).removeView(view)
         }
         compose.waitUntil(10_000) { !state.isDrawing && state.strokes.isNotEmpty() }
         compose.runOnIdle {
@@ -132,6 +126,53 @@ class InkSignatureTest {
             }
             exported.recycle()
         }
+    }
+
+    @Test
+    fun cancelledGesturePreservesRedoAndDisabledViewRejectsInput() {
+        val state = compose.activity.inkState
+        compose.runOnIdle { state.restore(listOf(stroke(0.9f))); state.undo() }
+        compose.onNodeWithTag("ink").performTouchInput {
+            down(Offset(30f, 60f))
+            moveTo(Offset(100f, 100f), 32)
+            cancel()
+        }
+        compose.runOnIdle {
+            assertTrue(state.canRedo)
+            val view = checkNotNull(findInk(compose.activity.window.decorView))
+            view.isEnabled = false
+            val now = SystemClock.uptimeMillis()
+            val event = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 30f, 50f, 0)
+            try { assertFalse(view.dispatchTouchEvent(event)) } finally { event.recycle() }
+            assertFalse(state.isDrawing)
+            assertTrue(state.canRedo)
+        }
+    }
+
+    @Test
+    fun endedStrokeSurvivesImmediateDetachBeforeHandoff() {
+        val state = compose.activity.inkState
+        compose.runOnIdle {
+            val view = checkNotNull(findInk(compose.activity.window.decorView))
+            val now = SystemClock.uptimeMillis() - 60
+            listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP)
+                .forEachIndexed { index, action ->
+                    val event = MotionEvent.obtain(now, now + index * 20, action,
+                        30f + index * 50, 50f + index * 20, 0)
+                    try { view.dispatchTouchEvent(event) } finally { event.recycle() }
+                }
+            assertTrue(state.isDrawing)
+            (view.parent as ViewGroup).removeView(view)
+        }
+        compose.waitUntil(10_000) { !state.isDrawing && state.strokes.size == 1 }
+    }
+
+    private fun findInk(view: View): InkSignatureView? {
+        if (view is InkSignatureView) return view
+        if (view is ViewGroup) for (index in 0 until view.childCount) {
+            findInk(view.getChildAt(index))?.let { return it }
+        }
+        return null
     }
 
     private fun stroke(pressure: Float): Stroke {

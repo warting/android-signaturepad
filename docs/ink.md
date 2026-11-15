@@ -42,6 +42,11 @@ stylus metadata. They are not the old Parcelable `Signature` model and are not a
 persisted across process death. Applications needing durable storage can use Jetpack Ink's
 storage APIs. The existing SVG/legacy-model APIs remain on the original renderers.
 
+When the view detaches, active input is cancelled. Ended strokes awaiting renderer handoff
+are committed from retained real input using Ink's public stroke model, preserving pressure,
+tilt, orientation and batched motion history. Predicted samples are never stored. Temporary
+input copies are recycled after handoff, cancellation or restoration.
+
 ## Verification
 
 The sample app's **Try Jetpack Ink** button opens a dedicated capture screen. Instrumentation
@@ -51,6 +56,7 @@ comparison against `app/src/androidTest/assets/reference/ink-signature.png` (Git
 
 ```shell
 ./gradlew :app:connectedDebugAndroidTest \
+  -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true \
   -Pandroid.testInstrumentationRunnerArguments.class=se.warting.signaturepad.app.InkSignatureTest
 ```
 

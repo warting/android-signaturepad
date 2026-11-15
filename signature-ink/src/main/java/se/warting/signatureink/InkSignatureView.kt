@@ -31,6 +31,7 @@ class InkSignatureView @JvmOverloads constructor(
     private var activeId: InProgressStrokeId? = null
     private var pointerId = -1
     private var observedGeneration = 0
+    private val samples = linkedMapOf<InProgressStrokeId, PendingInkStroke>()
     private val issued = linkedMapOf<InProgressStrokeId, Int>()
     private val dry = object : View(context) {
         override fun onDraw(canvas: Canvas) {
@@ -41,6 +42,7 @@ class InkSignatureView @JvmOverloads constructor(
         if (observedGeneration != state.generation) {
             observedGeneration = state.generation
             cancelInput()
+            discardSamples()
             issued.clear()
             wet.cancelUnfinishedStrokes()
             wet.removeFinishedStrokes(wet.getFinishedStrokes().keys)
@@ -52,8 +54,10 @@ class InkSignatureView @JvmOverloads constructor(
         set(value) {
             if (field === value) return
             cancelInput()
+            commitEndedStrokes()
             field.observers.remove(changed)
             issued.keys.toList().forEach(field::cancel)
+            discardSamples()
             issued.clear()
             wet.cancelUnfinishedStrokes()
             wet.removeFinishedStrokes(wet.getFinishedStrokes().keys)
@@ -77,6 +81,7 @@ class InkSignatureView @JvmOverloads constructor(
                 val accepted = linkedMapOf<InProgressStrokeId, Stroke>()
                 issued.keys.toList().forEach { id ->
                     val stroke = strokes[id] ?: return@forEach
+                    samples.remove(id)?.recycle()
                     if (issued.remove(id) == state.generation) accepted[id] = stroke
                 }
                 state.finish(accepted)
@@ -90,6 +95,10 @@ class InkSignatureView @JvmOverloads constructor(
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean = true
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) {
+            cancelInput()
+            return false
+        }
         if (event.actionMasked == MotionEvent.ACTION_UP) performClick()
         return handleInput(event)
     }
@@ -107,11 +116,28 @@ class InkSignatureView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         cancelInput()
-        issued.keys.toList().forEach(state::cancel)
-        issued.clear()
-        wet.cancelUnfinishedStrokes()
+        // A detached surface cannot complete the asynchronous renderer handoff.
+        // Commit ended strokes from retained real input through Ink's public model API.
+        commitEndedStrokes()
         state.observers.remove(changed)
         super.onDetachedFromWindow()
+    }
+
+    private fun commitEndedStrokes() {
+        val ended = linkedMapOf<InProgressStrokeId, Stroke>()
+        samples.entries.toList().forEach { (id, input) ->
+            if (input.ended && issued[id] == state.generation) ended[id] = input.toStroke()
+        }
+        ended.keys.forEach { id ->
+            issued.remove(id)
+            samples.remove(id)?.recycle()
+        }
+        if (ended.isNotEmpty()) state.finish(ended)
+    }
+
+    private fun discardSamples() {
+        samples.values.forEach(PendingInkStroke::recycle)
+        samples.clear()
     }
 
     private fun handleInput(event: MotionEvent): Boolean {
@@ -122,6 +148,7 @@ class InkSignatureView @JvmOverloads constructor(
                 parent?.requestDisallowInterceptTouchEvent(true)
                 pointerId = event.getPointerId(event.actionIndex)
                 val id = wet.startStroke(event, pointerId, brush)
+                samples[id] = PendingInkStroke(brush, pointerId).also { it.add(event) }
                 activeId = id
                 issued[id] = state.generation
                 state.begin(id)
@@ -129,6 +156,7 @@ class InkSignatureView @JvmOverloads constructor(
             MotionEvent.ACTION_MOVE -> {
                 val id = activeId ?: return true
                 if (event.findPointerIndex(pointerId) < 0) { cancelInput(); return true }
+                samples[id]?.add(event)
                 val predicted = predictor.predict()
                 try { wet.addToStroke(event, pointerId, id, predicted) }
                 finally { predicted?.recycle() }
@@ -139,6 +167,7 @@ class InkSignatureView @JvmOverloads constructor(
                 if (Build.VERSION.SDK_INT >= 33 && event.flags and MotionEvent.FLAG_CANCELED != 0) {
                     cancelInput()
                 } else {
+                    samples[id]?.apply { add(event); ended = true }
                     wet.finishStroke(event, pointerId, id)
                     activeId = null
                     pointerId = -1
@@ -161,6 +190,7 @@ class InkSignatureView @JvmOverloads constructor(
         id?.let {
             wet.cancelStroke(id)
             issued.remove(id)
+            samples.remove(id)?.recycle()
             state.cancel(id)
         }
     }
