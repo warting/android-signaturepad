@@ -66,9 +66,12 @@ public final class se/warting/signatureview/view/ViewCompat {
 
 public final class se/warting/signatureview/views/SignaturePad : android/view/View {
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
+	public final fun canRedo ()Z
 	public final fun canUndo ()Z
 	public final fun clear ()V
 	public final fun clearView ()V
+	public final fun exportBitmap (Lse/warting/signaturecore/SignatureExportOptions;)Landroid/graphics/Bitmap;
+	public static synthetic fun exportBitmap$default (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signaturecore/SignatureExportOptions;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun getSignature ()Lse/warting/signaturecore/Signature;
 	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
 	public final fun getSignatureBitmap (ILjava/lang/Integer;)Landroid/graphics/Bitmap;
@@ -80,6 +83,7 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signatureview/views/SignaturePad;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
+	public final fun redo ()V
 	public final fun setClearOnDoubleClick (Z)V
 	public fun setEnabled (Z)V
 	public final fun setMaxWidth (F)V
@@ -93,6 +97,10 @@ public final class se/warting/signatureview/views/SignaturePad : android/view/Vi
 	public final fun setShadowIntensity (F)V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 	public final fun setVelocityFilterWeight (F)V
+	public final fun toBase64 (Lse/warting/signaturecore/SignatureExportOptions;)Ljava/lang/String;
+	public static synthetic fun toBase64$default (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signaturecore/SignatureExportOptions;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun toPngByteArray (Lse/warting/signaturecore/SignatureExportOptions;)[B
+	public static synthetic fun toPngByteArray$default (Lse/warting/signatureview/views/SignaturePad;Lse/warting/signaturecore/SignatureExportOptions;ILjava/lang/Object;)[B
 	public final fun undo ()V
 }
 

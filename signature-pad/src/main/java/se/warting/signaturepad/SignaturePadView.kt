@@ -33,8 +33,12 @@ import androidx.core.graphics.createBitmap
 import se.warting.signaturecore.Event
 import se.warting.signaturecore.ExperimentalSignatureApi
 import se.warting.signaturecore.Signature
+import se.warting.signaturecore.SignatureExportOptions
 import se.warting.signaturecore.SignatureInput
 import se.warting.signaturecore.SignatureSDK
+import se.warting.signaturecore.exportBitmap
+import se.warting.signaturecore.toBase64
+import se.warting.signaturecore.toPngByteArray
 import se.warting.signaturecore.utils.SignedListener
 import se.warting.signaturepad.compose.BuildConfig
 import kotlin.math.roundToInt
@@ -161,6 +165,7 @@ fun SignaturePadView(
             }
 
             override fun onSigning() {
+                state.updateRedoStatus()
                 currentOnSigning()
             }
 
@@ -319,6 +324,7 @@ class SignaturePadState private constructor(
 
     private var empty by mutableStateOf(sdk.isEmpty)
     private var undoAvailable by mutableStateOf(sdk.canUndo())
+    private var redoAvailable by mutableStateOf(sdk.canRedo())
 
     internal fun invalidate() {
         redrawTick++
@@ -329,6 +335,11 @@ class SignaturePadState private constructor(
     internal fun updateStatus() {
         empty = sdk.isEmpty
         undoAvailable = sdk.canUndo()
+        updateRedoStatus()
+    }
+
+    internal fun updateRedoStatus() {
+        redoAvailable = sdk.canRedo()
     }
 
     private fun ensureBitmap() {
@@ -359,8 +370,31 @@ class SignaturePadState private constructor(
      */
     fun canUndo(): Boolean = undoAvailable
 
+    /** Restore the most recently undone stroke, if available. */
+    fun redo() {
+        sdk.redo()
+        ensureBitmap()
+        updateStatus()
+        invalidate()
+    }
+
+    /** Observable availability of an undone stroke. */
+    fun canRedo(): Boolean = redoAvailable
+
     val isEmpty: Boolean
         get() = empty
+
+    /** Export with cropping, padding and colors; null before the raster is initialized. */
+    fun exportBitmap(options: SignatureExportOptions = SignatureExportOptions()): Bitmap? =
+        sdk.exportBitmap(options)
+
+    /** Encode PNG bytes; null before the raster is initialized. */
+    fun toPngByteArray(options: SignatureExportOptions = SignatureExportOptions()): ByteArray? =
+        sdk.toPngByteArray(options)
+
+    /** Standard Base64 PNG, without line breaks or a data-URL prefix. */
+    fun toBase64(options: SignatureExportOptions = SignatureExportOptions()): String? =
+        sdk.toBase64(options)
 
     @Suppress("unused")
     fun getSignatureBitmap(): Bitmap = sdk.getSignatureBitmap() ?: createBitmap(1, 1)
@@ -422,6 +456,10 @@ class SignaturePadAdapter private constructor(
     fun undo() = state.undo()
 
     fun canUndo(): Boolean = state.canUndo()
+
+    fun redo() = state.redo()
+
+    fun canRedo(): Boolean = state.canRedo()
 
     val isEmpty: Boolean get() = state.isEmpty
 

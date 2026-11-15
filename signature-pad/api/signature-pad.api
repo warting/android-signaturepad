@@ -11,6 +11,7 @@ public final class se/warting/signaturepad/SignatureFieldKt {
 public final class se/warting/signaturepad/SignaturePadAdapter {
 	public static final field $stable I
 	public synthetic fun <init> (Lse/warting/signaturepad/SignaturePadState;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun canRedo ()Z
 	public final fun canUndo ()Z
 	public final fun clear ()V
 	public final fun getSignature ()Lse/warting/signaturecore/Signature;
@@ -23,6 +24,7 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 	public final fun getTransparentSignatureBitmap (ZLjava/lang/Integer;)Landroid/graphics/Bitmap;
 	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadAdapter;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
+	public final fun redo ()V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
 	public final fun undo ()V
 }
@@ -30,8 +32,11 @@ public final class se/warting/signaturepad/SignaturePadAdapter {
 public final class se/warting/signaturepad/SignaturePadState {
 	public static final field $stable I
 	public synthetic fun <init> (Lse/warting/signaturecore/SignatureSDK;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun canRedo ()Z
 	public final fun canUndo ()Z
 	public final fun clear ()V
+	public final fun exportBitmap (Lse/warting/signaturecore/SignatureExportOptions;)Landroid/graphics/Bitmap;
+	public static synthetic fun exportBitmap$default (Lse/warting/signaturepad/SignaturePadState;Lse/warting/signaturecore/SignatureExportOptions;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun getSignature ()Lse/warting/signaturecore/Signature;
 	public final fun getSignatureBitmap ()Landroid/graphics/Bitmap;
 	public final fun getSignatureBitmap (ILjava/lang/Integer;)Landroid/graphics/Bitmap;
@@ -42,7 +47,12 @@ public final class se/warting/signaturepad/SignaturePadState {
 	public final fun getTransparentSignatureBitmap (ZLjava/lang/Integer;)Landroid/graphics/Bitmap;
 	public static synthetic fun getTransparentSignatureBitmap$default (Lse/warting/signaturepad/SignaturePadState;ZLjava/lang/Integer;ILjava/lang/Object;)Landroid/graphics/Bitmap;
 	public final fun isEmpty ()Z
+	public final fun redo ()V
 	public final fun setSignature (Lse/warting/signaturecore/Signature;)V
+	public final fun toBase64 (Lse/warting/signaturecore/SignatureExportOptions;)Ljava/lang/String;
+	public static synthetic fun toBase64$default (Lse/warting/signaturepad/SignaturePadState;Lse/warting/signaturecore/SignatureExportOptions;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun toPngByteArray (Lse/warting/signaturecore/SignatureExportOptions;)[B
+	public static synthetic fun toPngByteArray$default (Lse/warting/signaturepad/SignaturePadState;Lse/warting/signaturecore/SignatureExportOptions;ILjava/lang/Object;)[B
 	public final fun undo ()V
 }
 

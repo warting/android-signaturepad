@@ -22,6 +22,26 @@ import se.warting.signaturecore.ExperimentalSignatureApi
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class PointerShadowViewTest {
     @Test
+    fun redo_restoresPixelsSvgAndEvents() {
+        val pad = createPad()
+        touch(pad, MotionEvent.ACTION_DOWN, 20f)
+        touch(pad, MotionEvent.ACTION_MOVE, 50f)
+        touch(pad, MotionEvent.ACTION_MOVE, 80f)
+        touch(pad, MotionEvent.ACTION_UP, 110f)
+        val bitmap = pad.getTransparentSignatureBitmap()
+        val svg = pad.getSignatureSvg()
+        val events = pad.getSignature().events
+        pad.undo()
+        assertTrue(pad.canRedo())
+        assertTrue(pad.isEmpty)
+        pad.redo()
+        assertTrue(!pad.canRedo())
+        assertEquals(events, pad.getSignature().events)
+        assertEquals(svg, pad.getSignatureSvg())
+        assertTrue(bitmap.sameAs(pad.getTransparentSignatureBitmap()))
+    }
+
+    @Test
     fun resize_updatesBitmapBeforeNextDrawAndAcceptsInputInNewArea() {
         val pad = createPad()
         render(pad)
@@ -32,6 +52,12 @@ class PointerShadowViewTest {
         touch(pad, MotionEvent.ACTION_MOVE, 310f)
         touch(pad, MotionEvent.ACTION_UP, 340f)
         val bitmap = pad.getTransparentSignatureBitmap()
+        val options = se.warting.signaturecore.SignatureExportOptions(paddingPixels = 4)
+        val bytes = requireNotNull(pad.toPngByteArray(options))
+        val png = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        assertEquals(bitmap.width + 8, png.width)
+        assertEquals(bitmap.height + 8, png.height)
+        assertTrue(bytes.contentEquals(android.util.Base64.decode(pad.toBase64(options), 0)))
         assertEquals(400, bitmap.width)
         assertEquals(200, bitmap.height)
         assertTrue(android.graphics.Color.alpha(bitmap.getPixel(280, 100)) > 0)

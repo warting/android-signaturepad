@@ -45,7 +45,10 @@ class SignaturePadStateTest {
                     onSigned = { assertTrue(state.canUndo()) },
                     onClear = { assertTrue(state.isEmpty) },
                 )
-                BasicText("empty=${state.isEmpty};undo=${state.canUndo()}", Modifier.testTag("status"))
+                BasicText(
+                    "empty=${state.isEmpty};undo=${state.canUndo()};redo=${state.canRedo()}",
+                    Modifier.testTag("status")
+                )
             }
         }
         assertStatus(empty = true, undo = false)
@@ -59,7 +62,10 @@ class SignaturePadStateTest {
         assertStatus(empty = false, undo = true)
         val saved = compose.runOnIdle { state.getSignature() }
         compose.runOnIdle { state.undo() }
-        assertStatus(empty = true, undo = false)
+        assertStatus(empty = true, undo = false, redo = true)
+        compose.runOnIdle { state.redo() }
+        assertStatus(empty = false, undo = true)
+        compose.runOnIdle { state.undo() }
         compose.runOnIdle { state.setSignature(saved) }
         assertStatus(empty = false, undo = true)
         compose.runOnIdle { state.clear() }
@@ -81,6 +87,14 @@ class SignaturePadStateTest {
             up()
         }
         val before = compose.runOnIdle { state.getTransparentSignatureBitmap() }
+        compose.runOnIdle {
+            val options = se.warting.signaturecore.SignatureExportOptions(paddingPixels = 4)
+            val bytes = requireNotNull(state.toPngByteArray(options))
+            val png = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            assertEquals(before.width + 8, png.width)
+            assertEquals(before.height + 8, png.height)
+            assertTrue(bytes.contentEquals(android.util.Base64.decode(state.toBase64(options), 0)))
+        }
         compose.runOnIdle { width.value = 300.dp }
         compose.runOnIdle {
             val after = state.getTransparentSignatureBitmap()
@@ -101,7 +115,7 @@ class SignaturePadStateTest {
         }
     }
 
-    private fun assertStatus(empty: Boolean, undo: Boolean) {
-        compose.onNodeWithTag("status").assertTextEquals("empty=$empty;undo=$undo")
+    private fun assertStatus(empty: Boolean, undo: Boolean, redo: Boolean = false) {
+        compose.onNodeWithTag("status").assertTextEquals("empty=$empty;undo=$undo;redo=$redo")
     }
 }
