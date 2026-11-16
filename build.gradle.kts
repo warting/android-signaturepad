@@ -22,6 +22,8 @@ plugins {
     alias(libs.plugins.io.github.gradle.nexus.publish.plugin)
     alias(libs.plugins.org.jetbrains.kotlinx.binary.compatibility.validator)
     alias(libs.plugins.nl.littlerobots.version.catalog.update)
+    // Share publishing build services across Android and multiplatform modules.
+    alias(libs.plugins.com.vanniktech.maven.publish).apply(false)
     alias(libs.plugins.com.android.application).apply(false)
     alias(libs.plugins.com.android.library).apply(false)
     alias(libs.plugins.com.android.legacy.kapt).apply(false)
@@ -38,9 +40,11 @@ if (localPropertiesFile.exists()) {
 // Native Git supports both regular clones and linked worktrees. Keep release
 // versions tag-based and retain the existing MMMNNNPPP signature version codes.
 val gitVersionName = providers.exec {
+    workingDir(rootDir)
     commandLine("git", "describe", "--tags", "--always", "--dirty", "--match", "v[0-9]*")
 }.standardOutput.asText.get().trim()
 val gitVersionTag = providers.exec {
+    workingDir(rootDir)
     commandLine("git", "describe", "--tags", "--abbrev=0", "--match", "v[0-9]*")
     isIgnoreExitValue = true
 }.standardOutput.asText.get().trim()
@@ -132,6 +136,7 @@ subprojects {
             // Compare against the actual published AAR, independently of editable API snapshots.
             val publishedApiVersion = "0.3.0"
             val publishedApi = configurations.create("publishedApi") {
+                resolutionStrategy.useGlobalDependencySubstitutionRules.set(false)
                 isCanBeConsumed = false
                 isTransitive = false
             }
