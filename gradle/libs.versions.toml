@@ -15,7 +15,7 @@ androidx-ink-brush = { module = "androidx.ink:ink-brush", version.ref = "ink" }
 androidx-ink-strokes = { module = "androidx.ink:ink-strokes", version.ref = "ink" }
 androidx-ink-authoring = { module = "androidx.ink:ink-authoring", version.ref = "ink" }
 androidx-ink-rendering = { module = "androidx.ink:ink-rendering", version.ref = "ink" }
-androidx-input-motionprediction = "androidx.input:input-motionprediction:1.0.0"
+androidx-input-motionprediction = "androidx.input:input-motionprediction:1.0.1"
 compose-multiplatform-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeMultiplatform" }
 screenshot-validation-api = { module = "com.android.tools.screenshot:screenshot-validation-api", version.ref = "screenshot" }
 androidx-activity-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
