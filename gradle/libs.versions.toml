@@ -43,7 +43,7 @@ io-gitlab-arturbosch-detekt-detekt-formatting = { module = "io.gitlab.arturbosch
 junit = "junit:junit:4.13.2"
 org-jetbrains-kotlin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 org-jetbrains-kotlin-kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
-robolectric = "org.robolectric:robolectric:4.17"
+robolectric = "org.robolectric:robolectric:4.18.1"
 
 [plugins]
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
