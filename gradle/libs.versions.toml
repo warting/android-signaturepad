@@ -2,7 +2,7 @@
 ink = "1.0.0"
 agp = "9.5.1"
 androidx-activity = "1.13.0"
-composeBom = "2026.09.00"
+composeBom = "2026.11.01"
 composeMultiplatform = "1.12.2"
 screenshot = "0.0.1-alpha17"
 core = "1.19.1"
