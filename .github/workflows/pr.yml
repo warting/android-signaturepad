@@ -42,6 +42,9 @@ jobs:
       - name: Run Android checks
         run: ./gradlew check apiCheck :app:assembleDebug :sample-android:assembleDebug :app:testDebugScreenshotTestDefaultTestSuite --stacktrace
 
+      - name: Validate publication task graph
+        run: ./gradlew publishAllPublicationsToMavenCentralRepository --dry-run -PVERSION_NAME=2.0.0-SNAPSHOT -PmavenCentralUsername=ci-validation -PmavenCentralPassword=not-a-secret
+
       - name: Upload reports
         uses: actions/upload-artifact@v7
         if: failure()
